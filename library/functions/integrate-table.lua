@@ -14,12 +14,20 @@
 
 ---@param base table
 ---@param source table
----@param mode? 'skip'|'replace'|'strict'
----Integrates the source table into the base table.
----* `strict` (default): Throws an error if the key already exists in the base table.
----* `skip`: Does not overwrite the key if it already exists in the base table.
----* `replace`: Overwrites the key if it already exists in the base table.
-_G.integrateTable = function (base, source, mode)
+---@param mode? 'strict'|'replace'|'skip'
+---
+---@return table
+---
+---Merges the contents of one table (`source`) into another (`base`) with configurable handling
+---for key collisions. The integration process depends on the specified `mode`:
+---
+---* `strict` Throws an error if a key in the `source` table already exists in the `base` table.
+---* `replace` Overwrites values in the `base` table with those from the `source`.
+---* `skip` Leaves existing keys in the `base` table unchanged.
+---
+---By default, the `strict` mode is used. The updated `base` table is returned.
+---
+backbone.integrateTable = function (base, source, mode)
   mode = mode or 'strict'
 
   for key, value in pairs (source) do
@@ -37,10 +45,22 @@ end
 ---@param sources table
 ---@param mode? 'skip'|'replace'|'strict'
 ---
-_G.integrateTables = function (base, sources, mode)
+---@return table
+---
+---Combines multiple tables (`sources`) into a single `base` table using a configurable merge strategy.
+---This function applies the specified `mode` to control how conflicts between keys are resolved, iterating
+---through each table in the `sources` collection.
+---
+---* `strict` Throws an error if a key in the `source` table already exists in the `base` table.
+---* `replace` Overwrites values in the `base` table with those from the `source`.
+---* `skip` Leaves existing keys in the `base` table unchanged.
+---
+---By default, the `strict` mode is used. The updated `base` table is returned.
+---
+backbone.integrateTables = function (base, sources, mode)
   Vector (sources):forEach (
     function (index, source)
-      integrateTable (base, source, mode)
+      backbone.integrateTable (base, source, mode)
     end
   )
 

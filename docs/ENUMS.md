@@ -1,4 +1,4 @@
-[Return to the documentation](../README.md)
+[< Backbone documentation](../README.md)
 
 # Backbone
 Version `1.0.0` (*work in progress*)
@@ -9,3 +9,7 @@ Version `1.0.0` (*work in progress*)
 - ?
 
 The enumeration reference is currently under construction.
+
+---
+
+[< Backbone documentation](../README.md)

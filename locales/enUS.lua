@@ -17,6 +17,15 @@ local context = select(2, ...)
 context.plugin:registerLocalizedStrings (
   'enUS', {
     ['development-mode'] = 'Development mode',
-    ['development-mode-tooltip'] = '?'
+    ['development-mode-tooltip'] = 'Allows for adapting the behavior of addons depending on the current environment.',
+
+    ['item-quality/poor']      = 'Poor',
+    ['item-quality/common']    = 'Common',
+    ['item-quality/uncommon']  = 'Uncommon',
+    ['item-quality/rare']      = 'Rare',
+    ['item-quality/epic']      = 'Epic',
+    ['item-quality/legendary'] = 'Legendary',
+    ['item-quality/artifact']  = 'Artifact',
+    ['item-quality/heirloom']  = 'Heirloom',
   }
 )

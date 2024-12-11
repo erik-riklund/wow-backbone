@@ -29,7 +29,7 @@ local createChannel = function (owner, name, options)
   end
 
   local channel = new 'Listenable' --[[@as Backbone.Channel]]
-  channels:setEntry(channelId, integrateTables(
+  channels:setEntry(channelId, backbone.integrateTables (
     channel, { options, { name = name, owner = owner } }
   ))
 end
@@ -135,6 +135,6 @@ end
 ---Invokes all registered listeners on the specified channel.
 ---* Arguments are passed to the listeners' callback functions.
 ---
-networkAPI.invokeChannelListeners = function (self, channelName, ...)
+networkAPI.triggerChannel = function (self, channelName, ...)
   invokeListeners (self, channelName, ...)
 end

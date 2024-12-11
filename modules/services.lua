@@ -1,7 +1,7 @@
 ---@class Backbone
 local context = select(2, ...)
 
---[[~ Updated: 2024/12/09 | Author(s): Gopher ]]
+--[[~ Updated: 2024/12/11 | Author(s): Gopher ]]
 
 --Backbone - A World of Warcraft addon framework
 --Copyright (C) 2024 Erik Riklund (Gopher)
@@ -64,6 +64,7 @@ end
 
 ---@param name string
 ---@return boolean
+---
 ---Checks whether the specified service exists.
 ---
 backbone.hasService = function (name)
@@ -71,9 +72,11 @@ backbone.hasService = function (name)
 end
 
 ---@generic T
+---
 ---@param name `T`
 ---@param ... unknown
 ---@return T
+---
 ---Invokes the service with the specified name.
 ---
 backbone.requestService = function (name, ...)
@@ -89,7 +92,8 @@ backbone.requestService = function (name, ...)
     context.loadAddon (service.provider)
   end
 
-  return service.initializer(...)
+  local object = service.initializer(...)
+  return ((type (object) == 'table') and backbone.createImmutableProxy (object)) or object
 end
 
 -- PLUGIN API --
@@ -99,6 +103,7 @@ local serviceAPI = context.pluginAPI
 
 ---@param name string
 ---@param service Backbone.ServiceInitializer
+---
 ---Registers a service with the specified name.
 ---
 serviceAPI.registerService = function (self, name, service)

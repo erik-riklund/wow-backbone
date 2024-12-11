@@ -14,7 +14,7 @@
 ---@param source table
 ---@return table
 ---
----Creates and returns a shallow copy of the `source` table.
----* Note: This function does not recursively copy nested tables.
+---Returns a new table containing the same elements as the `source` table, preserving their order.
+---* The function creates a shallow copy of the table, meaning that any nested tables will still reference the original tables.
 ---
 backbone.copyTable = function (source) return { unpack (source) } end

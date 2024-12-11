@@ -12,11 +12,20 @@
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---@generic T
+---
 ---@param condition boolean
 ---@param onTrue T
 ---@param onFalse T
+---
 ---@return T
----Provides a concise way to return one of two values based on a boolean condition.
+---
+---Provides a concise way to return one of two values based on a boolean condition. This function
+---is useful in situations where Lua's built-in short-circuit operators does not work as expected.
+---
+---```lua
+----- always assigns `true` as `false` short-circuits the expression.
+---local value = (someValue == nil and false) or true
+---```
 ---
 backbone.when = function (condition, onTrue, onFalse)
   local value = onTrue

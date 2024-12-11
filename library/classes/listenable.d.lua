@@ -14,20 +14,8 @@
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---@class Listener
-local listener =
-{
-  ---@type string?
-  ---A unique identifier for the listener. (optional)
-  ---* If omitted, the listener will be anonymous (not eligible for targeted removal).
-  id = nil,
-
-  ---@type function
-  ---The callback function to be invoked when the listener is triggered.
-  callback = nil,
-
-  ---@type boolean?
-  ---Indicates whether the listener should persist after being invoked. (optional)
-  ---* If true, the listener remains active; if false, it is automatically removed after one invocation.
-  ---* Defaults to true if not specified.
-  persistent = nil
-}
+---Represents a listener reacting to a channel or event.
+---
+---@field id? string A unique identifier for the listener.
+---@field callback function The callback function to be invoked when the listener is triggered.
+---@field persistent? boolean Indicates whether the listener should persist after being invoked.

@@ -40,10 +40,10 @@ context.frame:HookScript (
         local pluginId = string.lower (addon)
         local plugin = context.plugins:getEntry (pluginId) --[[@as Backbone.Plugin]]
 
-        context.plugin:invokeChannelListeners ('PLUGIN_LOADED', plugin)
+        context.plugin:triggerChannel ('PLUGIN_LOADED', plugin)
       end
 
-      context.plugin:invokeChannelListeners ('ADDON_READY', addon)
+      context.plugin:triggerChannel ('ADDON_READY', addon)
       return -- exit early.
     end
 

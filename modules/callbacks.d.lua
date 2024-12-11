@@ -15,6 +15,7 @@
 
 ---@class Backbone.Task
 ---Represents a unit of work to be executed.
+---
 ---@field id string? A unique identifier for the task.
 ---@field callback function The callback function to execute.
 ---@field arguments Vector? Arguments to pass to the callback function.

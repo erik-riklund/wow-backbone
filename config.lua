@@ -17,11 +17,11 @@ local context = select(2, ...)
 context.plugin:registerDefaultSettings { DEVELOPMENT_MODE = false }
 
 context.plugin:onReady (
-function ()
-    local configPanel = ConfigPanel (context.plugin)
+  function ()
+    -- local configPanel = ConfigPanel (context.plugin)
 
-    configPanel:createToggle { 
-      setting = 'DEVELOPMENT_MODE', label = 'development-mode', tooltip = true
-     }
+    -- configPanel:createToggle { 
+    --   setting = 'DEVELOPMENT_MODE', label = 'development-mode', tooltip = true
+    --  }
   end
 )

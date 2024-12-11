@@ -1,5 +1,17 @@
 ---@meta
---[[~ Updated: 2024/11/29 | Author(s): Gopher ]]
+
+--[[~ Updated: 2024/12/11 | Author(s): Gopher ]]
+
+--Backbone - A World of Warcraft addon framework
+--Copyright (C) 2024 Erik Riklund (Gopher)
+--
+--This program is free software: you can redistribute it and/or modify it under the terms
+--of the GNU General Public License as published by the Free Software Foundation, either
+--version 3 of the License, or (at your option) any later version.
+--
+--This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY;
+--without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+--See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---@class Settings
 Settings = {}
@@ -27,24 +39,29 @@ Settings.RegisterVerticalLayoutCategory = function (name) end
 
 ---@param parent Settings.VerticalLayoutCategory
 ---@param name string
+---
 ---@return Settings.VerticalLayoutCategory category, Settings.VerticalLayout layout
 ---
 Settings.RegisterVerticalLayoutSubcategory = function (parent, name) end
 
 ---@generic T
+---
 ---@param category Settings.VerticalLayoutCategory
 ---@param variable string
----@param variable_type `T`
+---@param variableType `T`
 ---@param name string
----@param default_value T
+---@param defaultValue T
 ---@param getter fun(): T
 ---@param setter fun(value: T)
+---
 ---@return table setting
 ---
-Settings.RegisterProxySetting = function (category, variable, variable_type, name, default_value, getter, setter) end
+Settings.RegisterProxySetting = function (category, variable, variableType, name, defaultValue, getter, setter) end
 
 ---@param text string
 ---@param tooltip? string
+---
 ---@return table header
 ---
 CreateSettingsListSectionHeaderInitializer = function (text, tooltip) end
+

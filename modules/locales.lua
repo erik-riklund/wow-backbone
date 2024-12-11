@@ -28,7 +28,7 @@ local registerStrings = function (plugin, locale, strings)
   local registeredStrings = locales:getEntry (plugin) --[[@as table]]
   registeredStrings[locale] = registeredStrings[locale] or {}
 
-  integrateTable (registeredStrings[locale], strings, 'skip')
+  backbone.integrateTable (registeredStrings[locale], strings, 'skip')
 end
 
 ---@param plugin Backbone.Plugin
@@ -81,6 +81,21 @@ backbone.registerLocalizedStrings = function (pluginName, locale, strings)
       end
     }
   )
+end
+
+---@param pluginName string
+---@param key string
+---@return string
+---
+---Returns the localized string for the specified plugin and key.
+---
+backbone.getLocalizedString = function (pluginName, key)
+  local pluginId = string.lower (pluginName)
+  if not context.plugins:hasEntry (pluginId) then
+    return string.format ('The plugin "%s" is not loaded.', pluginName)
+  end
+
+  return context.plugins:getEntry (pluginId) --[[@as Backbone.Plugin]]:getLocalizedString (key)
 end
 
 -- PLUGIN API --

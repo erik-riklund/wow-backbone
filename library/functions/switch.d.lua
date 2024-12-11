@@ -1,6 +1,6 @@
 ---@meta
 
---[[~ Updated: 2024/12/10 | Author(s): Gopher ]]
+--[[~ Updated: 2024/12/11 | Author(s): Gopher ]]
 
 --Backbone - A World of Warcraft addon framework
 --Copyright (C) 2024 Erik Riklund (Gopher)
@@ -13,11 +13,4 @@
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
----@class Backbone.ConfigPanel.HeaderOptions
----@field label string The key of the localized string to use for the header's label.
----@field tooltip? boolean Specifies whether to include a tooltip for the header.
-
----@class Backbone.ConfigPanel.ToggleOptions
----@field setting string The key of the setting to toggle. Must be a boolean setting.
----@field label string The key of the localized string to use for the toggle's label.
----@field tooltip? boolean Specifies whether to include a tooltip for the toggle.
+---@class Backbone.Switch.Cases<T> : { [T]: unknown, default?: unknown }

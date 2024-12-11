@@ -1,4 +1,3 @@
-
 --[[~ Updated: 2024/12/03 | Author(s): Gopher ]]
 
 --Backbone - A World of Warcraft Addon Framework
@@ -15,11 +14,20 @@
 ---@param target table
 ---@param steps table
 ---@param mode? 'exit'|'build'|'strict'
----@return unknown
----Traverses a table by following the provided steps and returns the result.
----* In build mode, missing steps will be created. In exit mode, missing steps will return `nil`.
----* If any step (except the last) is a non-table value, the function will throw an error in strict mode, otherwise `nil` will be returned.
-_G.traverseTable = function (target, steps, mode)
+---
+---@return unknown?
+---
+---Use this function to access or ensure the existence of deeply nested structures in a table.
+---It navigates through the `target` table's nested structure based on a sequence of `steps`,
+---allowing for flexible handling of missing paths. The behavior depends on the specified `mode`:
+---
+---* `exit` Stops traversal and returns `nil` if any step in the path does not exist.
+---* `build` Automatically creates missing tables along the specified path.
+---* `strict` Throws an error if a step in the path is not a table or does not exist.
+---
+---By default, the `exit` mode is used.
+---
+backbone.traverseTable = function (target, steps, mode)
   mode = mode or 'exit'
 
   if type (target) ~= 'table' then

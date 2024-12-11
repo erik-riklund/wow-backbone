@@ -1,6 +1,4 @@
----@meta
-
---[[~ Updated: 2024/11/29 | Author(s): Gopher ]]
+--[[~ Updated: 2024/12/11 | Author(s): Gopher ]]
 
 --Backbone - A World of Warcraft addon framework
 --Copyright (C) 2024 Erik Riklund (Gopher)
@@ -13,11 +11,8 @@
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
----@class Backbone.ConfigElement.Header
----@field text string
----@field tooltip? string
-
----@class Backbone.ConfigElement.Checkbox
----@field setting string
----@field label string
----@field tooltip? string
+---?
+---
+---
+---
+backbone.createConfigPanel = function () end

@@ -1,4 +1,4 @@
---[[~ Updated: 2024/12/08 | Author(s): Gopher ]]
+--[[~ Updated: 2024/12/11 | Author(s): Gopher ]]
 
 --Backbone - A World of Warcraft addon framework
 --Copyright (C) 2024 Erik Riklund (Gopher)
@@ -11,19 +11,24 @@
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
----@param value unknown
----@param cases table
----@param ... unknown
----@return unknown
----Provides a table-based switch statement operator.
----* If the resulting case value is a function, it will be called with the provided arguments, and its return value will be returned.
+---@generic T
 ---
-backbone.switch = function (value, cases, ...)
+---@param key T
+---@param cases Backbone.Switch.Cases<T>
+---@param ... unknown
+---
+---@return unknown?
+---
+---Provides a table-based switch statement operator, which can be used to select a value based
+---on a given key. The switch statement allows for multiple cases and an optional default case,
+---making it a powerful tool for handling different scenarios based on input values.
+---
+backbone.switch = function (key, cases, ...)
   if not type (cases) == 'table' then
     error ('Expected a table for argument #2 (cases).', 3)
   end
 
   ---@type unknown?
-  local case = backbone.when (cases[value] ~= nil, cases[value], cases.default)
+  local case = backbone.when (cases[key] ~= nil, cases[key], cases.default)
   return (type (case) == 'function' and case (...)) or case
 end

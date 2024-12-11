@@ -25,8 +25,8 @@ local getDefaultSetting = function (plugin, key)
     backbone.throw ('The plugin "%s" has not registered default settings.', plugin:getName())
   end
 
-  local keys = splitString (key, '/'): toArray()
-  local value = traverseTable (settings:getEntry (plugin), keys)
+  local keys = backbone.splitString (key, '/'): toArray()
+  local value = backbone.traverseTable (settings:getEntry (plugin), keys)
 
   if value == nil then
     backbone.throw ('The setting "%s" is not registered for plugin "%s".', key, plugin:getName())
@@ -63,10 +63,10 @@ local getSetting = function (plugin, key)
   end
 
   local defaultValue = getDefaultSetting (plugin, key)
-  local keys = splitString (key, '/'): toArray()
+  local keys = backbone.splitString (key, '/'): toArray()
 
   local store = plugin:getAccountVariable (prefix) --[[@as table?]]
-  local value = (store and traverseTable (store, keys)) or nil
+  local value = (store and backbone.traverseTable (store, keys)) or nil
 
   return backbone.when (value == nil, defaultValue, value)
 end
@@ -80,7 +80,7 @@ local setSetting = function (plugin, key, value)
     backbone.throw ('The plugin "%s" has not registered default settings.', plugin:getName())
   end
 
-  local parents = splitString (key, '/')
+  local parents = backbone.splitString (key, '/')
   local variable = parents:removeElement() --[[@as string]]
   local defaultValue = getDefaultSetting (plugin, key)
 
@@ -95,7 +95,7 @@ local setSetting = function (plugin, key, value)
     store = plugin:getAccountVariable (prefix)
   end
 
-  traverseTable (store --[[@as table]], parents:toArray(), 'build')[variable] = value
+  backbone.traverseTable (store --[[@as table]], parents:toArray(), 'build')[variable] = value
 end
 
 -- PLUGIN API --

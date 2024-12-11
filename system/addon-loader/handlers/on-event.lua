@@ -21,7 +21,7 @@ context.registerAddonLoader (
     )
 
     if type (events) == 'string' then
-      local eventList = splitString (events, ',')
+      local eventList = backbone.splitString (events, ',')
 
       eventList:forEach(
         ---@param eventName string

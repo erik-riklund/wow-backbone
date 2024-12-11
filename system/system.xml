@@ -6,10 +6,11 @@
   <Include file="addon-loader/handlers/on-event.lua" />
   <Include file="addon-loader/handlers/on-service-request.lua" />
 
-  <!-- CONFIGURATION INTERFACE -->
-  <Include file="config-interface/category.lua" />
+  <!-- CONFIGURATION PANELS -->
+
+  <!-- <Include file="config-interface/category.lua" />
   <Include file="config-interface/manager.lua" />
-  <Include file="config-interface/panel.lua" />
+  <Include file="config-interface/panel.lua" /> -->
   
   <!-- GARBAGE COLLECTOR -->
   <Include file="garbage-collector.lua" />

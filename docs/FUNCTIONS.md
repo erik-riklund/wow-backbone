@@ -1,27 +1,27 @@
-[Return to the documentation](../README.md)
+[< Backbone documentation](../README.md)
 
 # Backbone
 Version `1.0.0` (*work in progress*)
 
 ---
 
-- [Logic-related functions](#logic-related-functions)
+- **Logic-related functions**
 
-  - [backbone.switch](#backboneswitch)
-  - [backbone.when](#backbonewhen)
+  - [`backbone.switch`](#backboneswitch)
+  - [`backbone.when`](#backbonewhen)
 
-- [String-related functions](#string-related-functions)
+- **String-related functions**
 
-  - [backbone.splitString](#backbonesplitstring)
+  - [`backbone.splitString`](#backbonesplitstring)
 
-- [Table-related functions](#table-related-functions)
+- **Table-related functions**
 
-  - [backbone.copyTable](#backbonecopytable)
-  - [backbone.createImmutableProxy](#backbonecreateimmutableproxy)
-  - [backbone.flattenTable](#backboneflattentable)
-  - backbone.integrateTable
-  - backbone.integrateTables
-  - backbone.traverseTable
+  - [`backbone.copyTable`](#backbonecopytable)
+  - [`backbone.createImmutableProxy`](#backbonecreateimmutableproxy)
+  - [`backbone.flattenTable`](#backboneflattentable)
+  - [`backbone.integrateTable`](#backboneintegratetable)
+  - [`backbone.integrateTables`](#backboneintegratetables)
+  - [`backbone.traverseTable`](#backbonetraversetable)
 
 ## Logic-related functions
 
@@ -30,273 +30,104 @@ This section covers utility functions designed to simplify common logic-based op
 ---
 ### backbone.switch
 
-The `switch` function allows you to evaluate a value against a set of predefined cases and return the corresponding result. It serves as a compact alternative to verbose `if-else` statements, making code more readable and maintainable.
+`backbone.switch (key: T, cases: table<T, unknown>, ...unknown) -> unknown?`
 
-#### Signature
+Provides a table-based switch statement operator, which can be used to select a value based on a given key. The switch statement allows for multiple cases and an optional `default` case, making it a powerful tool for handling different scenarios based on input values.
 
-`backbone.switch (value: unknown, cases: table, ...unknown) -> unknown?`
-
-#### Parameters
-
-- `value`
-
-  The value to evaluate. It is compared against the keys in the cases table to determine which case to execute.
-
-- `cases`
-
-  An associative table where:
-  - Keys represent potential values of `value`.
-  - Values specify the corresponding results or actions for those keys.
-  - `default?`
-  
-    A fallback value or function executed if value does not match any key in the cases table.
-
-- `...unknown`
-
-  Optional arguments passed to the result if it is a function. This allows dynamic case handling when the case result requires additional input.
-
-#### Description
-
-The `switch` function streamlines conditional logic by mapping values to corresponding outcomes in a single, clear structure. Unlike traditional `if-else` statements, it centralizes case handling, improving readability and maintainability.
-
-If `value` matches a key in the `cases` table, the associated value or function is returned. If no match is found and a default case is specified, the default is executed. If neither match nor default exists, the function returns `nil`.
-
-```lua
-local result = backbone.switch (
-  'apple', {
-    apple = 'A fruit',
-    carrot = 'A vegetable',
-    default = 'Unknown item'
-  }
-)
-
-print (result) -- Outputs: "A fruit"
-
-local dynamicResult = backbone.switch(
-  'add', {
-    add = function(a, b) return a + b end,
-    subtract = function(a, b) return a - b end,
-    default = function() return "Unsupported operation" end
-  },
-  5, 3 -- Arguments passed to the function.
-)
-
-print (dynamicResult) -- Outputs: 8
-```
+> If the selected case is a function, it will be invoked with any extra arguments provided, and its result will be returned.
 
 ---
 ### backbone.when
 
-The `when` function provides a concise way to return one of two values based on a boolean condition. It is particularly useful for inline conditional expressions where Lua's built-in short-circuit operators are insufficient or produce unintended behavior.
-
->
-
-#### Signature
-
 `backbone.when (condition: boolean, onTrue: T, onFalse: T) -> T`
 
-#### Parameters
-
-- `condition`
-
-  A boolean value that determines which argument is returned.
-
-- `onTrue`
-
-  The value returned if `condition` is `true`.
-
-- `onFalse`
-
-  The value returned if `condition` is `false`.
-
-#### Description
-
-This function acts as a hybrid ternary operator, providing an explicit mechanism for conditionally returning one of two values. It is particularly valuable in situations where Lua's short-circuit operators (`and` / `or`) do not suffice or lead to ambiguous behavior. Consider the following example:
+Provides a concise way to return one of two values based on a boolean condition. This function is useful in situations where Lua's built-in short-circuit operators does not work as expected.
 
 ```lua
-local value = (someValue == nil and variableWithValueFalse) or variableWithValueTrue
-```
-
-In this case, the expression would always return `variableWithValueTrue`, even when `someValue` is `nil`, because Lua short-circuits the expression when it encounters a falsy value, leading to potentially unintended results.
-
-Using the `when` function resolves this issue by explicitly evaluating the condition and returning the appropriate value.
-
-```lua
-local value = backbone.when (someValue == nil, variableWithValueFalse, variableWithValueTrue)
+-- always assigns `true` as `false` short-circuits the expression.
+local value = (someValue == nil and false) or true
 ```
 
 ## String-related functions
 
-?
+This section covers utility functions for working with strings. These functions provide a concise and readable way to manipulate strings, reducing the need for verbose string operations in your code.
 
 ---
 ### backbone.splitString
 
-The `splitString` function splits a string into substrings based on a specified separator and returns the resulting components as a `Vector`. It also trims whitespace from each component for a clean output. This function provides an efficient way to handle string parsing for dynamic or user-generated input.
+`backbone.splitString (target: string, separator: string, pieces?: number) -> Vector`
 
-#### Signature
+Splits a string into substrings based on the given `separator`, removing any leading or trailing whitespace from each substring. If a limit on the number of parts is provided, the split will produce no more than `pieces` substrings. Returns a `Vector` object containing the resulting substrings.
 
-`backbone.splitString(target: string, separator: string, pieces?: number) -> Vector`
-
-#### Parameters
-
-- `target`
-
-  The input string to be split into components.
-
-- `separator`
-
-  The delimiter used to identify boundaries between substrings.
-
-- `pieces?`
-
-  The maximum number of substrings to extract. If not provided, the string is split at all occurrences of the separator.
-
-#### Returns
-
-- `Vector` object containing the resulting substrings, with leading and trailing whitespace removed from each.
-
-#### Description
-
-The function divides the `target` string into substrings based on the `separator`. The resulting substrings are stored in a `Vector` for enhanced manipulation and iteration capabilities. During the process, each substring is trimmed of extra whitespace to ensure clean, ready-to-use components.
-
-```lua
-local input = '  apple, banana,    cherry,date'
-local result = backbone.splitString (input, ',', 3)
-
--- Result: Vector {'apple', 'banana', 'cherry,date'}
-```
-
+---
 ## Table-related functions
 
-?
+This section covers utility functions for working with tables. These functions provide a concise and readable way to manipulate tables, reducing the need for verbose table operations in your code.
 
 ---
 ### backbone.copyTable
 
-The `copyTable` function creates and returns a shallow copy of the provided table. This is useful when you need to duplicate a table without affecting the original, particularly for tables with simple structures.
-
-#### Signature
-
 `backbone.copyTable (source: table) -> table`
 
-#### Parameters
+Returns a new table containing the same elements as the `source` table, preserving their order.
 
-- `source`
-
-  The table to be copied.
-
-#### Returns
-
-- `table` containing the same elements as the `source` table.
-
-#### Description
-
-The function extracts all elements from the `source` table and creates a new table with the same structure. This approach results in a shallow copy, meaning nested tables or objects within the `source` table are not duplicated but referenced in the new table.
-
-```lua
-local original = { 1, 2, 3 }
-local copy = backbone.copyTable (original)
-
-table.insert(copy, 4) -- Modifying the copy does not affect the original.
-
-print(original) -- Output: { 1, 2, 3 }
-print(copy)     -- Output: { 1, 2, 3, 4 }
-```
+> The function creates a shallow copy of the table, meaning that any nested tables will still reference the original tables.
 
 ---
 ### backbone.createImmutableProxy
 
-The `createImmutableProxy` function creates a read-only proxy for the provided table. It ensures that the original table and its nested tables cannot be modified directly, safeguarding the data against unintended changes. This is useful for creating data structures that are not intended to be modified directly.
+`backbone.createImmutableProxy (source: table) -> table`
 
-#### Signature
-
-`backbone.createImmutableProxy (target: table) -> table`
-
-#### Parameters
-
-- `target`
-
-  The table for which the read-only proxy is created.
-
-#### Returns
-
-- `table` reflecting the structure and content of the `target` table, with read-only access.
-
-#### Description
-
-The function creates a read-only proxy referencing the `target` table through a custom metatable. The proxy intercepts attempts to access or modify elements in the original table:
-
-- Retrieves values from the original table. If the value is itself a table, the proxy recursively creates a read-only proxy for it.
-- The proxy is in fact an empty table, but any attempt to modify it results in an error.
-
-```lua
-local mutableTable = {
-  key1 = 'value1',
-  key2 = {
-    nestedKey = 'nestedValue'
-  }
-}
-
-local immutableProxy = backbone.createImmutableProxy (mutableTable)
-
-print (immutableProxy.key1)           -- Output: "value1"
-print (immutableProxy.key2.nestedKey) -- Output: "nestedValue"
-
-immutableProxy.key1 = 'newValue'           -- Error: Cannot modify a read-only table
-immutableProxy.key2.nestedKey = 'newValue' -- Error: Cannot modify a read-only table
-```
+Creates a read-only proxy for the provided table. The proxy retrieves values from the `source` table when accessed, but does not allow any modifications.
 
 ---
 ### backbone.flattenTable
 
-The `flattenTable` function transforms a nested table into a single-level table, representing the original structure through a nested key scheme. This is particularly useful for serializing, debugging, or handling deeply nested data in a simpler format.
+`backbone.flattenTable(target: table, parents?: string, result?: table): table`
 
-#### Signature
+Transforms a nested table into a single-level table by representing its structure through composite keys. The function recursively traverses the input table, combining parent keys with child keys using a `/` separator to create a flattened representation.
 
-`backbone.flattenTable (target: table, parents?: string, result?: table) -> table`
+> This method skips keys that begin with `$`, treating them as special or excluded cases. The resulting table contains a direct mapping of composite keys to their corresponding values. If a `result` table is provided, it will be updated in place; otherwise, a new table will be returned.
 
-#### Parameters
+---
+### backbone.integrateTable
 
-- `target`
+`backbone.integrateTable (base: table, source: table, mode?: 'strict'|'replace'|'skip') -> table`
 
-  The input table to be flattened. It should contain nested tables or key-value pairs to process.
+Merges the contents of one table (`source`) into another (`base`) with configurable handling for key collisions. The integration process depends on the specified `mode`:
 
-- `parents?`
+- **`strict`**: Throws an error if a key in the `source` table already exists in the `base` table.
+- **`replace`**: Overwrites values in the `base` table with those from the `source`.
+- **`skip`**: Leaves existing keys in the `base` table unchanged.
 
-  A string representing the parent key path for nested elements. This is used internally to track the hierarchy during recursion. If omitted, the function starts from the root level.
+> By default, the `strict` mode is used. The updated `base` table is returned.
 
-- `result?`
+---
+### backbone.integrateTables
 
-  A table to collect the flattened key-value pairs. If not provided, a new table is created.
+`backbone.integrateTables (base: table, sources: table, mode?: 'strict'|'replace'|'skip') -> table`
 
-#### Returns
+Combines multiple tables (`sources`) into a single `base` table using a configurable merge strategy. This function applies the specified `mode` to control how conflicts between keys are resolved, iterating through each table in the `sources` collection.
 
-- `table` containing the flattened version of the input table, where keys represent the original nested structure using a slash (`/`) delimiter.
+- **`strict`**: Throws an error if a key in any `source` table conflicts with an existing key in the `base`.
+- **`replace`**: Overwrites values in the `base` table with those from the `sources`.
+- **`skip`**: Preserves existing keys in the `base` table, ignoring conflicts.
 
-#### Description
+> The function processes each table in `sources` in order, merging their contents into `base`. By default, the `strict` mode is used. The updated `base` table is returned.
 
-The function iterates through each key-value pair in the `target` table. For nested tables, it recursively processes their contents, appending the current key to the parent path to form a hierarchical key. Non-table values are added directly to the `result` table with their corresponding flattened keys. Keys starting with a `$` character are excluded from recursion but added as-is to the flattened table.
+---
+### backbone.traverseTable
 
-```lua
-local nestedTable = {
-  a = 1,
-  b = {
-    c = 2,
-    d = {
-      e = 3
-    }
-  },
-  ['$hidden'] = { f = 4 }
-}
+`backbone.traverseTable (target: table, steps: table, mode?: 'exit'|'build'|'strict') -> unknown?`
 
-local flattened = backbone.flattenTable (nestedTable)
+Use this function to access or ensure the existence of deeply nested structures in a table. It navigates through the `target` table's nested structure based on a sequence of `steps`, allowing for flexible handling of missing paths. The behavior depends on the specified `mode`:
 
--- Result:
--- {
---   ["a"] = 1,
---   ["b/c"] = 2,
---   ["b/d/e"] = 3,
---   ["$hidden"] = { f = 4 } -- Preserved as a non-recursed key.
--- }
-```
+- **`exit`**: Stops traversal and returns `nil` if any step in the path does not exist.
+- **`build`**: Automatically creates missing tables along the specified path.
+- **`strict`**: Throws an error if a step in the path is not a table or does not exist.
+
+> By default, the `exit` mode is used.
+
+---
+
+[< Backbone documentation](../README.md)

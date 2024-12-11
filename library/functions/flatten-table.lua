@@ -15,10 +15,12 @@
 ---@param target table
 ---@param parents? string
 ---@param result? table
+---
 ---@return table
 ---
----Flattens a table with nested tables into a single table, using a
----nested key scheme to represent the original table's structure.
+---Transforms a nested table into a single-level table by representing its structure through
+---composite keys. The function recursively traverses the input table, combining parent keys
+---with child keys using a `/` separator to create a flattened representation.
 ---
 backbone.flattenTable = function (target, parents, result)
   if type (target) ~= 'table' then

@@ -1,5 +1,4 @@
-
---[[~ Updated: 2024/12/04 | Author(s): Gopher ]]
+--[[~ Updated: 2024/12/11 | Author(s): Gopher ]]
 
 --Backbone - A World of Warcraft Addon Framework
 --Copyright (C) 2024 Erik Riklund (Gopher)
@@ -15,11 +14,14 @@
 ---@param target string
 ---@param separator string
 ---@param pieces? number
+---
 ---@return Vector components
 ---
----Splits a string into substrings based on a separator.
+---Splits a string into substrings based on the given `separator`, removing any leading or trailing
+---whitespace from each substring. If a limit on the number of parts is provided, the split will
+---produce no more than `pieces` substrings.
 ---
-_G.splitString = function (target, separator, pieces)
+backbone.splitString = function (target, separator, pieces)
   local components = Vector {
     string.split(separator, target, pieces)
   }
