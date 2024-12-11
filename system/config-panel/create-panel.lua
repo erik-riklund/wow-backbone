@@ -14,10 +14,20 @@ local context = select(2, ...)
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
-context.plugin:registerDefaultSettings { DEVELOPMENT_MODE = false }
+local panels = new 'Dictionary'
 
-context.plugin:onReady (
-  function ()
-    local configPanel = backbone.createConfigPanel (context.plugin)
+---Creates a configuration panel for the provided plugin.
+---
+---@param plugin Backbone.Plugin
+---@return Backbone.ConfigPanel
+---
+backbone.createConfigPanel = function (plugin)
+  if panels:hasEntry (plugin) then
+    backbone.throw (
+      'The plugin "%s" has already created a configuration panel.', plugin:getName()
+    )
   end
-)
+
+  panels:setEntry (plugin, context.createConfigPanel (plugin))  
+  return panels:getEntry (plugin)
+end

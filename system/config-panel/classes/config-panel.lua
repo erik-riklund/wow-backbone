@@ -14,10 +14,18 @@ local context = select(2, ...)
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
-context.plugin:registerDefaultSettings { DEVELOPMENT_MODE = false }
+---@class Backbone.ConfigPanel
+local configPanel = {}
 
-context.plugin:onReady (
-  function ()
-    local configPanel = backbone.createConfigPanel (context.plugin)
-  end
-)
+-- CONSTRUCTOR --
+
+local prototype = { __index = configPanel }
+
+---?
+---
+---@param plugin Backbone.Plugin
+---@return Backbone.ConfigPanel
+---
+context.createConfigPanel = function (plugin)
+  return setmetatable ({ plugin = plugin }, prototype)
+end

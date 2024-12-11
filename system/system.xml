@@ -7,10 +7,8 @@
   <Include file="addon-loader/handlers/on-service-request.lua" />
 
   <!-- CONFIGURATION PANELS -->
-
-  <!-- <Include file="config-interface/category.lua" />
-  <Include file="config-interface/manager.lua" />
-  <Include file="config-interface/panel.lua" /> -->
+  <Include file="config-panel/classes/config-panel.lua" />
+  <Include file="config-panel/create-panel.lua" />
   
   <!-- GARBAGE COLLECTOR -->
   <Include file="garbage-collector.lua" />

@@ -1,3 +1,5 @@
+---@meta
+
 --[[~ Updated: 2024/12/11 | Author(s): Gopher ]]
 
 --Backbone - A World of Warcraft addon framework
@@ -11,8 +13,5 @@
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
----?
----
----
----
-backbone.createConfigPanel = function () end
+---@class Backbone.ConfigPanel
+---@field protected plugin Backbone.Plugin

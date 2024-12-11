@@ -1,5 +1,4 @@
----@class Backbone
-local context = select(2, ...)
+---@meta
 
 --[[~ Updated: 2024/12/11 | Author(s): Gopher ]]
 
@@ -14,10 +13,10 @@ local context = select(2, ...)
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
-context.plugin:registerDefaultSettings { DEVELOPMENT_MODE = false }
+---@class Settings.VerticalLayout
+---
+local layout = {}
 
-context.plugin:onReady (
-  function ()
-    local configPanel = backbone.createConfigPanel (context.plugin)
-  end
-)
+---@param initializer table
+---
+layout.AddInitializer = function (self, initializer) end

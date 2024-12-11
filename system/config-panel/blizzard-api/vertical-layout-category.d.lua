@@ -1,5 +1,4 @@
----@class Backbone
-local context = select(2, ...)
+---@meta
 
 --[[~ Updated: 2024/12/11 | Author(s): Gopher ]]
 
@@ -14,10 +13,30 @@ local context = select(2, ...)
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
-context.plugin:registerDefaultSettings { DEVELOPMENT_MODE = false }
+---@class Settings.VerticalLayoutCategory
+---
+local category = {}
 
-context.plugin:onReady (
-  function ()
-    local configPanel = backbone.createConfigPanel (context.plugin)
-  end
-)
+---@return string name
+---
+category.GetName = function (self) end
+
+---@param name string
+---
+category.SetName = function (self, name) end
+
+---@return boolean hasParent
+---
+category.HasParentCategory = function (self) end
+
+---@return Settings.VerticalLayoutCategory? parent
+---
+category.GetParentCategory = function (self) end
+
+---@param parent Settings.VerticalLayoutCategory
+---
+category.SetParentCategory = function (self, parent) end
+
+---@param enabled boolean
+---
+category.SetShouldSortAlphabetically = function (self, enabled) end
