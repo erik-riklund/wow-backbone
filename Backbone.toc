@@ -1,0 +1,10 @@
+## Interface: 110005
+## Title: Backbone (framework)
+## Author: Gopher
+## Version: 1.0.0
+## Notes: An addon development framework.
+
+framework.lua
+events.lua
+utilities.lua
+settings.lua
