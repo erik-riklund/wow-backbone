@@ -55,7 +55,9 @@ for index = 1, C_AddOns.GetNumAddOns() do
     dictionary.forEach(
       load_handlers, function(name, handler)
         local metadata = C_AddOns.GetAddOnMetadata(index, 'X-Load-' .. name)
-        if type(metadata) == 'string' and #metadata > 0 then handler(index, metadata) end
+        if type(metadata) == 'string' and #metadata > 0 then
+          handler(index, metadata)
+        end
       end
     )
   end

@@ -280,7 +280,7 @@ backbone.utils.dictionary =
       type(callback) == 'function',
       'Expected argument `callback` to be a function.'
     )
-    
+
     for key, value in pairs(target) do
       local result = callback(key, value)
       if result ~= nil then
@@ -291,6 +291,38 @@ backbone.utils.dictionary =
 }
 
 local dictionary = backbone.utils.dictionary
+
+---
+---Utility functions for working with tables.
+---
+backbone.utils.table =
+{
+  ---
+  ---Protect a table from modification by wrapping it in a read-only proxy.
+  ---
+  ---@generic T:table
+  ---@param target T
+  ---@return T
+  ---
+  protect = function(target)
+    assert(
+      type(target) == 'table',
+      'Expected argument `target` to be a table.'
+    )
+
+    local blocker = function()
+      error('Cannot modify a protected table.', 2)
+    end
+    local retriever = function(_, key)
+      local protect = backbone.utils.table.protect
+      return (type(target[key]) == 'table' and protect(target[key])) or target[key]
+    end
+
+    return setmetatable({}, {
+      __index = retriever, __newindex = blocker
+    })
+  end
+}
 
 --=============================================================================
 -- ADDON MANAGER:
