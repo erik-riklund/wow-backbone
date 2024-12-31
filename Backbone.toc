@@ -8,3 +8,5 @@ framework.lua
 events.lua
 utilities.lua
 settings.lua
+
+scripts/garbage.lua

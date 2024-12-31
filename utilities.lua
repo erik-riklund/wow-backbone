@@ -13,6 +13,8 @@ local context = select(2, ...)
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
+local dictionary = backbone.utils.dictionary
+
 --=============================================================================
 -- LOCALE HANDLER:
 -- <add description of the module>
@@ -28,4 +30,33 @@ local context = select(2, ...)
 -- <add description of the module>
 --=============================================================================
 
+--=============================================================================
+-- ADDON LOADER:
+-- <add description of the module>
+--=============================================================================
 
+---
+---!
+---
+---@type table<string, fun(index: number, metadata: string)>
+---
+local load_handlers =
+{
+  OnEvent = function(index, metadata)
+    backbone.print '"OnEvent" load handler not implemented.'
+  end
+}
+
+---
+---Apply load handlers for addons that should be conditionally loaded.
+---
+for index = 1, C_AddOns.GetNumAddOns() do
+  if C_AddOns.IsAddOnLoadOnDemand(index) then
+    dictionary.forEach(
+      load_handlers, function(name, handler)
+        local metadata = C_AddOns.GetAddOnMetadata(index, 'X-Load-' .. name)
+        if type(metadata) == 'string' and #metadata > 0 then handler(index, metadata) end
+      end
+    )
+  end
+end

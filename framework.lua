@@ -170,6 +170,28 @@ backbone.utils.array =
       'There is no element at the position "' .. position .. '".'
     )
     return value
+  end,
+
+  ---
+  ---Apply a function to each element of the array. If the function
+  ---returns a value, the element is replaced with the returned value.
+  ---
+  ---@generic V
+  ---@param target array<V>
+  ---@param callback fun(index: number, value: V): unknown?
+  ---
+  forEach = function(target, callback)
+    assert(
+      type(callback) == 'function',
+      'Expected argument `callback` to be a function.'
+    )
+
+    for index, value in ipairs(target) do
+      local result = callback(index, value)
+      if result ~= nil then
+        target[index] = result
+      end
+    end
   end
 }
 
@@ -243,6 +265,28 @@ backbone.utils.dictionary =
     )
     target[key] = nil
     return value
+  end,
+
+  ---
+  ---Apply a function to each entry of the dictionary. If the function
+  ---returns a value, the entry is replaced with the returned value.
+  ---
+  ---@generic K, V
+  ---@param target table<K, V>
+  ---@param callback fun(key: K, value: V): unknown?
+  ---
+  forEach = function(target, callback)
+    assert(
+      type(callback) == 'function',
+      'Expected argument `callback` to be a function.'
+    )
+    
+    for key, value in pairs(target) do
+      local result = callback(key, value)
+      if result ~= nil then
+        target[key] = result
+      end
+    end
   end
 }
 
@@ -265,8 +309,7 @@ local getAddonId = function(name) return string.lower(name) end
 context.__addon = {}
 
 ---
----Create and return a new addon object. Throws an error
----if an addon with the specified name already exists.
+---Create and return a new addon object with the specified name.
 ---
 ---@param name string
 ---@return backbone.addon
@@ -283,18 +326,27 @@ backbone.registerAddon = function(name)
 end
 
 ---
+---Determine if an addon with the specified name has been registered.
+---
+---@param name string
+---@return boolean
+---
+backbone.hasAddon = function(name)
+  return dictionary.hasEntry(addons, getAddonId(name))
+end
+
+---
 ---The addon object that represents the framework itself.
 ---
 context.addon = backbone.registerAddon 'Backbone'
 
 ---
 ---Retrieve an addon object by its name.
----Throws an error if the addon does not exist.
 ---
 ---@param name string
 ---@return backbone.addon
 ---
-backbone.getAddon = function(name)
+context.getAddon = function(name)
   local addon_id = getAddonId(name)
   assert(
     dictionary.hasEntry(addons, addon_id),
@@ -349,10 +401,3 @@ taskFrame:SetScript(
     end
   end
 )
-
---=============================================================================
--- ADDON LOADER:
--- <add description of the module>
---=============================================================================
-
-
