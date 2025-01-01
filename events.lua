@@ -21,7 +21,11 @@ local dictionary = backbone.utils.dictionary
 
 --=============================================================================
 -- COMPONENT > OBSERVABLE:
--- <add description of the component>
+--
+-- This component provides the functionality for creating observable objects.
+-- Observable objects enable event-driven programming by allowing other
+-- components, referred to as observers, to subscribe to custom events and
+-- receive notifications when those events occur.
 --=============================================================================
 
 ---
@@ -107,7 +111,7 @@ local observable =
 }
 
 ---
----!
+---Create a new observable object.
 ---
 ---@return backbone.observable
 ---
@@ -117,7 +121,10 @@ end
 
 --=============================================================================
 -- NETWORK CHANNELS:
--- <add description of the module>
+--
+-- This module provides functionality for creating and managing communication
+-- channels between addons or within the same addon. Channels enable structured
+-- message passing and allow addons to implement decoupled communication systems.
 --=============================================================================
 
 local channels = ({} --[[@as table<string, backbone.channel>]])
@@ -134,7 +141,7 @@ local createChannel = function(options)
   local access = options.access or 'public'
 
   assert(
-    owner == backbone.getAddon(owner.name),
+    owner == context.getAddon(owner:getName()),
     'Expected argument `owner` to be a registered addon.'
   )
 
@@ -262,7 +269,11 @@ end
 
 --=============================================================================
 -- EVENT HANDLING:
--- <add description of the module>
+--
+-- This module provides functionality for managing and responding to in-game
+-- events. It enables addons to register listeners for specific events, handle
+-- callbacks when events occur, and unregister listeners when they are no
+-- longer needed.
 --=============================================================================
 
 local eventFrame = CreateFrame 'Frame' --[[@as Frame]]
@@ -275,7 +286,7 @@ local load_events = ({} --[[@as table<string, backbone.observable>]])
 eventFrame:RegisterEvent 'ADDON_LOADED'
 eventFrame:SetScript(
   'OnEvent', function(...)
-    local arguments = { select(1, ...) }
+    local arguments = { select(2, ...) }
     local event_name = array.removeElement(arguments, 1) --[[@as WowEvent]]
 
     if event_name == 'ADDON_LOADED' then
@@ -290,8 +301,7 @@ eventFrame:SetScript(
       end
       
       if dictionary.hasEntry(load_events, addon_name) then
-        dictionary.getEntry(load_events, addon_name):notify()
-        dictionary.dropEntry(load_events, addon_name)
+        dictionary.dropEntry(load_events, addon_name):notify()
       end
     else
       local event = dictionary.getEntry(events, event_name)
@@ -312,14 +322,12 @@ eventFrame:SetScript(
 ---@param callback fun()
 ---
 backbone.onAddonReady = function(addon_name, callback)
-  if C_AddOns.IsAddOnLoaded(addon_name) then
+  if select(2, C_AddOns.IsAddOnLoaded(addon_name)) then
     return callback() -- the specified addon is already loaded.
   end
 
   if not dictionary.hasEntry(load_events, addon_name) then
-    dictionary.setEntry(
-      load_events, addon_name, createObservable()
-    )
+    dictionary.setEntry(load_events, addon_name, createObservable())
   end
   dictionary.getEntry(load_events, addon_name):subscribe(callback)
 end
@@ -331,7 +339,7 @@ end
 ---@param callback fun()
 ---
 __addon.onReady = function(self, callback)
-  backbone.onAddonReady(self.name, callback)
+  backbone.onAddonReady(self:getName(), callback)
 end
 
 ---

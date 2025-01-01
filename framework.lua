@@ -1,7 +1,7 @@
 ---@class __backbone
 local context = select(2, ...)
 
---[[~ Updated: 2024/12/30 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/01 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -48,6 +48,7 @@ end
 ---
 backbone.dump = function(value)
   local value_type = type(value)
+
   if value_type == 'table' then
     print 'table: {'
     for key, content in pairs(value) do
@@ -63,6 +64,8 @@ backbone.dump = function(value)
     print(
       string.format('string: "%s"', value)
     )
+  elseif value_type == 'nil' then
+    print 'nil'
   else
     print(
       string.format('%s: %s', value_type, tostring(value))
@@ -151,7 +154,7 @@ backbone.utils.array =
     )
 
     table.insert(target, position, value)
-    return value
+    return target[position]
   end,
 
   ---
@@ -226,7 +229,7 @@ backbone.utils.dictionary =
   getEntry = function(target, key)
     assert(
       target[key] ~= nil,
-      'There is no entry with the key "' .. key .. '".'
+      'There is no entry with the key "' .. tostring(key) .. '".'
     )
     return target[key]
   end,
@@ -246,7 +249,7 @@ backbone.utils.dictionary =
       'Expected argument `value` to be non-nil.'
     )
     target[key] = value
-    return value
+    return target[key]
   end,
 
   ---
@@ -321,6 +324,39 @@ backbone.utils.table =
     return setmetatable({}, {
       __index = retriever, __newindex = blocker
     })
+  end,
+
+  ---
+  ---?
+  ---
+  ---@param target table
+  ---@param steps array<string>
+  ---@param mode? 'exit'|'build'
+  ---@return unknown
+  ---
+  traverse = function(target, steps, mode)
+    mode = mode or 'exit'
+    assert(
+      mode == 'exit' or mode == 'build',
+      'Expected argument `mode` to be "exit" or "build".'
+    )
+
+    local value = target
+    local step_count = #steps
+    for index, key in ipairs(steps) do
+      if value[key] == nil then
+        if mode == 'exit' then return nil end
+        value[key] = {} -- create missing steps in 'build' mode.
+      end
+      
+      value = value[key]
+      assert(
+        type(value) ~= 'table' and index < step_count,
+        'Unexpected non-table value at step "' .. key .. '".'
+      )
+    end
+
+    return value
   end
 }
 
@@ -352,8 +388,14 @@ backbone.registerAddon = function(name)
     not dictionary.hasEntry(addons, addon_id),
     'An addon with the name "' .. name .. '" already exists.'
   )
+
+  ---@class backbone.addon
+  local addon = {
+    getId = function(self) return addon_id end,
+    getName = function(self) return name end
+  }
   return dictionary.setEntry(addons, addon_id,
-    setmetatable({ id = addon_id, name = name }, { __index = context.__addon })
+    setmetatable(addon, { __index = context.__addon })
   )
 end
 
@@ -428,7 +470,7 @@ taskFrame:SetScript(
     if tasks[1] ~= nil then
       local time_started = GetTimePreciseSec()
       while tasks[1] ~= nil and (GetTimePreciseSec() - time_started < time_limit) do
-        backbone.executeTask(array.removeElement(tasks, 1))
+        backbone.executeTask(table.remove(tasks, 1))
       end
     end
   end

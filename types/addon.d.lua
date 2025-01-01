@@ -17,6 +17,14 @@
 ---
 ---@class backbone.addon
 ---
----@field id string The unique identifier of the addon.
----@field name string The name of the addon, matching its addon directory name.
+---@field private variables backbone.addon-variables The addon's saved variables, only available when the addon is fully initialized.
+---
+
+---
+---?
+---
+---@class backbone.addon-variables
+---
+---@field account table The addon's account-wide saved variables.
+---@field character table The addon's character-specific saved variables.
 ---

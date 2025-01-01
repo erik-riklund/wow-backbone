@@ -1,7 +1,9 @@
 ---@class __backbone
 local context = select(2, ...)
 
---[[~ Updated: 2024/12/30 | Author(s): Gopher ]]
+---@diagnostic disable: invisible
+
+--[[~ Updated: 2025/01/01 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -13,7 +15,12 @@ local context = select(2, ...)
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
+---@class backbone.addon
+local __addon = context.__addon
+
+local array = backbone.utils.array
 local dictionary = backbone.utils.dictionary
+local traverse = backbone.utils.table.traverse
 
 --=============================================================================
 -- LOCALE HANDLER:
@@ -21,9 +28,124 @@ local dictionary = backbone.utils.dictionary
 --=============================================================================
 
 --=============================================================================
--- STORAGE MANAGER:
--- <add description of the module>
+-- STATE MANAGER:
+--
+-- This module manages saved variables for addons, ensuring consistent storage
+-- and retrieval of account-wide and character-specific data. It organizes
+-- variables into two scopes: account-wide (shared across characters) and
+-- character-specific (unique to the current character).
 --=============================================================================
+
+---
+---Responsible for initializing saved variables for addons.
+---
+array.insertElement(
+  context.addon_initializers, function(addon)
+    ---@cast addon backbone.addon
+
+    ---
+    ---@param scope 'Account'|'Character'
+    ---@return table
+    ---
+    local createStorage = function(scope)
+      local variable = string.format(
+        '%s%sVariables', addon:getName(), scope
+      )
+      _G[variable] = _G[variable] or {}
+      return _G[variable]
+    end
+
+    addon.variables = {
+      account = createStorage 'Account',
+      character = createStorage 'Character'
+    }
+  end
+)
+
+---
+---Breaks a variable path into its components.
+---
+---@param path string
+---@return array<string>
+---
+local parseVariablePath = function(path)
+  return { string.split('/', path) }
+end
+
+---
+---Retrieves a saved variable from the specified scope.
+---
+---@param addon backbone.addon
+---@param scope 'account'|'character'
+---@param key string
+---@return unknown
+---
+local getVariable = function(addon, scope, key)
+  assert(
+    type(addon.variables) == 'table',
+    'Saved variables are not initialized for ' .. addon:getName() .. '.'
+  )
+  return traverse(addon.variables[scope], parseVariablePath(key))
+end
+
+---
+---Retrieve the value of a saved account variable.
+---
+---@param key string
+---@return unknown
+---
+__addon.getAccountVariable = function(self, key)
+  return getVariable(self, 'account', key)
+end
+
+---
+---Retrieve the value of a saved character variable.
+---
+---@param key string
+---@return unknown
+---
+__addon.getCharacterVariable = function(self, key)
+  return getVariable(self, 'character', key)
+end
+
+---
+---Set the value of a saved variable in the specified scope.
+---
+---@param addon backbone.addon
+---@param scope 'account'|'character'
+---@param key string
+---@param value unknown
+---
+local setVariable = function(addon, scope, key, value)
+  assert(
+    type(addon.variables) == 'table',
+    'Saved variables are not initialized for ' .. addon:getName() .. '.'
+  )
+  local parents = parseVariablePath(key)
+  local variable = table.remove(parents)
+
+  traverse(addon.variables[scope], parents)[variable] = value
+end
+
+---
+---Set the value of a saved account variable.
+---
+---@param key string
+---@param value unknown
+---
+__addon.setAccountVariable = function(self, key, value)
+  setVariable(self, 'account', key, value)
+end
+
+---
+---Set the value of a saved character variable.
+---
+---@param key string
+---@param value unknown
+---
+__addon.setCharacterVariable = function(self, key, value)
+  setVariable(self, 'character', key, value)
+end
 
 --=============================================================================
 -- SERVICE MANAGER:
@@ -32,18 +154,42 @@ local dictionary = backbone.utils.dictionary
 
 --=============================================================================
 -- ADDON LOADER:
--- <add description of the module>
+--
+-- This module handles the conditional loading of addons based on specific
+-- triggers such as game events or service requests. It ensures addons are
+-- loaded only when required, optimizing performance and resource usage.
 --=============================================================================
 
 ---
----!
+---The available handlers for loading addons.
 ---
 ---@type table<string, fun(index: number, metadata: string)>
 ---
 local load_handlers =
 {
+  ---
+  ---Responsible for loading addons on specific events.
+  ---
   OnEvent = function(index, metadata)
-    backbone.print '"OnEvent" load handler not implemented.'
+    array.forEach(
+      { string.split(',', metadata) },
+      function(_, event_name)
+        backbone.registerEventListenerOnce(
+          string.trim(event_name), function()
+            if not C_AddOns.IsAddOnLoaded(index) then
+              C_AddOns.LoadAddOn(index)
+            end
+          end
+        )
+      end
+    )
+  end,
+
+  ---
+  ---Responsible for loading addons on service requests.
+  ---
+  OnServiceRequest = function(index, metadata)
+    backbone.print '"OnServiceRequest" loader not implemented.'
   end
 }
 
