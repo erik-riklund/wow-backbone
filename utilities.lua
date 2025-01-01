@@ -40,9 +40,9 @@ local traverse = backbone.utils.table.traverse
 ---Responsible for initializing saved variables for addons.
 ---
 array.insertElement(
-  context.addon_initializers, function(addon)
-    ---@cast addon backbone.addon
-
+  context.addon_initializers,
+  ---@param addon backbone.addon
+  function(addon)
     ---
     ---@param scope 'Account'|'Character'
     ---@return table
@@ -151,6 +151,13 @@ end
 -- SERVICE MANAGER:
 -- <add description of the module>
 --=============================================================================
+
+local services = ({} --[[@as table<string, backbone.service>]])
+
+---
+---?
+---
+backbone.registerService = function(name, object) end
 
 --=============================================================================
 -- ADDON LOADER:

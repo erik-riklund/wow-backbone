@@ -1,7 +1,7 @@
 ---@class __backbone
 local context = select(2, ...)
 
---[[~ Updated: 2024/12/30 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/01 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -13,12 +13,22 @@ local context = select(2, ...)
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
+---@class backbone.addon
+local __addon = context.__addon
+
+local array = backbone.utils.array
+
 --=============================================================================
 -- SETTINGS MANAGER:
 -- <add description of the module>
 --=============================================================================
 
-
+---
+---?
+---
+---@param settings backbone.addon-settings
+---
+__addon.setDefaultSettings = function(self, settings) end
 
 --=============================================================================
 -- CONFIGURATION INTERFACE INTEGRATION SERVICE:

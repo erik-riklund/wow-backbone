@@ -4,6 +4,7 @@
 ## Version: 1.0.0
 ## Notes: An addon development framework.
 
+enums.lua
 framework.lua
 events.lua
 utilities.lua
