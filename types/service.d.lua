@@ -17,5 +17,12 @@
 ---
 ---@class backbone.service
 ---
+---@field supplier? string
+---@field object? backbone.service-object
 ---
+
+---
+---?
+---
+---@alias backbone.service-object table
 ---

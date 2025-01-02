@@ -15,5 +15,5 @@
 ---
 ---Represents an array of values of type `V`.
 ---
----@class array<V>: { [number]: V }
+---@class arrayz<V>: { [number]: V }
 ---

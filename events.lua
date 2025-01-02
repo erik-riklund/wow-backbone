@@ -22,17 +22,16 @@ local dictionary = backbone.utils.dictionary
 --=============================================================================
 -- COMPONENT > OBSERVABLE:
 --
--- This component provides the functionality for creating observable objects.
--- Observable objects enable event-driven programming by allowing other
--- components, referred to as observers, to subscribe to custom events and
--- receive notifications when those events occur.
+-- Observable objects enable event-driven programming by allowing other components,
+-- referred to as observers, to subscribe to custom events and receive notifications
+-- when those events occur.
 --=============================================================================
 
 ---
 ---Represents an object that can be observed, allowing for custom event handling.
 ---
 ---@class backbone.observable
----@field observers array<backbone.observer>
+---@field observers backbone.observer[]
 ---
 local observable =
 {

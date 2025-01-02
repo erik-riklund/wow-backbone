@@ -1,6 +1,4 @@
----@meta
-
---[[~ Updated: 2024/12/28 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/01 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -15,16 +13,14 @@
 ---
 ---?
 ---
----@class backbone.addon
+---@class backbone.config-service
 ---
----@field private variables backbone.addon-variables The addon's saved variables, only available when the addon is fully initialized.
----
+local handler = 
+{
+
+}
 
 ---
----?
+---!
 ---
----@class backbone.addon-variables
----
----@field account table The addon's account-wide saved variables.
----@field character table The addon's character-specific saved variables.
----
+backbone.registerService('backbone.config-service', handler)

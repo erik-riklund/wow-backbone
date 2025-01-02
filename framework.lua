@@ -132,9 +132,22 @@ end
 backbone.utils.array =
 {
   ---
+  ---Determine if the provided table is an array.
+  ---
+  ---@param target table
+  ---@return boolean
+  ---
+  is = function(target)
+    for key in pairs(target) do
+      if type(key) ~= 'number' then return false end
+    end
+    return true
+  end,
+
+  ---
   ---Determine if the table contains an element at the specified position.
   ---
-  ---@param target array<unknown>
+  ---@param target unknown[]
   ---@param position number
   ---@return boolean
   ---
@@ -151,7 +164,7 @@ backbone.utils.array =
   ---the value is inserted at the end of the table.
   ---
   ---@generic V
-  ---@param target array<V>
+  ---@param target V[]
   ---@param value V
   ---@param position? number
   ---@return V
@@ -178,7 +191,7 @@ backbone.utils.array =
   ---the last element is removed.
   ---
   ---@generic V
-  ---@param target array<V>
+  ---@param target V[]
   ---@param position? number
   ---@return V
   ---
@@ -196,7 +209,7 @@ backbone.utils.array =
   ---returns a value, the element is replaced with the returned value.
   ---
   ---@generic V
-  ---@param target array<V>
+  ---@param target V[]
   ---@param callback fun(index: number, value: V): unknown?
   ---
   foreach = function(target, callback)
@@ -346,7 +359,7 @@ backbone.utils.table =
   ---?
   ---
   ---@param target table
-  ---@param steps array<string>
+  ---@param steps string[]
   ---@param mode? 'exit'|'build'
   ---@return unknown
   ---
@@ -385,7 +398,7 @@ backbone.utils.table =
 --=============================================================================
 
 local addons = ({} --[[@as table<string, backbone.addon>]])
-context.addon_initializers = ({} --[[@as array<fun(addon: backbone.addon)>]])
+context.addon_initializers = ({} --[[@as table<number, fun(addon: backbone.addon)>]])
 local getAddonId = function(name) return string.lower(name) end
 
 ---
@@ -456,7 +469,7 @@ end
 -- that tasks are processed efficiently and non-blockingly during frame updates.
 --=============================================================================
 
-local tasks = ({} --[[@as array<fun()>]])
+local tasks = ({} --[[@as table<number, fun()>]])
 local taskFrame = CreateFrame 'Frame' --[[@as Frame]]
 
 ---

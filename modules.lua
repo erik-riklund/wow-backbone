@@ -27,6 +27,8 @@ local traverse = backbone.utils.table.traverse
 -- <add description of the module>
 --=============================================================================
 
+-- TODO: implement the locale handler.
+
 --=============================================================================
 -- STATE MANAGER:
 --
@@ -39,10 +41,13 @@ local traverse = backbone.utils.table.traverse
 ---
 ---Responsible for initializing saved variables for addons.
 ---
+
 array.insert(
   context.addon_initializers,
   ---@param addon backbone.addon
   function(addon)
+    ---
+    ---!
     ---
     ---@param scope 'Account'|'Character'
     ---@return table
@@ -63,17 +68,17 @@ array.insert(
 )
 
 ---
----Breaks a variable path into its components.
+---Break a variable path into its components.
 ---
 ---@param path string
----@return array<string>
+---@return string[]
 ---
 local parseVariablePath = function(path)
   return { string.split('/', path) }
 end
 
 ---
----Retrieves a saved variable from the specified scope.
+---Retrieve the value of a saved variable from the specified scope.
 ---
 ---@param addon backbone.addon
 ---@param scope 'account'|'character'
@@ -149,15 +154,75 @@ end
 
 --=============================================================================
 -- SERVICE MANAGER:
--- <add description of the module>
+--
+-- This module manages the registration and retrieval of services within the
+-- Backbone framework. Services are shared components that provide reusable
+-- functionality and can be accessed by multiple addons.
 --=============================================================================
 
 local services = ({} --[[@as table<string, backbone.service>]])
+local getServiceId = function(name) return string.lower(name) end
 
 ---
----?
+---Register a service with the specified name and object.
 ---
-backbone.registerService = function(name, object) end
+---@param service_name string
+---@param object backbone.service-object
+---
+backbone.registerService = function(service_name, object)
+  local service_id = getServiceId(service_name)
+  if dictionary.has(services, service_id) then
+    local service = dictionary.get(services, service_id)
+    assert(
+      service.object == nil,
+      'The service "' .. service_name .. '" is already registered.'
+    )
+    service.object = object
+  else
+    dictionary.set(services, service_id, { object = object })
+  end
+end
+
+---
+---Retrieve a service object by its name.
+---
+---@generic T
+---@param service_name `T`
+---@return T
+---
+backbone.requestService = function(service_name)
+  local service_id = getServiceId(service_name)
+  assert(
+    dictionary.has(services, service_id),
+    'The requested service "' .. service_name .. '" does not exist.'
+  )
+  local protect = backbone.utils.table.protect
+  local service = dictionary.get(services, service_id)
+
+  if service.object == nil then
+    C_AddOns.LoadAddOn(service.supplier --[[@as string]])
+    while service.object == nil do
+      -- defer execution until the addon is loaded.
+    end
+  end
+
+  return protect(service.object)
+end
+
+---
+---Used internally to register loadable services.
+---
+---@param addon_name string
+---@param service_name string
+---
+context.registerLoadableService = function(addon_name, service_name)
+  local service_id = getServiceId(service_name)
+  assert(
+    not dictionary.has(services, service_id),
+    'The ervice "' .. service_name .. '" already exists.'
+  )
+  dictionary.set(services, service_id, { supplier = addon_name, })
+end
 
 --=============================================================================
 -- ADDON LOADER:
@@ -166,6 +231,19 @@ backbone.registerService = function(name, object) end
 -- triggers such as game events or service requests. It ensures addons are
 -- loaded only when required, optimizing performance and resource usage.
 --=============================================================================
+
+---
+---Break down a metadata string into its component parts.
+---
+---@param metadata string
+---@return string[]
+---
+local parseAddonMetadata = function(metadata)
+  local data = { string.split(',', metadata) }
+  array.foreach(data, function(_, value) return string.trim(value) end)
+
+  return data
+end
 
 ---
 ---The available handlers for loading addons.
@@ -179,10 +257,9 @@ local load_handlers =
   ---
   OnEvent = function(index, metadata)
     array.foreach(
-      { string.split(',', metadata) },
-      function(_, event_name)
+      parseAddonMetadata(metadata), function(_, event_name)
         backbone.registerEventListenerOnce(
-          string.trim(event_name), function()
+          event_name, function()
             if not C_AddOns.IsAddOnLoaded(index) then
               C_AddOns.LoadAddOn(index)
             end
@@ -196,7 +273,12 @@ local load_handlers =
   ---Responsible for loading addons on service requests.
   ---
   OnServiceRequest = function(index, metadata)
-    backbone.print '"OnServiceRequest" loader not implemented.'
+    local addon_name = C_AddOns.GetAddOnInfo(index)
+    array.foreach(
+      parseAddonMetadata(metadata), function(_, service_name)
+        context.registerLoadableService(addon_name, service_name)
+      end
+    )
   end
 }
 

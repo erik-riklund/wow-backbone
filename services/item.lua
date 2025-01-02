@@ -23,4 +23,4 @@ local handler =
 ---
 ---!
 ---
-
+backbone.registerService('backbone.item-service', handler)

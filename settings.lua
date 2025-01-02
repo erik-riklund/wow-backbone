@@ -19,6 +19,26 @@ local __addon = context.__addon
 local array = backbone.utils.array
 
 --=============================================================================
+-- COMPONENT > LIST SETTING:
+-- <add description of the module>
+--=============================================================================
+
+---
+---?
+---
+---@class backbone.list-setting
+---
+local listSetting =
+{
+
+}
+
+---
+---?
+---
+local createListSetting = function() end
+
+--=============================================================================
 -- SETTINGS MANAGER:
 -- <add description of the module>
 --=============================================================================
@@ -26,11 +46,19 @@ local array = backbone.utils.array
 ---
 ---?
 ---
----@param settings backbone.addon-settings
----
 __addon.setDefaultSettings = function(self, settings) end
 
---=============================================================================
--- CONFIGURATION INTERFACE INTEGRATION SERVICE:
--- <add description of the module>
---=============================================================================
+---
+---?
+---
+__addon.getListSetting = function(self, key) end
+
+---
+---?
+---
+__addon.getSimpleSetting = function(self, key) end
+
+---
+---?
+---
+__addon.setSimpleSetting = function(self, key, value) end

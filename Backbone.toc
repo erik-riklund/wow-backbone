@@ -10,4 +10,6 @@ events.lua
 modules.lua
 settings.lua
 
+services/config.lua
+services/item.lua
 scripts/garbage.lua
