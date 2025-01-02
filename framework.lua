@@ -16,11 +16,20 @@ local context = select(2, ...)
 ---
 ---The API for the Backbone framework.
 ---
-backbone = { utils = {} }
+backbone =
+{
+  ---
+  ---Provides utility functions for common tasks.
+  ---
+  utils = {}
+}
 
 --=============================================================================
 -- OUTPUT HANDLING:
--- <add description of the module>
+--
+-- This module provides utility functions for logging and displaying output
+-- in the default chat frame. It includes tools for printing strings, numbers,
+-- and complex data structures like tables in a readable format.
 --=============================================================================
 
 ---
@@ -75,7 +84,10 @@ end
 
 --=============================================================================
 -- ENVIRONMENT:
--- <add description of the module>
+--
+-- This module manages the framework's runtime environment, allowing developers
+-- to differentiate between "development" and "production" modes. It provides
+-- functionality to query and set the current environment state.
 --=============================================================================
 
 ---
@@ -107,11 +119,15 @@ end
 
 --=============================================================================
 -- UTILITIES:
--- <add description of the module>
+--
+-- This module provides a collection of utility functions for working with arrays,
+-- dictionaries, strings, and tables. These functions help streamline common tasks.
 --=============================================================================
 
 ---
 ---Utility methods for working with arrays.
+---
+---@class backbone.utils.array
 ---
 backbone.utils.array =
 {
@@ -122,7 +138,7 @@ backbone.utils.array =
   ---@param position number
   ---@return boolean
   ---
-  hasElement = function(target, position)
+  has = function(target, position)
     assert(
       type(position) == 'number',
       'Expected argument `position` to be a number.'
@@ -140,16 +156,16 @@ backbone.utils.array =
   ---@param position? number
   ---@return V
   ---
-  insertElement = function(target, value, position)
+  insert = function(target, value, position)
     assert(
       value ~= nil,
       'Expected argument `value` to be non-nil.'
     )
 
-    local maxIndex = #target + 1
-    position = position or maxIndex
+    local max_index = #target + 1
+    position = position or max_index
     assert(
-      position > 0 and position <= maxIndex,
+      position > 0 and position <= max_index,
       'Index "' .. position .. '" is out of range.'
     )
 
@@ -166,7 +182,7 @@ backbone.utils.array =
   ---@param position? number
   ---@return V
   ---
-  removeElement = function(target, position)
+  remove = function(target, position)
     local value = table.remove(target, position)
     assert(
       value ~= nil,
@@ -183,7 +199,7 @@ backbone.utils.array =
   ---@param target array<V>
   ---@param callback fun(index: number, value: V): unknown?
   ---
-  forEach = function(target, callback)
+  foreach = function(target, callback)
     assert(
       type(callback) == 'function',
       'Expected argument `callback` to be a function.'
@@ -213,7 +229,7 @@ backbone.utils.dictionary =
   ---@param key K
   ---@return boolean
   ---
-  hasEntry = function(target, key)
+  has = function(target, key)
     return target[key] ~= nil
   end,
 
@@ -226,7 +242,7 @@ backbone.utils.dictionary =
   ---@param key K
   ---@return V
   ---
-  getEntry = function(target, key)
+  get = function(target, key)
     assert(
       target[key] ~= nil,
       'There is no entry with the key "' .. tostring(key) .. '".'
@@ -243,7 +259,7 @@ backbone.utils.dictionary =
   ---@param value V
   ---@return V
   ---
-  setEntry = function(target, key, value)
+  set = function(target, key, value)
     assert(
       value ~= nil,
       'Expected argument `value` to be non-nil.'
@@ -260,7 +276,7 @@ backbone.utils.dictionary =
   ---@param key K
   ---@return V
   ---
-  dropEntry = function(target, key)
+  drop = function(target, key)
     local value = target[key]
     assert(
       value ~= nil,
@@ -278,7 +294,7 @@ backbone.utils.dictionary =
   ---@param target table<K, V>
   ---@param callback fun(key: K, value: V): unknown?
   ---
-  forEach = function(target, callback)
+  foreach = function(target, callback)
     assert(
       type(callback) == 'function',
       'Expected argument `callback` to be a function.'
@@ -362,7 +378,10 @@ backbone.utils.table =
 
 --=============================================================================
 -- ADDON MANAGER:
--- <add description of the module>
+--
+-- This module manages the registration and retrieval of addons within the Backbone
+-- ecosystem. It ensures each addon is uniquely identified and provides utilities
+-- for accessing and verifying registered addons.
 --=============================================================================
 
 local addons = ({} --[[@as table<string, backbone.addon>]])
@@ -385,7 +404,7 @@ context.__addon = {}
 backbone.registerAddon = function(name)
   local addon_id = getAddonId(name)
   assert(
-    not dictionary.hasEntry(addons, addon_id),
+    not dictionary.has(addons, addon_id),
     'An addon with the name "' .. name .. '" already exists.'
   )
 
@@ -394,7 +413,7 @@ backbone.registerAddon = function(name)
     getId = function(self) return addon_id end,
     getName = function(self) return name end
   }
-  return dictionary.setEntry(addons, addon_id,
+  return dictionary.set(addons, addon_id,
     setmetatable(addon, { __index = context.__addon })
   )
 end
@@ -406,7 +425,7 @@ end
 ---@return boolean
 ---
 backbone.hasAddon = function(name)
-  return dictionary.hasEntry(addons, getAddonId(name))
+  return dictionary.has(addons, getAddonId(name))
 end
 
 ---
@@ -423,15 +442,18 @@ context.addon = backbone.registerAddon 'Backbone'
 context.getAddon = function(name)
   local addon_id = getAddonId(name)
   assert(
-    dictionary.hasEntry(addons, addon_id),
+    dictionary.has(addons, addon_id),
     'There is no registered addon with the name "' .. name .. '".'
   )
-  return dictionary.getEntry(addons, addon_id)
+  return dictionary.get(addons, addon_id)
 end
 
 --=============================================================================
 -- TASK EXECUTION:
--- <add description of the module>
+--
+-- This module provides functionality for managing and executing tasks within
+-- the framework. It supports immediate and queued task execution, ensuring
+-- that tasks are processed efficiently and non-blockingly during frame updates.
 --=============================================================================
 
 local tasks = ({} --[[@as array<fun()>]])
@@ -456,7 +478,7 @@ end
 ---@param task fun()
 ---
 backbone.queueTask = function(task)
-  array.insertElement(tasks, task)
+  array.insert(tasks, task)
 end
 
 ---
@@ -465,10 +487,10 @@ end
 ---
 taskFrame:SetScript(
   'OnUpdate', function()
-    local time_limit = 0.01667 -- 60 fps
-
     if tasks[1] ~= nil then
+      local time_limit = 0.01667 -- 60 fps
       local time_started = GetTimePreciseSec()
+
       while tasks[1] ~= nil and (GetTimePreciseSec() - time_started < time_limit) do
         backbone.executeTask(table.remove(tasks, 1))
       end

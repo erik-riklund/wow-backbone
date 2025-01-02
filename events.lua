@@ -47,7 +47,7 @@ local observable =
       observer = { callback = observer }
     end
     observer.persistent = (observer.persistent == nil) or observer.persistent
-    array.insertElement(self.observers, observer)
+    array.insert(self.observers, observer)
   end,
 
   ---
@@ -59,7 +59,7 @@ local observable =
   unsubscribe = function(self, observer)
     for index, object in ipairs(self.observers) do
       if observer == object or observer == object.callback then
-        return array.removeElement(self.observers, index)
+        return array.remove(self.observers, index)
       end
     end
   end,
@@ -93,7 +93,7 @@ local observable =
     if count > 0 then
       for index = count, 1, -1 do
         if not self.observers[index].persistent then
-          array.removeElement(self.observers, index)
+          array.remove(self.observers, index)
         end
       end
     end
@@ -147,11 +147,11 @@ local createChannel = function(options)
 
   local channel_id = getChannelId(channel_name)
   assert(
-    not dictionary.hasEntry(channels, channel_id),
+    not dictionary.has(channels, channel_id),
     'A channel with the name "' .. channel_name .. '" already exists.'
   )
 
-  dictionary.setEntry(
+  dictionary.set(
     channels, channel_id, {
       owner = owner,
       name = channel_name,
@@ -190,10 +190,10 @@ end
 local getChannel = function(name)
   local channel_id = getChannelId(name)
   assert(
-    dictionary.hasEntry(channels, channel_id),
+    dictionary.has(channels, channel_id),
     'There is no channel with the name "' .. name .. '".'
   )
-  return dictionary.getEntry(channels, channel_id)
+  return dictionary.get(channels, channel_id)
 end
 
 ---
@@ -287,29 +287,29 @@ eventFrame:RegisterEvent 'ADDON_LOADED'
 eventFrame:SetScript(
   'OnEvent', function(...)
     local arguments = { select(2, ...) }
-    local event_name = array.removeElement(arguments, 1) --[[@as WowEvent]]
+    local event_name = array.remove(arguments, 1) --[[@as WowEvent]]
 
     if event_name == 'ADDON_LOADED' then
       local addon_name = arguments[1] --[[@as string]]
 
       if backbone.hasAddon(addon_name) then
         local loaded_addon = context.getAddon(addon_name)
-        array.forEach(
+        array.foreach(
           context.addon_initializers,
           function(_, initializer) initializer(loaded_addon) end
         )
       end
       
-      if dictionary.hasEntry(load_events, addon_name) then
-        dictionary.dropEntry(load_events, addon_name):notify()
+      if dictionary.has(load_events, addon_name) then
+        dictionary.drop(load_events, addon_name):notify()
       end
     else
-      local event = dictionary.getEntry(events, event_name)
+      local event = dictionary.get(events, event_name)
       event:notify(arguments)
 
       if event:listeners() == 0 then
         eventFrame:UnregisterEvent(event_name)
-        dictionary.dropEntry(events, event_name)
+        dictionary.drop(events, event_name)
       end
     end
   end
@@ -326,10 +326,10 @@ backbone.onAddonReady = function(addon_name, callback)
     return callback() -- the specified addon is already loaded.
   end
 
-  if not dictionary.hasEntry(load_events, addon_name) then
-    dictionary.setEntry(load_events, addon_name, createObservable())
+  if not dictionary.has(load_events, addon_name) then
+    dictionary.set(load_events, addon_name, createObservable())
   end
-  dictionary.getEntry(load_events, addon_name):subscribe(callback)
+  dictionary.get(load_events, addon_name):subscribe(callback)
 end
 
 ---
@@ -350,13 +350,13 @@ end
 ---@param persistent? boolean
 ---
 local listen = function(event_name, callback, persistent)
-  if not dictionary.hasEntry(events, event_name) then
-    dictionary.setEntry(
+  if not dictionary.has(events, event_name) then
+    dictionary.set(
       events, event_name, createObservable()
     )
     eventFrame:RegisterEvent(event_name)
   end
-  dictionary.getEntry(events, event_name):subscribe {
+  dictionary.get(events, event_name):subscribe {
     callback = callback, persistent = (persistent == nil) or persistent
   }
 end
@@ -389,8 +389,8 @@ end
 ---
 backbone.removeEventListener = function(event_name, callback)
   assert(
-    dictionary.hasEntry(events, event_name),
+    dictionary.has(events, event_name),
     'The event "' .. event_name .. '" has not been registered.'
   )
-  dictionary.getEntry(events, event_name):unsubscribe(callback)
+  dictionary.get(events, event_name):unsubscribe(callback)
 end

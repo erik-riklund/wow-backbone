@@ -15,5 +15,5 @@
 ---
 ---Represents an array of values of type `V`.
 ---
----@alias array<V> V[]
+---@class array<V>: { [number]: V }
 ---

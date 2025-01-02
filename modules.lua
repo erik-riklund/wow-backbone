@@ -39,7 +39,7 @@ local traverse = backbone.utils.table.traverse
 ---
 ---Responsible for initializing saved variables for addons.
 ---
-array.insertElement(
+array.insert(
   context.addon_initializers,
   ---@param addon backbone.addon
   function(addon)
@@ -178,7 +178,7 @@ local load_handlers =
   ---Responsible for loading addons on specific events.
   ---
   OnEvent = function(index, metadata)
-    array.forEach(
+    array.foreach(
       { string.split(',', metadata) },
       function(_, event_name)
         backbone.registerEventListenerOnce(
@@ -205,7 +205,7 @@ local load_handlers =
 ---
 for index = 1, C_AddOns.GetNumAddOns() do
   if C_AddOns.IsAddOnLoadOnDemand(index) then
-    dictionary.forEach(
+    dictionary.foreach(
       load_handlers, function(name, handler)
         local metadata = C_AddOns.GetAddOnMetadata(index, 'X-Load-' .. name)
         if type(metadata) == 'string' and #metadata > 0 then

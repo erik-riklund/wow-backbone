@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/01 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/02 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -44,17 +44,17 @@ BNUM.ANCHOR_POINT =
 ---
 BNUM.EXPANSION_LEVEL =
 {
-          CLASSIC = 0,
-  BURNING_CRUSADE = 1,
-        LICH_KING = 2,
-        CATACLYSM = 3,
-         PANDARIA = 4,
-          DRAENOR = 5,
-           LEGION = 6,
-          AZEROTH = 7,
-      SHADOWLANDS = 8,
-     DRAGONFLIGHT = 9,
-       WAR_WITHIN = 10
+       CLASSIC = 0, -- Vanilla
+       OUTLAND = 1, -- The Burning Crusade
+     NORTHREND = 2, -- Wrath of the Lich King
+     CATACLYSM = 3, -- Cataclysm
+      PANDARIA = 4, -- Mists of Pandaria
+       DRAENOR = 5, -- Warlords of Draenor
+        LEGION = 6, -- Legion
+       AZEROTH = 7, -- Battle for Azeroth
+   SHADOWLANDS = 8, -- Shadowlands
+  DRAGONFLIGHT = 9, -- Dragonflight
+    WAR_WITHIN = 10 -- The War Within
 }
 
 ---
@@ -64,37 +64,36 @@ BNUM.EXPANSION_LEVEL =
 ---
 BNUM.ITEM_BIND =
 {
-        NONE = Enum.ItemBind.None,
-  ON_ACQUIRE = Enum.ItemBind.OnAcquire,
-    ON_EQUIP = Enum.ItemBind.OnEquip,
-      ON_USE = Enum.ItemBind.OnUse,
-       QUEST = Enum.ItemBind.Quest,
-     ACCOUNT = Enum.ItemBind.ToWoWAccount,
-     WARBAND = Enum.ItemBind.ToBnetAccount,
-  WARBAND_EQ = Enum.ItemBind.ToBnetAccountUntilEquipped
+        NONE = Enum.ItemBind.None, -- The item is not bound to the player.
+  ON_ACQUIRE = Enum.ItemBind.OnAcquire, -- Binds to the player when the item is picked up.
+    ON_EQUIP = Enum.ItemBind.OnEquip, -- Binds to the player when the item is equipped.
+      ON_USE = Enum.ItemBind.OnUse, -- Binds to the player when the item is used.
+       QUEST = Enum.ItemBind.Quest, -- Bound to a specific quest.
+     ACCOUNT = Enum.ItemBind.ToWoWAccount, -- Binds to the player's World of Warcraft account.
+     WARBAND = Enum.ItemBind.ToBnetAccount, -- Binds to the player's Battle.net account.
+  WARBAND_EQ = Enum.ItemBind.ToBnetAccountUntilEquipped -- Binds to the player's Battle.net account until the item is equipped.
 }
 
 ---
 ---Represents the main categories of items in the game.
 ---
----@enum ITEM_CLASS
+---@enum ITEM_TYPE
 ---
-BNUM.ITEM_CLASS =
+BNUM.ITEM_TYPE =
 {
   CONSUMABLE = Enum.ItemClass.Consumable,
-  CONTAINER  = Enum.ItemClass.Container,
+   CONTAINER = Enum.ItemClass.Container,
       WEAPON = Enum.ItemClass.Weapon,
        ARMOR = Enum.ItemClass.Armor,
-     REAGENT = Enum.ItemClass.Reagent,
   PROJECTILE = Enum.ItemClass.Projectile,
-  TRADEGOODS = Enum.ItemClass.Tradegoods,
+     REAGENT = Enum.ItemClass.Tradegoods, -- Tradeskill reagents.
       RECIPE = Enum.ItemClass.Recipe,
       QUIVER = Enum.ItemClass.Quiver,
        QUEST = Enum.ItemClass.Questitem,
          KEY = Enum.ItemClass.Key,
         MISC = Enum.ItemClass.Miscellaneous,
    BATTLEPET = Enum.ItemClass.Battlepet,
-   WOW_TOKEN = Enum.ItemClass.WoWToken
+       TOKEN = Enum.ItemClass.WoWToken -- World of Warcraft game token.
 }
 
 ---
@@ -112,15 +111,15 @@ BNUM.ITEM_QUALITY =
   LEGENDARY = Enum.ItemQuality.Legendary,
    ARTIFACT = Enum.ItemQuality.Artifact,
    HEIRLOOM = Enum.ItemQuality.Heirloom,
-  WOW_TOKEN = Enum.ItemQuality.WoWToken
+      TOKEN = Enum.ItemQuality.WoWToken -- World of Warcraft game token.
 }
 
 ---
 ---Represents the different types of loot slots in the game.
 ---
----@enum LOOT_SLOT_TYPE
+---@enum LOOT_TYPE
 ---
-BNUM.LOOT_SLOT_TYPE =
+BNUM.LOOT_TYPE =
 {
       NONE = Enum.LootSlotType.None,
       ITEM = Enum.LootSlotType.Item,
@@ -135,17 +134,17 @@ BNUM.LOOT_SLOT_TYPE =
 ---
 BNUM.REAGENT_TYPE =
 {
-               PARTS = 1,
-       JEWELCRAFTING = 4,
-               CLOTH = 5,
-             LEATHER = 6,
-              METALS = 7,
-             COOKING = 8,
-                HERB = 9,
-           ELEMENTAL = 10,
-               OTHER = 11,
-          ENCHANTING = 12,
-         INSCRIPTION = 16,
-   OPTIONAL_REAGENTS = 18,
-  FINISHING_REAGENTS = 19
+       PART = 1,
+      JEWEL = 4,
+      CLOTH = 5,
+    LEATHER = 6,
+      METAL = 7,
+    COOKING = 8,
+       HERB = 9,
+  ELEMENTAL = 10,
+      OTHER = 11,
+       DUST = 12,
+    PIGMENT = 16,
+   OPTIONAL = 18,
+  FINISHING = 19
 }
