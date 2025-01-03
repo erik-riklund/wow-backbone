@@ -13,7 +13,7 @@
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
----?
+---Represents a service within the Backbone ecosystem.
 ---
 ---@class backbone.service
 ---
@@ -22,7 +22,7 @@
 ---
 
 ---
----?
+---Represents a unique service object within the Backbone ecosystem.
 ---
----@alias backbone.service-object table
+---@class backbone.service-object : {}
 ---

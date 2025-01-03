@@ -1,4 +1,6 @@
---[[~ Updated: 2025/01/01 | Author(s): Gopher ]]
+---@meta
+
+--[[~ Updated: 2025/01/03 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -11,16 +13,19 @@
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
----?
+---Represents locales and their associated localized strings.
 ---
----@class backbone.config-service
+---@class backbone.locale-registry: { [backbone.locale]: backbone.localized-strings }
 ---
-local handler = 
-{
-
-}
 
 ---
----!
+---Represents a collection of localized strings.
 ---
-backbone.registerService('backbone.config-service', handler)
+---@class backbone.localized-strings: { [string]: string }
+---
+
+---
+---Represents the supported locales.
+---
+---@alias backbone.locale 'enUS'|'koKR'|'frFR'|'deDE'|'zhCN'|'zhTW'|'esES'|'esMX'|'ruRU'|'ptBR'|'itIT'
+---

@@ -13,18 +13,26 @@
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
----?
+---Represents a single addon within the Backbone ecosystem.
 ---
 ---@class backbone.addon
 ---
----@field private variables backbone.addon-variables The addon's saved variables, only available when the addon is fully initialized.
+---@field private strings backbone.addon-strings
+---@field private variables backbone.addon-variables
+---@field private settings table
 ---
 
 ---
----?
+---Represents the storage of variables associated with an addon.
 ---
 ---@class backbone.addon-variables
 ---
----@field account table The addon's account-wide saved variables.
----@field character table The addon's character-specific saved variables.
+---@field account table
+---@field character table
+---
+
+---
+---Represents the repository of localized strings associated with an addon.
+---
+---@class backbone.addon-strings : { [backbone.locale]: backbone.localized-strings }
 ---

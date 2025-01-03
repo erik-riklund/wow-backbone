@@ -20,14 +20,92 @@ local __addon = context.__addon
 
 local array = backbone.utils.array
 local dictionary = backbone.utils.dictionary
+local protect = backbone.utils.table.protect
 local traverse = backbone.utils.table.traverse
 
 --=============================================================================
 -- LOCALE HANDLER:
--- <add description of the module>
+--
+-- This module manages the registration and retrieval of localized strings for addons,
+-- enabling multilingual support. It allows external contributors to register strings,
+-- ensuring that existing strings are not overwritten.
 --=============================================================================
 
--- TODO: implement the locale handler.
+local contributed_strings = ({} --[[@as table<string, backbone.locale-registry>]])
+
+---
+---Register any contributed localized strings once the addon is fully initialized.
+---
+array.insert(
+  context.addon_initializers,
+  ---@param addon backbone.addon
+  function(addon)
+    addon:onReady(
+      function()
+        local addon_name = addon:getName()
+        if dictionary.has(contributed_strings, addon_name) then
+          dictionary.foreach(
+            contributed_strings[addon_name],
+            function(locale, strings)
+              addon:registerLocalizedStrings(locale, strings)
+            end
+          )
+          dictionary.drop(contributed_strings, addon_name)
+        end
+      end
+    )
+  end
+)
+
+---
+---Retrieve the localized string with the specified key.
+---
+---@param key string
+---@return string
+---
+__addon.getLocalizedString = function(self, key)
+  assert(
+    self.strings ~= nil,
+    'No localized strings have been registered for "' .. self:getName() .. '".'
+  )
+  return (self.strings[backbone.activeLocale] and self.strings[backbone.activeLocale][key])
+      or (self.strings.enUS and self.strings.enUS[key])
+      or string.format('[Missing localized string "%s" (%s)]', key, self:getName())
+end
+
+---
+---Register a set of localized strings for the addon.
+---These strings will not overwrite existing strings.
+---
+---@param locale backbone.locale
+---@param strings backbone.localized-strings
+---
+__addon.registerLocalizedStrings = function(self, locale, strings)
+  self.strings = self.strings or {}
+  self.strings[locale] = self.strings[locale] or {}
+
+  dictionary.combine(self.strings[locale], strings)
+end
+
+---
+---Contribute localized strings to an addon. These strings will be registered
+---after the addon have been initialized, and will not overwrite existing strings.
+---
+---@param addon_name string
+---@param locale backbone.locale
+---@param strings backbone.localized-strings
+---
+backbone.contributeLocalizedStrings = function(addon_name, locale, strings)
+  if select(2, C_AddOns.IsAddOnLoaded(addon_name)) then
+    local addon = context.getAddon(addon_name)
+    addon:registerLocalizedStrings(locale, strings)
+  else
+    contributed_strings[addon_name] = contributed_strings[addon_name] or {}
+    contributed_strings[addon_name][locale] = contributed_strings[addon_name][locale] or {}
+
+    dictionary.combine(contributed_strings[addon_name][locale], strings)
+  end
+end
 
 --=============================================================================
 -- STATE MANAGER:
@@ -41,7 +119,6 @@ local traverse = backbone.utils.table.traverse
 ---
 ---Responsible for initializing saved variables for addons.
 ---
-
 array.insert(
   context.addon_initializers,
   ---@param addon backbone.addon
@@ -49,7 +126,7 @@ array.insert(
     ---
     ---!
     ---
-    ---@param scope 'Account'|'Character'
+    ---@param scope string
     ---@return table
     ---
     local createStorage = function(scope)
@@ -129,7 +206,7 @@ local setVariable = function(addon, scope, key, value)
   local parents = parseVariablePath(key)
   local variable = table.remove(parents)
 
-  traverse(addon.variables[scope], parents)[variable] = value
+  traverse(addon.variables[scope], parents, 'build')[variable] = value
 end
 
 ---
@@ -153,6 +230,79 @@ __addon.setCharacterVariable = function(self, key, value)
 end
 
 --=============================================================================
+-- SETTINGS MANAGER:
+--
+-- <add description of the module
+--=============================================================================
+
+local createSettingsTable
+local settings_prefix = '__settings'
+
+---
+---!
+---
+---@param key string
+---@return string
+---
+local getNormalizedSettingKey = function(key)
+  local normalized_key = string.gsub(key, '_', '-')
+  return normalized_key
+end
+
+---
+---!
+---
+---@param target table
+---@param settings table
+---
+createSettingsTable = function(target, settings)
+  for key, value in pairs(settings) do
+    local normalized_key = getNormalizedSettingKey(key)
+
+    if type(value) == 'table' then
+      if array.is(value) then
+        dictionary.set(target, normalized_key, {})
+        array.foreach(value, function(_, entry)
+          dictionary.set(target[normalized_key], tostring(entry), true)
+        end)
+      else
+        createSettingsTable(dictionary.set(target, normalized_key, {}), value)
+      end
+    else
+      dictionary.set(target, normalized_key, value)
+    end
+  end
+end
+
+---
+---?
+---
+---@param settings table
+---
+__addon.setDefaultSettings = function(self, settings)
+  assert(
+    self.settings == nil,
+    'Default settings have already been set for addon "' .. self:getName() .. '".'
+  )
+  createSettingsTable(dictionary.set(self, 'settings', {}), settings)
+end
+
+---
+---!
+---
+__addon.getDefaultSetting = function(self, key) end
+
+---
+---?
+---
+__addon.getSetting = function(self, key) end
+
+---
+---?
+---
+__addon.setSetting = function(self, key, value) end
+
+--=============================================================================
 -- SERVICE MANAGER:
 --
 -- This module manages the registration and retrieval of services within the
@@ -161,6 +311,7 @@ end
 --=============================================================================
 
 local services = ({} --[[@as table<string, backbone.service>]])
+local service_cache = setmetatable({}, { __mode = 'v' }) --[[@as table<string, backbone.service-object>]]
 local getServiceId = function(name) return string.lower(name) end
 
 ---
@@ -172,7 +323,7 @@ local getServiceId = function(name) return string.lower(name) end
 backbone.registerService = function(service_name, object)
   local service_id = getServiceId(service_name)
   if dictionary.has(services, service_id) then
-    local service = dictionary.get(services, service_id)
+    local service = services[service_id]
     assert(
       service.object == nil,
       'The service "' .. service_name .. '" is already registered.'
@@ -196,9 +347,8 @@ backbone.requestService = function(service_name)
     dictionary.has(services, service_id),
     'The requested service "' .. service_name .. '" does not exist.'
   )
-  local protect = backbone.utils.table.protect
-  local service = dictionary.get(services, service_id)
 
+  local service = services[service_id]
   if service.object == nil then
     C_AddOns.LoadAddOn(service.supplier --[[@as string]])
     while service.object == nil do
@@ -206,7 +356,12 @@ backbone.requestService = function(service_name)
     end
   end
 
-  return protect(service.object)
+  local proxy = service_cache[service_id]
+  if proxy == nil then
+    proxy = protect(service.object --[[@as backbone.service-object]])
+    dictionary.set(service_cache, service_id, proxy)
+  end
+  return proxy
 end
 
 ---
@@ -219,7 +374,7 @@ context.registerLoadableService = function(addon_name, service_name)
   local service_id = getServiceId(service_name)
   assert(
     not dictionary.has(services, service_id),
-    'The ervice "' .. service_name .. '" already exists.'
+    'The service "' .. service_name .. '" already exists.'
   )
   dictionary.set(services, service_id, { supplier = addon_name, })
 end

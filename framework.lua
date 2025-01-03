@@ -19,9 +19,18 @@ local context = select(2, ...)
 backbone =
 {
   ---
-  ---Provides utility functions for common tasks.
+  ---A string representation of the current locale.
   ---
-  utils = {}
+  ---@type backbone.locale
+  ---
+  activeLocale = GetLocale(),
+
+  ---
+  ---A numerical value representing the current expansion level.
+  ---
+  ---@type number
+  ---
+  currentExpansion = GetExpansionLevel()
 }
 
 --=============================================================================
@@ -125,269 +134,278 @@ end
 --=============================================================================
 
 ---
----Utility methods for working with arrays.
+---Provides utility functions for common tasks.
 ---
----@class backbone.utils.array
+---@class backbone.utils
 ---
-backbone.utils.array =
+backbone.utils =
 {
   ---
-  ---Determine if the provided table is an array.
+  ---Utility methods for working with arrays.
   ---
-  ---@param target table
-  ---@return boolean
+  ---@class backbone.utils.array
   ---
-  is = function(target)
-    for key in pairs(target) do
-      if type(key) ~= 'number' then return false end
-    end
-    return true
-  end,
+  array =
+  {
+    ---
+    ---Determine if the provided table is an array.
+    ---
+    ---@param target table
+    ---@return boolean
+    ---
+    is = function(target)
+      local elements = 0
+      for _ in pairs(target) do
+        elements = elements + 1
+      end
+      return (elements == #target)
+    end,
 
-  ---
-  ---Determine if the table contains an element at the specified position.
-  ---
-  ---@param target unknown[]
-  ---@param position number
-  ---@return boolean
-  ---
-  has = function(target, position)
-    assert(
-      type(position) == 'number',
-      'Expected argument `position` to be a number.'
-    )
-    return target[position] ~= nil
-  end,
+    ---
+    ---Determine if the table contains an element at the specified position.
+    ---
+    ---@param target unknown[]
+    ---@param position number
+    ---@return boolean
+    ---
+    has = function(target, position)
+      assert(
+        type(position) == 'number',
+        'Expected argument `position` to be a number.'
+      )
+      return target[position] ~= nil
+    end,
 
-  ---
-  ---Insert a value into the table. If no position is specified,
-  ---the value is inserted at the end of the table.
-  ---
-  ---@generic V
-  ---@param target V[]
-  ---@param value V
-  ---@param position? number
-  ---@return V
-  ---
-  insert = function(target, value, position)
-    assert(
-      value ~= nil,
-      'Expected argument `value` to be non-nil.'
-    )
+    ---
+    ---Insert a value into the table. If no position is specified,
+    ---the value is inserted at the end of the table.
+    ---
+    ---@generic V
+    ---@param target V[]
+    ---@param value V
+    ---@param position? number
+    ---@return V
+    ---
+    insert = function(target, value, position)
+      assert(
+        value ~= nil,
+        'Expected argument `value` to be non-nil.'
+      )
 
-    local max_index = #target + 1
-    position = position or max_index
-    assert(
-      position > 0 and position <= max_index,
-      'Index "' .. position .. '" is out of range.'
-    )
+      local max_index = #target + 1
+      position = position or max_index
+      assert(
+        position > 0 and position <= max_index,
+        'Index "' .. position .. '" is out of range.'
+      )
 
-    table.insert(target, position, value)
-    return target[position]
-  end,
+      table.insert(target, position, value)
+      return target[position]
+    end,
 
-  ---
-  ---Remove an element from the table. If no position is specified,
-  ---the last element is removed.
-  ---
-  ---@generic V
-  ---@param target V[]
-  ---@param position? number
-  ---@return V
-  ---
-  remove = function(target, position)
-    local value = table.remove(target, position)
-    assert(
-      value ~= nil,
-      'There is no element at the position "' .. position .. '".'
-    )
-    return value
-  end,
+    ---
+    ---Remove an element from the table. If no position is specified,
+    ---the last element is removed.
+    ---
+    ---@generic V
+    ---@param target V[]
+    ---@param position? number
+    ---@return V
+    ---
+    remove = function(target, position)
+      local value = table.remove(target, position)
+      assert(
+        value ~= nil,
+        'There is no element at the position "' .. position .. '".'
+      )
+      return value
+    end,
 
-  ---
-  ---Apply a function to each element of the array. If the function
-  ---returns a value, the element is replaced with the returned value.
-  ---
-  ---@generic V
-  ---@param target V[]
-  ---@param callback fun(index: number, value: V): unknown?
-  ---
-  foreach = function(target, callback)
-    assert(
-      type(callback) == 'function',
-      'Expected argument `callback` to be a function.'
-    )
+    ---
+    ---Apply a function to each element of the array. If the function
+    ---returns a value, the element is replaced with the returned value.
+    ---
+    ---@generic V
+    ---@param target V[]
+    ---@param callback fun(index: number, value: V): unknown?
+    ---
+    foreach = function(target, callback)
+      assert(
+        type(callback) == 'function',
+        'Expected argument `callback` to be a function.'
+      )
 
-    for index, value in ipairs(target) do
-      local result = callback(index, value)
-      if result ~= nil then
-        target[index] = result
+      for index, value in ipairs(target) do
+        local result = callback(index, value)
+        if result ~= nil then
+          target[index] = result
+        end
       end
     end
-  end
+  },
+
+  ---
+  ---Utility methods for working with dictionaries.
+  ---
+  ---@class backbone.utils.dictionary
+  ---
+  dictionary =
+  {
+    ---
+    ---Determine if the table contains an entry with the specified key.
+    ---
+    ---@generic K
+    ---@param target table<K, unknown>
+    ---@param key K
+    ---@return boolean
+    ---
+    has = function(target, key)
+      return target[key] ~= nil
+    end,
+
+    ---
+    ---Set the value of an entry in the table.
+    ---
+    ---@generic K, V
+    ---@param target table<K, V>
+    ---@param key K
+    ---@param value V
+    ---@return V
+    ---
+    set = function(target, key, value)
+      assert(
+        value ~= nil,
+        'Expected argument `value` to be non-nil.'
+      )
+      target[key] = value
+      return target[key]
+    end,
+
+    ---
+    ---Remove an entry from the table and return its value.
+    ---
+    ---@generic K, V
+    ---@param target table<K, V>
+    ---@param key K
+    ---@return V
+    ---
+    drop = function(target, key)
+      local value = target[key]
+      assert(
+        value ~= nil,
+        'There is no entry with the key "' .. key .. '".'
+      )
+      target[key] = nil
+      return value
+    end,
+
+    ---
+    ---Apply a function to each entry of the dictionary. If the function
+    ---returns a value, the entry is replaced with the returned value.
+    ---
+    ---@generic K, V
+    ---@param target table<K, V>
+    ---@param callback fun(key: K, value: V): unknown?
+    ---
+    foreach = function(target, callback)
+      assert(
+        type(callback) == 'function',
+        'Expected argument `callback` to be a function.'
+      )
+
+      for key, value in pairs(target) do
+        local result = callback(key, value)
+        if result ~= nil then
+          target[key] = result
+        end
+      end
+    end,
+
+    ---
+    ---Combine multiple dictionaries into a single one. The target dictionary is altered
+    ---and returned for further modification. Existing values will not be overwritten.
+    ---
+    ---@generic K, V
+    ---@param target table<K, V>
+    ---@param ... table<K, V>
+    ---@return table<K, V>
+    ---
+    combine = function(target, ...)
+      local sources = { ... }
+      for _, source in ipairs(sources) do
+        for key, value in pairs(source) do
+          if target[key] == nil then target[key] = value end
+        end
+      end
+      return target
+    end
+  },
+
+  ---
+  ---Utility functions for working with tables.
+  ---
+  ---@class backbone.utils.table
+  ---
+  table =
+  {
+    ---
+    ---Protect a table from modification by wrapping it in a read-only proxy.
+    ---
+    ---@generic T:table
+    ---@param target T
+    ---@return T
+    ---
+    protect = function(target)
+      assert(
+        type(target) == 'table',
+        'Expected argument `target` to be a table.'
+      )
+
+      local blocker = function()
+        error('Cannot modify a protected table.', 2)
+      end
+      local retriever = function(_, key)
+        local protect = backbone.utils.table.protect
+        return (type(target[key]) == 'table' and protect(target[key])) or target[key]
+      end
+
+      return setmetatable({}, {
+        __index = retriever, __newindex = blocker
+      })
+    end,
+
+    ---
+    ---Traverse a table using the specified steps. In 'build' mode, missing
+    ---steps are created, while the traversal is cancelled in 'exit' mode.
+    ---
+    ---@param target table
+    ---@param steps string[]
+    ---@param mode? 'exit'|'build'
+    ---@return unknown
+    ---
+    traverse = function(target, steps, mode)
+      mode = mode or 'exit'
+      assert(
+        mode == 'exit' or mode == 'build',
+        'Expected argument `mode` to be "exit" or "build".'
+      )
+
+      local value = target
+      for _, key in ipairs(steps) do
+        if value[key] == nil then
+          if mode == 'exit' then return nil end
+          value[key] = {} -- create missing steps in 'build' mode.
+        end
+        value = value[key]
+      end
+
+      return value
+    end
+  }
 }
 
 local array = backbone.utils.array
-
----
----Utility methods for working with dictionaries.
----
-backbone.utils.dictionary =
-{
-  ---
-  ---Determine if the table contains an entry with the specified key.
-  ---
-  ---@generic K
-  ---@param target table<K, unknown>
-  ---@param key K
-  ---@return boolean
-  ---
-  has = function(target, key)
-    return target[key] ~= nil
-  end,
-
-  ---
-  ---Retrieve the value of an entry in the table.
-  ---Throws an error if the entry does not exist.
-  ---
-  ---@generic K, V
-  ---@param target table<K, V>
-  ---@param key K
-  ---@return V
-  ---
-  get = function(target, key)
-    assert(
-      target[key] ~= nil,
-      'There is no entry with the key "' .. tostring(key) .. '".'
-    )
-    return target[key]
-  end,
-
-  ---
-  ---Set the value of an entry in the table.
-  ---
-  ---@generic K, V
-  ---@param target table<K, V>
-  ---@param key K
-  ---@param value V
-  ---@return V
-  ---
-  set = function(target, key, value)
-    assert(
-      value ~= nil,
-      'Expected argument `value` to be non-nil.'
-    )
-    target[key] = value
-    return target[key]
-  end,
-
-  ---
-  ---Remove an entry from the table and return its value.
-  ---
-  ---@generic K, V
-  ---@param target table<K, V>
-  ---@param key K
-  ---@return V
-  ---
-  drop = function(target, key)
-    local value = target[key]
-    assert(
-      value ~= nil,
-      'There is no entry with the key "' .. key .. '".'
-    )
-    target[key] = nil
-    return value
-  end,
-
-  ---
-  ---Apply a function to each entry of the dictionary. If the function
-  ---returns a value, the entry is replaced with the returned value.
-  ---
-  ---@generic K, V
-  ---@param target table<K, V>
-  ---@param callback fun(key: K, value: V): unknown?
-  ---
-  foreach = function(target, callback)
-    assert(
-      type(callback) == 'function',
-      'Expected argument `callback` to be a function.'
-    )
-
-    for key, value in pairs(target) do
-      local result = callback(key, value)
-      if result ~= nil then
-        target[key] = result
-      end
-    end
-  end
-}
-
 local dictionary = backbone.utils.dictionary
-
----
----Utility functions for working with tables.
----
-backbone.utils.table =
-{
-  ---
-  ---Protect a table from modification by wrapping it in a read-only proxy.
-  ---
-  ---@generic T:table
-  ---@param target T
-  ---@return T
-  ---
-  protect = function(target)
-    assert(
-      type(target) == 'table',
-      'Expected argument `target` to be a table.'
-    )
-
-    local blocker = function()
-      error('Cannot modify a protected table.', 2)
-    end
-    local retriever = function(_, key)
-      local protect = backbone.utils.table.protect
-      return (type(target[key]) == 'table' and protect(target[key])) or target[key]
-    end
-
-    return setmetatable({}, {
-      __index = retriever, __newindex = blocker
-    })
-  end,
-
-  ---
-  ---?
-  ---
-  ---@param target table
-  ---@param steps string[]
-  ---@param mode? 'exit'|'build'
-  ---@return unknown
-  ---
-  traverse = function(target, steps, mode)
-    mode = mode or 'exit'
-    assert(
-      mode == 'exit' or mode == 'build',
-      'Expected argument `mode` to be "exit" or "build".'
-    )
-
-    local value = target
-    local step_count = #steps
-    for index, key in ipairs(steps) do
-      if value[key] == nil then
-        if mode == 'exit' then return nil end
-        value[key] = {} -- create missing steps in 'build' mode.
-      end
-      
-      value = value[key]
-      assert(
-        type(value) ~= 'table' and index < step_count,
-        'Unexpected non-table value at step "' .. key .. '".'
-      )
-    end
-
-    return value
-  end
-}
 
 --=============================================================================
 -- ADDON MANAGER:
@@ -458,7 +476,7 @@ context.getAddon = function(name)
     dictionary.has(addons, addon_id),
     'There is no registered addon with the name "' .. name .. '".'
   )
-  return dictionary.get(addons, addon_id)
+  return addons[addon_id]
 end
 
 --=============================================================================

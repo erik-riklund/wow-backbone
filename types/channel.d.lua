@@ -13,7 +13,7 @@
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
----?
+---Represents a unique channel within the Backbone ecosystem.
 ---
 ---@class backbone.channel
 ---
@@ -24,7 +24,7 @@
 ---
 
 ---
----?
+---Represents options for creating a new channel.
 ---
 ---@class backbone.channel-options
 ---

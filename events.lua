@@ -192,7 +192,7 @@ local getChannel = function(name)
     dictionary.has(channels, channel_id),
     'There is no channel with the name "' .. name .. '".'
   )
-  return dictionary.get(channels, channel_id)
+  return channels[channel_id]
 end
 
 ---
@@ -303,7 +303,7 @@ eventFrame:SetScript(
         dictionary.drop(load_events, addon_name):notify()
       end
     else
-      local event = dictionary.get(events, event_name)
+      local event = events[event_name]
       event:notify(arguments)
 
       if event:listeners() == 0 then
@@ -328,7 +328,7 @@ backbone.onAddonReady = function(addon_name, callback)
   if not dictionary.has(load_events, addon_name) then
     dictionary.set(load_events, addon_name, createObservable())
   end
-  dictionary.get(load_events, addon_name):subscribe(callback)
+  load_events[addon_name]:subscribe(callback)
 end
 
 ---
@@ -355,7 +355,7 @@ local listen = function(event_name, callback, persistent)
     )
     eventFrame:RegisterEvent(event_name)
   end
-  dictionary.get(events, event_name):subscribe {
+  events[event_name]:subscribe {
     callback = callback, persistent = (persistent == nil) or persistent
   }
 end
@@ -391,5 +391,5 @@ backbone.removeEventListener = function(event_name, callback)
     dictionary.has(events, event_name),
     'The event "' .. event_name .. '" has not been registered.'
   )
-  dictionary.get(events, event_name):unsubscribe(callback)
+  events[event_name]:unsubscribe(callback)
 end
