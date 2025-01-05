@@ -3,7 +3,7 @@ local context = select(2, ...)
 
 ---@diagnostic disable: invisible
 
---[[~ Updated: 2025/01/01 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/04 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -65,11 +65,12 @@ array.insert(
 ---
 __addon.getLocalizedString = function(self, key)
   assert(
-    self.strings ~= nil,
-    'No localized strings have been registered for "' .. self:getName() .. '".'
+    self.strings ~= nil, string.format(
+      'No strings have been registered for addon "%s".', self:getName()
+    )
   )
   return (self.strings[backbone.activeLocale] and self.strings[backbone.activeLocale][key])
-      or (self.strings.enUS and self.strings.enUS[key])
+      or (self.strings['enUS'] and self.strings['enUS'][key])
       or string.format('[Missing localized string "%s" (%s)]', key, self:getName())
 end
 
@@ -164,8 +165,9 @@ end
 ---
 local getVariable = function(addon, scope, key)
   assert(
-    type(addon.variables) == 'table',
-    'Saved variables are not initialized for ' .. addon:getName() .. '.'
+    type(addon.variables) == 'table', string.format(
+      'Saved variables are not initialized for addon "%s".', addon:getName()
+    )
   )
   return traverse(addon.variables[scope], parseVariablePath(key))
 end
@@ -200,8 +202,9 @@ end
 ---
 local setVariable = function(addon, scope, key, value)
   assert(
-    type(addon.variables) == 'table',
-    'Saved variables are not initialized for ' .. addon:getName() .. '.'
+    type(addon.variables) == 'table', string.format(
+      'Saved variables are not initialized for addon "%s".', addon:getName()
+    )
   )
   local parents = parseVariablePath(key)
   local variable = table.remove(parents)
@@ -235,19 +238,8 @@ end
 -- <add description of the module
 --=============================================================================
 
-local createSettingsTable
-local settings_prefix = '__settings'
-
----
----!
----
----@param key string
----@return string
----
-local getNormalizedSettingKey = function(key)
-  local normalized_key = string.gsub(key, '_', '-')
-  return normalized_key
-end
+local createDefaultSettingsTable
+local settings_prefix = '$settings'
 
 ---
 ---!
@@ -255,23 +247,42 @@ end
 ---@param target table
 ---@param settings table
 ---
-createSettingsTable = function(target, settings)
+createDefaultSettingsTable = function(target, settings)
   for key, value in pairs(settings) do
-    local normalized_key = getNormalizedSettingKey(key)
-
     if type(value) == 'table' then
-      if array.is(value) then
-        dictionary.set(target, normalized_key, {})
-        array.foreach(value, function(_, entry)
-          dictionary.set(target[normalized_key], tostring(entry), true)
-        end)
-      else
-        createSettingsTable(dictionary.set(target, normalized_key, {}), value)
-      end
+      createDefaultSettingsTable(
+        dictionary.set(target, key, {}), value
+      )
     else
-      dictionary.set(target, normalized_key, value)
+      dictionary.set(target, key, value)
     end
   end
+end
+
+---
+---!
+---
+---@param addon backbone.addon
+---
+local syncSettingsTable = function(addon)
+  local syncSettings
+
+  ---
+  ---!
+  ---
+  ---@param target table
+  ---@param source table
+  ---
+  syncSettings = function(target, source)
+
+  end
+
+  if not addon:getAccountVariable(settings_prefix) then
+    addon:setAccountVariable(settings_prefix, {})
+  end
+  syncSettings(
+    addon:getAccountVariable(settings_prefix), addon.settings
+  )
 end
 
 ---
@@ -281,26 +292,138 @@ end
 ---
 __addon.setDefaultSettings = function(self, settings)
   assert(
-    self.settings == nil,
-    'Default settings have already been set for addon "' .. self:getName() .. '".'
+    self.settings == nil, string.format(
+      'Default settings have already been set for addon "%s".', self:getName()
+    )
   )
-  createSettingsTable(dictionary.set(self, 'settings', {}), settings)
+
+  createDefaultSettingsTable(
+    dictionary.set(self, 'settings', {}), settings
+  )
+
+  self:onReady(
+    function()
+      if backbone.getEnvironment() == 'development' then
+        syncSettingsTable(self) -- in development mode, settings are always synced on startup.
+      else
+        -- TODO: implement version checks for updating the settings table.
+      end
+    end
+  )
 end
 
 ---
 ---!
 ---
-__addon.getDefaultSetting = function(self, key) end
+---@param key string
+---@return string
+---
+local getSettingPath = function(key)
+  return string.format('%s/%s', settings_prefix, key)
+end
+
+---
+---!
+---
+---@param key string
+---@return unknown
+---
+__addon.getDefaultSetting = function(self, key)
+  return traverse(self.settings, { string.split('/', key) })
+end
 
 ---
 ---?
 ---
-__addon.getSetting = function(self, key) end
+---@param key string
+---@return unknown
+---
+__addon.getSetting = function(self, key)
+  local value = self:getAccountVariable(getSettingPath(key))
+  if value ~= nil then
+    return value -- if the value is found, return it.
+  end
+
+  local default_value = self:getDefaultSetting(key)
+  assert(
+    default_value ~= nil, string.format(
+      'The requested setting "%s" does not exist (%s).', key, self:getName()
+    )
+  )
+  return default_value
+end
 
 ---
 ---?
 ---
-__addon.setSetting = function(self, key, value) end
+---@generic V
+---@param key string
+---@param value V
+---@return V
+---
+__addon.setSetting = function(self, key, value)
+  ---@diagnostic disable-next-line: missing-return
+  print 'addon.setSetting not implemented'
+end
+
+---
+---Provides a list of keys that can be toggled on and off.
+---
+---@class backbone.toggleable-list
+---@field private source table<string, boolean>
+---
+local toggleableList =
+{
+  ---
+  ---Determine if the specified key is enabled.
+  ---
+  ---@param self backbone.toggleable-list
+  ---@param key string|number
+  ---@return boolean
+  ---
+  isEnabled = function(self, key)
+    return (self.source[tostring(key)] == true)
+  end,
+
+  ---
+  ---Toggle the value of the specified key.
+  ---
+  ---@param self backbone.toggleable-list
+  ---@param key string|number
+  ---
+  toggle = function(self, key)
+    key = tostring(key)
+    self.source[key] = not self.source[key]
+  end,
+
+  ---
+  ---Set the value of the specified key.
+  ---
+  ---@param self backbone.toggleable-list
+  ---@param key string|number
+  ---@param value boolean
+  ---
+  set = function(self, key, value) 
+    self.source[tostring(key)] = value
+  end
+}
+
+---
+---?
+---
+---@param key string
+---@return backbone.toggleable-list
+---
+__addon.getToggleableListSetting = function(self, key)
+  local source = self:getSetting(key)
+  assert(
+    type(source) == 'table', string.format(
+      'The requested setting "%s" is not a toggleable list (%s).', key, self:getName()
+    )
+  )
+  local instance = setmetatable({ source = source }, { __index = toggleableList })
+  return instance --[[@as backbone.toggleable-list]]
+end
 
 --=============================================================================
 -- SERVICE MANAGER:
@@ -325,8 +448,9 @@ backbone.registerService = function(service_name, object)
   if dictionary.has(services, service_id) then
     local service = services[service_id]
     assert(
-      service.object == nil,
-      'The service "' .. service_name .. '" is already registered.'
+      service.object == nil, string.format(
+        'The service "%s" is already registered.', service_name
+      )
     )
     service.object = object
   else
@@ -344,8 +468,9 @@ end
 backbone.requestService = function(service_name)
   local service_id = getServiceId(service_name)
   assert(
-    dictionary.has(services, service_id),
-    'The requested service "' .. service_name .. '" does not exist.'
+    dictionary.has(services, service_id), string.format(
+      'The requested service "%s" does not exist.', service_name
+    )
   )
 
   local service = services[service_id]
@@ -373,8 +498,9 @@ end
 context.registerLoadableService = function(addon_name, service_name)
   local service_id = getServiceId(service_name)
   assert(
-    not dictionary.has(services, service_id),
-    'The service "' .. service_name .. '" already exists.'
+    not dictionary.has(services, service_id), string.format(
+      'The service "%s" already exists.', service_name
+    )
   )
   dictionary.set(services, service_id, { supplier = addon_name, })
 end

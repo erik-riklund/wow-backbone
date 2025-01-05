@@ -291,7 +291,7 @@ eventFrame:SetScript(
     if event_name == 'ADDON_LOADED' then
       local addon_name = arguments[1] --[[@as string]]
 
-      if backbone.hasAddon(addon_name) then
+      if backbone.hasRegisteredAddon(addon_name) then
         local loaded_addon = context.getAddon(addon_name)
         array.foreach(
           context.addon_initializers,

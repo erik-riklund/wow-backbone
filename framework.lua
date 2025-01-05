@@ -1,7 +1,9 @@
 ---@class __backbone
 local context = select(2, ...)
 
---[[~ Updated: 2025/01/01 | Author(s): Gopher ]]
+---@diagnostic disable: invisible
+
+--[[~ Updated: 2025/01/04 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -33,6 +35,19 @@ backbone =
   currentExpansion = GetExpansionLevel()
 }
 
+---
+---The palette of colors used by the framework.
+---
+local palette =
+{
+  normal    = 'F5DEB3', -- Warm, wheat color.
+  neutral   = 'BEBEBE', -- Neutral light gray.
+  info      = '4682B4', -- Steel blue.
+  error     = 'CC4733', -- Dark red-orange.
+  highlight = 'FCD462', -- Soft golden-yellow.
+  success   = '6B8E23', -- Dark olive green.
+}
+
 --=============================================================================
 -- OUTPUT HANDLING:
 --
@@ -44,51 +59,106 @@ backbone =
 ---
 ---Print the provided message to the default chat frame.
 ---
----@param ... unknown
+---@param output unknown
 ---
-backbone.print = function(...)
-  local values = { ... }
-  for i = 1, #values, 1 do
-    local value = values[i]
-    if type(value) == 'string' then
-      print(value)
-    else
-      backbone.dump(value)
-    end
+backbone.print = function(output)
+  if type(output) ~= 'string' then
+    return backbone.dump(output) -- debug the provided value.
   end
+  print(backbone.utils.string.colorize('<normal>' .. output .. '</end>'))
 end
 
 ---
----Print the provided value to the default chat frame. If the value
----is a table, its contents will be printed as a flat list.
+---Format and print the provided message to the default chat frame.
 ---
----@param value unknown
+---@param output string
+---@param ... string
 ---
-backbone.dump = function(value)
-  local value_type = type(value)
+backbone.printf = function(output, ...)
+  backbone.print(string.format(output, ...))
+end
 
-  if value_type == 'table' then
-    print 'table: {'
-    for key, content in pairs(value) do
-      if type(content) == 'string' then
-        content = '"' .. content .. '"'
-      end
-      print(
-        string.format('  %s = %s', tostring(key), tostring(content))
-      )
-    end
-    print '}'
-  elseif value_type == 'string' then
-    print(
-      string.format('string: "%s"', value)
-    )
-  elseif value_type == 'nil' then
-    print 'nil'
-  else
-    print(
-      string.format('%s: %s', value_type, tostring(value))
+---
+---Print a visually formatted representation of the provided
+---value to the default chat frame.
+---
+---@param target unknown
+---
+backbone.dump = function(target)
+  local createValueDump, createTableDump
+  local switch = backbone.utils.logic.switch
+  local result = backbone.utils.string.builder:new()
+
+  createValueDump = function(value)
+    local value_type = type(value)
+
+    return switch(
+      value_type,
+      {
+        ['nil'] = function()
+          return '<neutral>nil</end>'
+        end,
+        ['string'] = function()
+          return '<neutral>string</end> "' .. value .. '"'
+        end,
+        [{ 'number', 'boolean' }] = function()
+          return string.format('<neutral>%s</end> %s', value_type, tostring(value))
+        end,
+        [{ 'function', 'thread', 'userdata' }] = function()
+          local value_dump = string.gsub(
+            tostring(value), '([^:]+): (.+)', '<neutral>%1</end> %2'
+          )
+          return value_dump
+        end
+      }
     )
   end
+
+  ---@param table table
+  ---@param level? number
+  createTableDump = function(table, level)
+    local space = '    '
+    local indent = string.rep(space, level or 0)
+    local nested_table = (type(level) == 'number' and level > 0)
+    local table_id = string.gsub(tostring(table), ': (.+)', ' <neutral>(%1)</end>')
+
+    if nested_table then
+      result:append(
+        string.format('<info>%s</end> <info>></end>', table_id)
+      )
+    else
+      result:appendLine(
+        string.format('<info>%s</end> <info>></end>', table_id)
+      )
+    end
+
+    if next(table) ~= nil then
+      for key, value in pairs(table) do
+        result:appendLine(
+          indent .. space .. string.format('<highlight>%s</end> <neutral>=</end> ', key)
+        )
+        if type(value) == 'table' then
+          createTableDump(value, (level or 0) + 1)
+        else
+          result:append(createValueDump(value))
+        end
+      end
+    else
+      result:appendLine(indent .. space .. '<neutral>no entries</end>')
+    end
+
+    result:appendLine(indent .. '<info>end</end>')
+  end
+
+  result:appendLine('[Backbone] Dumping debug information...')
+
+  if type(target) == 'table' then
+    createTableDump(target)
+  else
+    result:appendLine(createValueDump(target))
+  end
+
+  result:finalize(function(line) backbone.print(line) end)
 end
 
 --=============================================================================
@@ -162,7 +232,7 @@ backbone.utils =
     end,
 
     ---
-    ---Determine if the table contains an element at the specified position.
+    ---Determine if the array contains an element at the specified position.
     ---
     ---@param target unknown[]
     ---@param position number
@@ -170,15 +240,31 @@ backbone.utils =
     ---
     has = function(target, position)
       assert(
-        type(position) == 'number',
-        'Expected argument `position` to be a number.'
+        type(position) == 'number', string.format(
+          'Expected argument `position` to be a number, received %s.', type(position)
+        )
       )
       return target[position] ~= nil
     end,
 
     ---
-    ---Insert a value into the table. If no position is specified,
-    ---the value is inserted at the end of the table.
+    ---Determine if the array contains the specified value.
+    ---
+    ---@generic V
+    ---@param target V[]
+    ---@param value V
+    ---@return boolean
+    ---
+    contains = function(target, value)
+      for _, element in ipairs(target) do
+        if element == value then return true end
+      end
+      return false
+    end,
+
+    ---
+    ---Insert a value into the array. If no position is specified,
+    ---the value is inserted at the end of the array.
     ---
     ---@generic V
     ---@param target V[]
@@ -195,16 +281,17 @@ backbone.utils =
       local max_index = #target + 1
       position = position or max_index
       assert(
-        position > 0 and position <= max_index,
-        'Index "' .. position .. '" is out of range.'
+        position > 0 and position <= max_index, string.format(
+          'Expected argument `position` to be between 1 and %d, received %d.', max_index, position
+        )
       )
 
       table.insert(target, position, value)
-      return target[position]
+      return value
     end,
 
     ---
-    ---Remove an element from the table. If no position is specified,
+    ---Remove an element from the array. If no position is specified,
     ---the last element is removed.
     ---
     ---@generic V
@@ -215,11 +302,21 @@ backbone.utils =
     remove = function(target, position)
       local value = table.remove(target, position)
       assert(
-        value ~= nil,
-        'There is no element at the position "' .. position .. '".'
+        value ~= nil, string.format(
+          'Expected argument `position` to be between 1 and %d, received %d.', #target, position
+        )
       )
       return value
     end,
+
+    ---
+    ---Clear all elements from the array.
+    ---
+    ---@generic T:table
+    ---@param target T
+    ---@return T
+    ---
+    clear = function(target) return wipe(target) end,
 
     ---
     ---Apply a function to each element of the array. If the function
@@ -231,8 +328,9 @@ backbone.utils =
     ---
     foreach = function(target, callback)
       assert(
-        type(callback) == 'function',
-        'Expected argument `callback` to be a function.'
+        type(callback) == 'function', string.format(
+          'Expected argument `callback` to be a function, received %s.', type(callback)
+        )
       )
 
       for index, value in ipairs(target) do
@@ -278,7 +376,7 @@ backbone.utils =
         'Expected argument `value` to be non-nil.'
       )
       target[key] = value
-      return target[key]
+      return value
     end,
 
     ---
@@ -292,8 +390,9 @@ backbone.utils =
     drop = function(target, key)
       local value = target[key]
       assert(
-        value ~= nil,
-        'There is no entry with the key "' .. key .. '".'
+        value ~= nil, string.format(
+          'The table does not contain an entry with the key "%s".', key
+        )
       )
       target[key] = nil
       return value
@@ -309,8 +408,9 @@ backbone.utils =
     ---
     foreach = function(target, callback)
       assert(
-        type(callback) == 'function',
-        'Expected argument `callback` to be a function.'
+        type(callback) == 'function', string.format(
+          'Expected argument `callback` to be a function, received %s.', type(callback)
+        )
       )
 
       for key, value in pairs(target) do
@@ -342,6 +442,142 @@ backbone.utils =
   },
 
   ---
+  ---?
+  ---
+  ---@class backbone.utils.logic
+  ---
+  logic =
+  {
+    ---
+    ---?
+    ---
+    ---@generic V
+    ---@param value V
+    ---@param cases table<'default'|V|V[], unknown|(fun(): unknown?)>
+    ---@return unknown?
+    ---
+    switch = function(value, cases)
+      local case = cases[value]
+
+      if case == nil then
+        for key, content in pairs(cases) do
+          if type(key) == 'table' then
+            for _, target in ipairs(key) do
+              if target == value then
+                case = content
+                break -- the value was caught by a multi-case pattern.
+              end
+            end
+          end
+        end
+      end
+
+      if case == nil then case = cases['default'] end
+      return (type(case) == 'function' and case()) or case
+    end
+  },
+
+  ---
+  ---Utility methods for working with strings.
+  ---
+  ---@class backbone.utils.string
+  ---
+  string =
+  {
+    ---
+    ---?
+    ---
+    ---@class backbone.utils.string-builder
+    ---@field private lines string[]
+    ---
+    builder =
+    {
+      ---
+      ---?
+      ---
+      ---@param self backbone.utils.string-builder
+      ---@return backbone.utils.string-builder
+      ---
+      new = function(self)
+        local instance = setmetatable({ lines = {} }, { __index = self })
+        return instance --[[@as backbone.utils.string-builder]]
+      end,
+
+      ---
+      ---?
+      ---
+      ---@param self backbone.utils.string-builder
+      ---@param content string
+      ---
+      append = function(self, content)
+        if self.lines[1] == nil then
+          self.lines[1] = content
+        else
+          local line_count = #self.lines
+          self.lines[line_count] = self.lines[line_count] .. content
+        end
+      end,
+
+      ---
+      ---?
+      ---
+      ---@param self backbone.utils.string-builder
+      ---@param content string
+      ---
+      appendLine = function(self, content)
+        table.insert(self.lines, content)
+      end,
+
+      ---
+      ---?
+      ---
+      ---@param self backbone.utils.string-builder
+      ---@param separator? string
+      ---@return string
+      ---
+      toString = function(self, separator)
+        return table.concat(self.lines, separator or '\n')
+      end,
+
+      ---
+      ---?
+      ---
+      ---@param self backbone.utils.string-builder
+      ---@param callback fun(line: string)
+      ---
+      finalize = function(self, callback)
+        backbone.utils.array.foreach(self.lines,
+          function(_, line) callback(line) end
+        )
+      end
+    },
+
+    ---
+    ---?
+    ---
+    ---@param target string
+    ---@return string
+    ---
+    colorize = function(target)
+      target = target
+          :gsub('<color:[ ]*#([^>]+)>',
+            function(color) return '|cFF' .. color end
+          )
+          :gsub('<([^/>]+)>',
+            function(type)
+              local array = backbone.utils.array
+
+              local color_types = { 'normal', 'error', 'highlight', 'success', 'neutral', 'info' }
+              return (array.contains(color_types, type) and ('|cFF' .. palette[type])) or ('<' .. type .. '>')
+            end
+          )
+          :gsub('</end>', '|r')
+
+      return target
+    end
+  },
+
+  ---
   ---Utility functions for working with tables.
   ---
   ---@class backbone.utils.table
@@ -357,8 +593,9 @@ backbone.utils =
     ---
     protect = function(target)
       assert(
-        type(target) == 'table',
-        'Expected argument `target` to be a table.'
+        type(target) == 'table', string.format(
+          'Expected argument `target` to be a table, received %s.', type(target)
+        )
       )
 
       local blocker = function()
@@ -435,8 +672,9 @@ context.__addon = {}
 backbone.registerAddon = function(name)
   local addon_id = getAddonId(name)
   assert(
-    not dictionary.has(addons, addon_id),
-    'An addon with the name "' .. name .. '" already exists.'
+    not dictionary.has(addons, addon_id), string.format(
+      'An addon with the name "%s" already exists.', name
+    )
   )
 
   ---@class backbone.addon
@@ -450,13 +688,23 @@ backbone.registerAddon = function(name)
 end
 
 ---
----Determine if an addon with the specified name has been registered.
+---Determine if an addon with the specified name has been registered with the framework.
 ---
 ---@param name string
 ---@return boolean
 ---
-backbone.hasAddon = function(name)
+backbone.hasRegisteredAddon = function(name)
   return dictionary.has(addons, getAddonId(name))
+end
+
+---
+---Determine if an addon (not only those registered with the framework) is loaded.
+---
+---@param name string
+---@return boolean
+---
+backbone.isAddonLoaded = function(name)
+  return select(2, C_AddOns.IsAddOnLoaded(name))
 end
 
 ---
@@ -473,8 +721,9 @@ context.addon = backbone.registerAddon 'Backbone'
 context.getAddon = function(name)
   local addon_id = getAddonId(name)
   assert(
-    dictionary.has(addons, addon_id),
-    'There is no registered addon with the name "' .. name .. '".'
+    dictionary.has(addons, addon_id), string.format(
+      'The requested addon "%s" does not exist.', name
+    )
   )
   return addons[addon_id]
 end
@@ -498,7 +747,15 @@ local taskFrame = CreateFrame 'Frame' --[[@as Frame]]
 backbone.executeTask = function(task)
   local success, result = pcall(task)
   if not success and environment == 'development' then
-    backbone.print('[Backbone] Error: ' .. result)
+    local file, line, message = string.split(':', result, 3)
+    backbone.print('<error>[Backbone]' .. message .. '</end>')
+
+    if environment == 'development' then
+      local folders = { string.split('/', file) }
+      if folders[3] ~= 'Backbone' then
+        backbone.print(string.format('%s (line %d)', file, line))
+      end
+    end
   end
 end
 

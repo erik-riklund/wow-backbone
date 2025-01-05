@@ -11,6 +11,8 @@
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 local handler
+local array = backbone.utils.array
+local LOOT_TYPE = BNUM.LOOT_TYPE
 
 ---
 ---?
@@ -22,19 +24,23 @@ handler =
   ---
   ---Returns the id for an item.
   ---
+  ---@param link string
+  ---@return number
+  ---
   getItemId = function(link)
-    return link:match 'item:(%d+)'
+    local item_id = string.match(link, 'item:(%d+)')
+    return tonumber(item_id) --[[@as number]]
   end,
 
   ---
-  ---Returns detailed information about an item.
+  ---Returns data about an item.
   ---
   ---@param item number|string
   ---@return backbone.item-data
   ---
-  getItemInfo = function(item)
+  getItemData = function(item)
     ---
-    ---Contains detailed information about an item.
+    ---Contains data about an item.
     ---
     ---@class backbone.item-data
     ---
@@ -67,14 +73,14 @@ handler =
   end,
 
   ---
-  ---Returns detailed information about a loot slot.
+  ---Returns data about a loot slot.
   ---
   ---@param slot number
   ---@return backbone.loot-data
   ---
-  getLootInfo = function(slot)
+  getLootData = function(slot)
     ---
-    ---Contains detailed information about a loot slot.
+    ---Contains data about a loot slot.
     ---
     ---@class backbone.loot-data
     ---
@@ -85,13 +91,29 @@ handler =
     data.quantity,
     data.currencyId,
     data.quality,
-    data.locked,
+    data.isLocked,
     data.isQuestItem,
     data.questId,
     data.isQuestActive = GetLootSlotInfo(slot)
 
     data.slotType = GetLootSlotType(slot)
     data.itemLink = GetLootSlotLink(slot)
+
+    if data.slotType == LOOT_TYPE.MONEY then
+      local cash = { string.split('\n', data.name) }
+      local tracker = { gold = 0, silver = 0, copper = 0 }
+
+      array.foreach(cash, function(_, raw_value)
+        local amount, value = string.split(' ', raw_value)
+        tracker[string.lower(value)] = tonumber(amount) or 0
+      end)
+
+      data.money = {
+        gold = tracker.gold or 0,
+        silver = tracker.silver or 0,
+        copper = tracker.copper or 0
+      }
+    end
 
     return data
   end,
@@ -104,6 +126,16 @@ handler =
   ---
   getItemLevel = function(item)
     return C_Item.GetDetailedItemLevelInfo(item)
+  end,
+
+  ---
+  ---Determine if the player knows the appearance of an item.
+  ---
+  ---@param item number|string
+  ---@return boolean
+  ---
+  hasTransmog = function(item)
+    return C_TransmogCollection.PlayerHasTransmogByItemInfo(item)
   end
 }
 
