@@ -425,6 +425,21 @@ __addon.getToggleableListSetting = function(self, key)
   return instance --[[@as backbone.toggleable-list]]
 end
 
+---
+---?
+---
+---@param content string[]|number[]
+---@return table<string, boolean>
+---
+backbone.createToggleableList = function(content)
+  ---@type table<string, boolean>
+  local list = {}
+  for _, value in ipairs(content) do
+    list[tostring(value)] = true
+  end
+  return list
+end
+
 --=============================================================================
 -- SERVICE MANAGER:
 --

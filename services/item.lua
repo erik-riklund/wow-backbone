@@ -108,9 +108,13 @@ handler =
         tracker[string.lower(value)] = tonumber(amount) or 0
       end)
 
+      ---@class backbone.loot-data.money
       data.money = {
+        ---@type number
         gold = tracker.gold or 0,
+        ---@type number
         silver = tracker.silver or 0,
+        ---@type number
         copper = tracker.copper or 0
       }
     end
