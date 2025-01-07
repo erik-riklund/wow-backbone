@@ -1,6 +1,4 @@
----@meta
-
---[[~ Updated: 2024/12/28 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/07 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -12,27 +10,23 @@
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
----
----Represents a single addon within the Backbone ecosystem.
----
----@class backbone.addon
----
----@field private strings backbone.addon-strings
----@field private variables backbone.addon-variables
----@field private settings table
----
+assert(stringBuffer == nil,
+  'Global variable conflict: `bufferString` has already been defined.'
+)
 
 ---
----Represents the storage of variables associated with an addon.
 ---
----@class backbone.addon-variables
 ---
----@field account table
----@field character table
+---@class backbone.string-buffer
+---@field protected content string[]
 ---
+_G.stringBuffer = {}
 
 ---
----Represents the repository of localized strings associated with an addon.
 ---
----@class backbone.addon-strings : { [backbone.locale]: backbone.localized-strings }
 ---
+---@return backbone.string-buffer
+---
+stringBuffer.new = function(self)
+  return setmetatable({ content = {} }, { __index = self }) --[[@as backbone.string-buffer]]
+end

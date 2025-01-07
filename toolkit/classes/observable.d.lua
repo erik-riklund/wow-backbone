@@ -1,6 +1,6 @@
 ---@meta
 
---[[~ Updated: 2025/01/01 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/07 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -13,16 +13,16 @@
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
----Represents a service within the Backbone ecosystem.
+---Represents an observer, used to react to notifications from an observable object.
 ---
----@class backbone.service
+---@class backbone.observer
 ---
----@field supplier? string
----@field object? backbone.service-object
+---@field callback backbone.observer-callback
+---@field persistent? boolean
 ---
 
 ---
----Represents a unique service object within the Backbone ecosystem.
+---Represents the callback function for an observer.
 ---
----@class backbone.service-object : {}
+---@alias backbone.observer-callback fun(payload: table)
 ---

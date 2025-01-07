@@ -1,4 +1,4 @@
---[[~ Updated: 2024/12/31 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/07 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -10,23 +10,14 @@
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
----
----Perform garbage collection when the player enters the world.
----
-backbone.registerEventListener(
-  'PLAYER_ENTERING_WORLD', function()
-    collectgarbage 'collect'
-  end
+assert(hashmap == nil,
+  'Global variable conflict: `hashmap` has already been defined.'
 )
 
 ---
----Perform garbage collection when the player goes AFK.
+---A handy set of utility functions for working with hashmaps. Built-in access
+---checks make sure everything runs smoothly and avoids errors.
 ---
-backbone.registerEventListener(
-  'PLAYER_FLAGS_CHANGED', function(payload)
-    local unit = payload[1] --[[@as UnitToken]]
-    if unit == 'player' and UnitIsAFK(unit) then
-      collectgarbage 'collect'
-    end
-  end
-)
+---@class backbone.hashmap
+---
+_G.hashmap = {}

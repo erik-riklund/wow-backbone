@@ -1,6 +1,6 @@
 ---@meta
 
---[[~ Updated: 2024/12/29 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/07 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -12,17 +12,5 @@
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
----
----Represents an event listener, used to react to specific events.
----
----@class backbone.observer
----
----@field callback backbone.observer-callback The function to be executed when the event is triggered.
----@field persistent? boolean If `false`, the listener will be removed after the first execution (default: `true`).
----
-
----
----Represents the callback of an event listener.
----
----@alias backbone.observer-callback fun(payload: table)
----
+---@alias backbone.locale 'enUS'|'koKR'|'frFR'|'deDE'|'zhCN'|'zhTW'|'esES'|'esMX'|'ruRU'|'ptBR'|'itIT'
+---@alias backbone.task fun()

@@ -6,13 +6,13 @@
 
 core.lua
 enums.lua
-framework/debug.lua
-framework/events.lua
-modules/locales.lua
-modules/variables.lua
-modules/settings.lua
-modules/services.lua
-modules/addon-loader.lua
-modules/config-ui.lua
-services/item.lua
-scripts/garbage.lua
+output.lua
+dispatch.lua
+
+toolkit/array.lua
+toolkit/hashmap.lua
+toolkit/logic/switch.lua
+toolkit/classes/observable.lua
+toolkit/classes/string-buffer.lua
+
+testing.lua
