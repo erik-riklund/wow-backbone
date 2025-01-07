@@ -100,23 +100,20 @@ handler =
     data.itemLink = GetLootSlotLink(slot)
 
     if data.slotType == LOOT_TYPE.MONEY then
-      local cash = { string.split('\n', data.name) }
-      local tracker = { gold = 0, silver = 0, copper = 0 }
+      ---
+      ---@class backbone.loot-data.money
+      ---
+      ---@field gold number
+      ---@field silver number
+      ---@field copper number
+      ---
+      data.money = { gold = 0, silver = 0, copper = 0 }
 
+      local cash = { string.split('\n', data.name) }
       array.foreach(cash, function(_, raw_value)
         local amount, value = string.split(' ', raw_value)
-        tracker[string.lower(value)] = tonumber(amount) or 0
+        data.money[string.lower(value)] = tonumber(amount) or 0
       end)
-
-      ---@class backbone.loot-data.money
-      data.money = {
-        ---@type number
-        gold = tracker.gold or 0,
-        ---@type number
-        silver = tracker.silver or 0,
-        ---@type number
-        copper = tracker.copper or 0
-      }
     end
 
     return data

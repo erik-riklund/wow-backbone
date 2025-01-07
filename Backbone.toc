@@ -4,10 +4,15 @@
 ## Version: 1.0.0
 ## Notes: An addon development framework.
 
+core.lua
 enums.lua
-framework.lua
-events.lua
-modules.lua
-
+framework/debug.lua
+framework/events.lua
+modules/locales.lua
+modules/variables.lua
+modules/settings.lua
+modules/services.lua
+modules/addon-loader.lua
+modules/config-ui.lua
 services/item.lua
 scripts/garbage.lua

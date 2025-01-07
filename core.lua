@@ -48,24 +48,21 @@ local palette =
   success   = '6B8E23', -- Dark olive green.
 }
 
---=============================================================================
--- OUTPUT HANDLING:
---
--- This module provides utility functions for logging and displaying output
--- in the default chat frame. It includes tools for printing strings, numbers,
--- and complex data structures like tables in a readable format.
---=============================================================================
-
 ---
 ---Print the provided message to the default chat frame.
 ---
 ---@param output unknown
 ---
 backbone.print = function(output)
-  if type(output) ~= 'string' then
-    return backbone.dump(output) -- debug the provided value.
-  end
-  print(backbone.utils.string.colorize('<normal>' .. output .. '</end>'))
+  backbone.utils.logic.switch(
+    type(output),
+    {
+      string = function()
+        print(backbone.utils.string.colorize(output))
+      end,
+      default = function() backbone.dump(output) end
+    }
+  )
 end
 
 ---
@@ -76,89 +73,6 @@ end
 ---
 backbone.printf = function(output, ...)
   backbone.print(string.format(output, ...))
-end
-
----
----Print a visually formatted representation of the provided
----value to the default chat frame.
----
----@param target unknown
----
-backbone.dump = function(target)
-  local createValueDump, createTableDump
-  local switch = backbone.utils.logic.switch
-  local result = backbone.utils.string.builder:new()
-
-  createValueDump = function(value)
-    local value_type = type(value)
-
-    return switch(
-      value_type,
-      {
-        ['nil'] = function()
-          return '<neutral>nil</end>'
-        end,
-        ['string'] = function()
-          return '<neutral>string</end> "' .. value .. '"'
-        end,
-        [{ 'number', 'boolean' }] = function()
-          return string.format('<neutral>%s</end> %s', value_type, tostring(value))
-        end,
-        [{ 'function', 'thread', 'userdata' }] = function()
-          local value_dump = string.gsub(
-            tostring(value), '([^:]+): (.+)', '<neutral>%1</end> %2'
-          )
-          return value_dump
-        end
-      }
-    )
-  end
-
-  ---@param table table
-  ---@param level? number
-  createTableDump = function(table, level)
-    local space = '    '
-    local indent = string.rep(space, level or 0)
-    local nested_table = (type(level) == 'number' and level > 0)
-    local table_id = string.gsub(tostring(table), ': (.+)', ' <neutral>(%1)</end>')
-
-    if nested_table then
-      result:append(
-        string.format('<info>%s</end> <info>></end>', table_id)
-      )
-    else
-      result:appendLine(
-        string.format('<info>%s</end> <info>></end>', table_id)
-      )
-    end
-
-    if next(table) ~= nil then
-      for key, value in pairs(table) do
-        result:appendLine(
-          indent .. space .. string.format('<highlight>%s</end> <neutral>=</end> ', key)
-        )
-        if type(value) == 'table' then
-          createTableDump(value, (level or 0) + 1)
-        else
-          result:append(createValueDump(value))
-        end
-      end
-    else
-      result:appendLine(indent .. space .. '<neutral>no entries</end>')
-    end
-
-    result:appendLine(indent .. '<info>end</end>')
-  end
-
-  result:appendLine('[Backbone] Dumping debug information...')
-
-  if type(target) == 'table' then
-    createTableDump(target)
-  else
-    result:appendLine(createValueDump(target))
-  end
-
-  result:finalize(function(line) backbone.print(line) end)
 end
 
 --=============================================================================
