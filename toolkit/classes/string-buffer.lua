@@ -28,5 +28,51 @@ _G.stringBuffer = {}
 ---@return backbone.string-buffer
 ---
 stringBuffer.new = function(self)
-  return setmetatable({ content = {} }, { __index = self }) --[[@as backbone.string-buffer]]
+  return inherit(self, { content = {} })
 end
+
+---
+---
+---
+---@param string string
+---
+stringBuffer.appendLine = function(self, string)
+  array.append(self.content, string)
+end
+
+---
+---
+---
+---@param string string
+---
+stringBuffer.append = function(self, string)
+  if self.content[1] == nil then
+    array.append(self.content, string)
+  else
+    local lastLineIndex = #self.content
+    self.content[lastLineIndex] = self.content[lastLineIndex] .. string
+  end
+end
+
+---
+---
+---
+---@param separator? string
+---@return string
+---
+stringBuffer.merge = function(self, separator)
+  return table.concat(self.content, separator or '\n')
+end
+
+---
+---
+---
+---@param callback fun(line: string): string?
+---
+stringBuffer.process = function(self, callback)
+  array.iterate(self.content,
+    function(_, line) return callback(line) end
+  )
+end
+
+

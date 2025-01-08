@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/07 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/08 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -15,7 +15,7 @@ assert(observable == nil,
 )
 
 ---
----
+---Represents an observable object to which observers can be subscribed.
 ---
 ---@class backbone.observable
 ---@field private observers backbone.observer[]
@@ -23,111 +23,74 @@ assert(observable == nil,
 _G.observable = {}
 
 ---
----
+---Create a new observable instance.
 ---
 ---@private
 ---@return backbone.observable
 ---
 observable.new = function(self)
-  local instance = setmetatable({ observers = {} }, { __index = observable })
-  return instance --[[@as backbone.observable]]
+  return inherit(self, { observers = {} })
 end
 
 ---
+---Subscribe an observer to the observable. The observer can be either an object
+---with a `callback` function and an optional `persistent` flag, or a standalone
+---callback function.
 ---
----
----@param observer backbone.observer|backbone.observer-callback
----
-observable.subscribe = function(self, observer) end
-
----
----
+---* Observers are marked as persistent by default unless specified otherwise.
 ---
 ---@param observer backbone.observer|backbone.observer-callback
 ---
-observable.unsubscribe = function(self, observer) end
+observable.subscribe = function(self, observer)
+  if type(observer) == 'function' then
+    observer = { callback = observer }
+  end
+  observer.persistent = (observer.persistent == nil) or observer.persistent
+  array.append(self.observers, observer)
+end
 
 ---
+---Unsubscribes an observer from the observable. The provided `observer` must be a
+---reference to an observer object or its callback function.
 ---
+---@param observer backbone.observer|backbone.observer-callback
+---
+observable.unsubscribe = function(self, observer)
+  for index, object in ipairs(self.observers) do
+    if observer == object or observer == object.callback then
+      return array.remove(self.observers, index)
+    end
+  end
+end
+
+---
+---Notify all subscribed observers, passing along the provided `payload`.
 ---
 ---@param payload? table
 ---
-observable.notify = function(self, payload) end
+observable.notify = function(self, payload)
+  assert(
+    payload == nil or type(payload) == 'table', string.format(
+      'Expected `payload` to be a table, got %s instead.', type(payload)
+    )
+  )
+  for _, observer in ipairs(self.observers) do
+    backbone.queueTask(
+      function() observer.callback(payload or {}) end
+    )
+  end
+end
 
 ---
+---Remove observers that are not marked as persistent from the observable.
 ---
----
-observable.cleanup = function(self) end
-
--- ---
---   ---Register a new observer.
---   ---
---   ---@param self backbone.observable
---   ---@param observer backbone.observer|backbone.observer-callback
---   ---
---   subscribe = function(self, observer)
---     if type(observer) == 'function' then
---       observer = { callback = observer }
---     end
---     observer.persistent = (observer.persistent == nil) or observer.persistent
---     array.insert(self.observers, observer)
---   end,
-
---   ---
---   ---Remove a previously registered observer.
---   ---
---   ---@param self backbone.observable
---   ---@param observer backbone.observer|backbone.observer-callback
---   ---
---   unsubscribe = function(self, observer)
---     for index, object in ipairs(self.observers) do
---       if observer == object or observer == object.callback then
---         return array.remove(self.observers, index)
---       end
---     end
---   end,
-
---   ---
---   ---Notify all registered observers, passing the provided payload to each.
---   ---
---   ---@param self backbone.observable
---   ---@param payload? table
---   ---
---   notify = function(self, payload)
---     assert(
---       payload == nil or type(payload) == 'table',
---       'Expected argument `payload` to be a table.'
---     )
---     for _, observer in ipairs(self.observers) do
---       backbone.queueTask(
---         function() observer.callback(payload or {}) end
---       )
---     end
---     self:cleanup()
---   end,
-
---   ---
---   ---Remove non-persistent observers from the list.
---   ---
---   ---@param self backbone.observable
---   ---
---   cleanup = function(self)
---     local count = #self.observers
---     if count > 0 then
---       for index = count, 1, -1 do
---         if not self.observers[index].persistent then
---           array.remove(self.observers, index)
---         end
---       end
---     end
---   end,
-
---   ---
---   ---Return the number of registered observers.
---   ---
---   ---@param self backbone.observable
---   ---@return number
---   ---
---   listeners = function(self)
---     return #self.observers
---   end
+observable.cleanup = function(self)
+  local count = #self.observers
+  if count > 0 then
+    for index = count, 1, -1 do
+      if not self.observers[index].persistent then
+        array.remove(self.observers, index)
+      end
+    end
+  end
+end

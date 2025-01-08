@@ -19,14 +19,19 @@ local taskFrame = CreateFrame 'Frame' --[[@as Frame]]
 ---@param task backbone.task
 ---
 backbone.executeTask = function(task)
+  assert(
+    type(task) == 'function', string.format(
+      'Expected `task` to be a function, got %s instead.', type(task)
+    )
+  )
   local success, result = pcall(task)
   if not success then
     local file, line, message = string.split(':', result, 3)
-    backbone.print('<error>[Backbone]' .. message .. '</end>')
+    backbone.printf('<error>[Backbone]%s</end>', message)
 
     local folders = { string.split('/', file) }
     if folders[3] ~= 'Backbone' then
-      backbone.print(string.format('%s (line %d)', file, line))
+      backbone.printf('%s (line %d)', file, line)
     end
   end
 end
@@ -37,7 +42,14 @@ end
 ---
 ---@param task backbone.task
 ---
-backbone.queueTask = function(task) array.append(tasks, task) end
+backbone.queueTask = function(task)
+  assert(
+    type(task) == 'function', string.format(
+      'Expected `task` to be a function, got %s instead.', type(task)
+    )
+  )
+  array.append(tasks, task)
+end
 
 ---
 ---Responsible for handling the execution of queued tasks.

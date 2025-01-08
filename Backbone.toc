@@ -11,7 +11,9 @@ dispatch.lua
 
 toolkit/array.lua
 toolkit/hashmap.lua
+toolkit/logic/inherit.lua
 toolkit/logic/switch.lua
+toolkit/logic/when.lua
 toolkit/classes/observable.lua
 toolkit/classes/string-buffer.lua
 

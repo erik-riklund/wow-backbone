@@ -37,6 +37,7 @@ array.append = function(target, element)
   table.insert(target, element)
   return element
 end
+
 ---
 ---
 ---
@@ -55,4 +56,33 @@ array.contains = function(target, searchValue)
     end
   end
   return false
+end
+
+---
+---
+---
+---@generic V
+---@param target table<number, V>
+---@param callback fun(index: number, value: V): V?
+---
+array.iterate = function(target, callback)
+  for index, value in ipairs(target) do
+    local result = callback(index, value)
+    if result ~= nil then target[index] = result end
+  end
+end
+
+---
+---
+---
+---@generic V
+---@param target V[]
+---@param index number
+---@return V
+---
+array.remove = function(target, index)
+  assert(target[index] ~= nil,
+    'Expected argument `index` to be within the bounds of the array.'
+  )
+  return table.remove(target, index)
 end

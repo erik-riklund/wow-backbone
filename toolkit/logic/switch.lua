@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/07 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/08 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -15,11 +15,13 @@ assert(switch == nil,
 )
 
 ---
----?
+---A pseudo-switch statement using a table of cases and their associated actions.
+---Each case can define a single value or a set of values to match against. The action
+---for each case must be a function that returns the result, if any.
 ---
 ---@generic V
 ---@param value V
----@param cases table<'default'|V|V[], unknown|(fun(): unknown?)>
+---@param cases table<'default'|V|V[], fun(): unknown?>
 ---@return unknown?
 ---
 switch = function(value, cases)
@@ -31,7 +33,7 @@ switch = function(value, cases)
         for _, target in ipairs(key) do
           if target == value then
             case = content
-            break     -- the value was caught by a multi-case pattern.
+            break -- the value was caught by a multi-case pattern.
           end
         end
       end
@@ -39,5 +41,5 @@ switch = function(value, cases)
   end
 
   if case == nil then case = cases['default'] end
-  return (type(case) == 'function' and case()) or case
+  return (type(case) == 'function' and case()) or nil
 end
