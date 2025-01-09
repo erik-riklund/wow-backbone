@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/07 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/09 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -10,26 +10,17 @@
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
-assert(hashmap == nil,
-  'Global variable conflict: `hashmap` has already been defined.'
-)
+local tokens = ({} --[[@as table<string, backbone.token>]])
 
 ---
----A handy set of utility functions for working with hashmaps. Built-in access
----checks make sure everything runs smoothly and avoids errors.
 ---
----@class backbone.hashmap
 ---
-_G.hashmap = {}
+backbone.createToken = function(addonName)
+  assert(
+    not hashmap.contains(tokens, string.lower(addonName)), string.format(
+      'A token with the name "%s" already exists.', addonName
+    )
+  )
 
----
----Determines whether the target table contains the specified key.
----
----@generic K
----@param target table<K, unknown>
----@param key K
----@return boolean
----
-hashmap.contains = function(target, key)
-  return target[key] ~= nil
+  
 end
