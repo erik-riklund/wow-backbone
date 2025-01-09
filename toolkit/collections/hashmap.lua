@@ -33,3 +33,10 @@ _G.hashmap = {}
 hashmap.contains = function(target, key)
   return target[key] ~= nil
 end
+
+---
+---
+---
+---
+---
+hashmap.set = function(target, key, value) end

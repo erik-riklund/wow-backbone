@@ -16,4 +16,5 @@
 ---Represents a unique addon within the Backbone ecosystem.
 ---
 ---@class backbone.token
+---@field name string The name of the addon that the token belong to.
 ---

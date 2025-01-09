@@ -17,4 +17,6 @@ toolkit/logic/when.lua
 toolkit/classes/observable.lua
 toolkit/classes/string-buffer.lua
 
+tokens.lua
+
 testing.lua

@@ -24,6 +24,7 @@ backbone.createToken = function(addonName)
       'A token with the name "%s" already exists.', addonName
     )
   )
-
-  
+  return hashmap.set(
+    tokens, string.lower(addonName), { name = addonName }
+  )
 end
