@@ -15,6 +15,9 @@ local tokens = ({} --[[@as table<string, backbone.token>]])
 ---
 ---
 ---
+---@param addonName string
+---@return backbone.token
+---
 backbone.createToken = function(addonName)
   assert(
     not hashmap.contains(tokens, string.lower(addonName)), string.format(
