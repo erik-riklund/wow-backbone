@@ -15,8 +15,8 @@ assert(when == nil,
 )
 
 ---
----Implements a pseudo-ternary operator that may be used for falsy conditions
----where the built-in short circuit evaluation fails.
+---A pseudo-ternary operator that may be used to select falsy values,
+---which would otherwise fail when using built-in short circuiting.
 ---
 ---@param condition boolean
 ---@param onTrue unknown
@@ -27,5 +27,5 @@ _G.when = function(condition, onTrue, onFalse)
   local result = onFalse
   if condition == true then result = onTrue end
   
-  return result
+  return (type(result) == 'function' and result()) or result
 end

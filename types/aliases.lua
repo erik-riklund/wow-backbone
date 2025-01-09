@@ -12,5 +12,7 @@
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
+---@alias array<V> V[]
+
 ---@alias backbone.locale 'enUS'|'koKR'|'frFR'|'deDE'|'zhCN'|'zhTW'|'esES'|'esMX'|'ruRU'|'ptBR'|'itIT'
 ---@alias backbone.task fun()

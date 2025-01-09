@@ -26,7 +26,7 @@ _G.array = {}
 ---Append an element to the end of the array.
 ---
 ---@generic V
----@param target V[]
+---@param target array<V>
 ---@param element V
 ---@return V
 ---
@@ -39,10 +39,10 @@ array.append = function(target, element)
 end
 
 ---
----
+---Determine if the array contains the specified value.
 ---
 ---@generic V
----@param target V[]
+---@param target array<V>
 ---@param searchValue V
 ---@return boolean
 ---
@@ -59,10 +59,11 @@ array.contains = function(target, searchValue)
 end
 
 ---
----
+---Apply a function to each element of the array.
+---The function can return a new value to replace the old value.
 ---
 ---@generic V
----@param target table<number, V>
+---@param target array<V>
 ---@param callback fun(index: number, value: V): V?
 ---
 array.iterate = function(target, callback)
@@ -73,10 +74,10 @@ array.iterate = function(target, callback)
 end
 
 ---
----
+---Remove an element from the array. The removed value is returned.
 ---
 ---@generic V
----@param target V[]
+---@param target array<V>
 ---@param index number
 ---@return V
 ---

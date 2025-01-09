@@ -15,7 +15,7 @@ assert(inherit == nil,
 )
 
 ---
----Sets the metatable of `child` to inherit from `parent`, establishing an
+---Set the metatable of `child` to inherit from `parent`, establishing an
 ---inheritance relationship. The return type matches the type of `parent`.
 ---
 ---@generic P:table
