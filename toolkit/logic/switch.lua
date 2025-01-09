@@ -21,10 +21,13 @@ assert(switch == nil,
 ---
 ---@generic V
 ---@param value V
----@param cases table<'default'|V|V[], fun(): unknown?>
+---@param cases table<'default'|array<V>|V, fun(): unknown?>
 ---@return unknown?
 ---
 switch = function(value, cases)
+  assert(value ~= nil, 
+    'Expected argument `value` to be non-nil.'
+  )
   local case = cases[value]
 
   if case == nil then
