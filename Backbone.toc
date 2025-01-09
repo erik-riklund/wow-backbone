@@ -9,8 +9,8 @@ enums.lua
 output.lua
 dispatch.lua
 
-toolkit/array.lua
-toolkit/hashmap.lua
+toolkit/collections/array.lua
+toolkit/collections/hashmap.lua
 toolkit/logic/inherit.lua
 toolkit/logic/switch.lua
 toolkit/logic/when.lua
