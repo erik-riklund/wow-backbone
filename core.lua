@@ -15,7 +15,8 @@ assert(backbone == nil,
 )
 
 ---
----
+--- The API for the Backbone framework, facilitating access
+--- to its provided functionality.
 ---
 ---@class backbone
 ---
@@ -34,3 +35,18 @@ _G.backbone =
   ---
   currentExpansion = GetExpansionLevel()
 }
+
+---
+---
+---
+---@return backbone.token
+---
+backbone.createToken = function()
+  ---
+  ---?
+  ---
+  ---@class backbone.token
+  ---
+  local token = {}
+  return token
+end
