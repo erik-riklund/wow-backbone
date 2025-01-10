@@ -7,6 +7,7 @@
 core.lua
 enums.lua
 output.lua
+addons.lua
 dispatch.lua
 
 toolkit/collections/array.lua
@@ -18,5 +19,7 @@ toolkit/classes/observable.lua
 toolkit/classes/string-buffer.lua
 
 tokens.lua
+modules/events/custom.lua
+modules/events/game.lua
 
 testing.lua
