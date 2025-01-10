@@ -79,6 +79,7 @@ observable.notify = function(self, payload)
       function() observer.callback(payload or {}) end
     )
   end
+  self:cleanup()
 end
 
 ---
