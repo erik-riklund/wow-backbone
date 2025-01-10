@@ -15,8 +15,8 @@ assert(array == nil,
 )
 
 ---
----A handy set of utility functions for working with arrays. Includes improved versions
----of standard table functions, with extra checks to keep things smooth and error-free.
+---Contains a set of robust utility functions for working with arrays.
+---Built-in access checks help avoid errors that may be hard to debug.
 ---
 ---@class backbone.array
 ---
