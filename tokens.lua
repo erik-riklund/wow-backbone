@@ -1,3 +1,6 @@
+---@class __backbone
+local context = select(2, ...)
+
 --[[~ Updated: 2025/01/09 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
@@ -13,18 +16,32 @@
 local tokens = ({} --[[@as table<string, backbone.token>]])
 
 ---
+---Create an identifier for an addon based on its name.
 ---
+---@param addonName string
+---@return string
+---
+context.getTokenId = function(addonName)
+  return string.lower(addonName)
+end
+
+---
+---Create a token used to identify an addon within the Backbone ecosystem.
 ---
 ---@param addonName string
 ---@return backbone.token
 ---
 backbone.createToken = function(addonName)
+  local addonId = context.getTokenId(addonName)
   assert(
-    not hashmap.contains(tokens, string.lower(addonName)), string.format(
+    not hashmap.contains(tokens, addonId), string.format(
       'A token with the name "%s" already exists.', addonName
     )
   )
-  return hashmap.set(
-    tokens, string.lower(addonName), { name = addonName }
-  )
+  return hashmap.set(tokens, addonId, { name = addonName })
 end
+
+---
+---Used internally to represent the framework itself.
+--
+context.token = backbone.createToken 'Backbone'
