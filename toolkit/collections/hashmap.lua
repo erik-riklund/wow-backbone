@@ -15,8 +15,8 @@ assert(hashmap == nil,
 )
 
 ---
----A handy set of utility functions for working with hashmaps. Built-in access
----checks make sure everything runs smoothly and avoids errors.
+---Provides a set of functions for working with hashmaps.
+---Built-in access checks help avoid errors that may be hard to debug.
 ---
 ---@class backbone.hashmap
 ---
@@ -37,6 +37,16 @@ end
 ---
 ---
 ---
+---@generic K, V
+---@param target table<K, V>
+---@param key K
+---@param value V
+---@return V
 ---
----
-hashmap.set = function(target, key, value) end
+hashmap.set = function(target, key, value)
+  assert(value ~= nil,
+    'Expected argument `value` to be non-nil.'
+  )
+  target[key] = value
+  return value
+end
