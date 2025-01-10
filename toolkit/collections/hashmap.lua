@@ -35,7 +35,24 @@ hashmap.contains = function(target, key)
 end
 
 ---
+---Retrieve the value associated with the specified key.
 ---
+---@generic K, V
+---@param target table<K, V>
+---@param key K
+---@return V
+---
+hashmap.get = function(target, key)
+  assert(
+    target[key] ~= nil, string.format(
+      'The key `%s` does not exist in the target table.', key
+    )
+  )
+  return target[key]
+end
+
+---
+---Set the value associated with the specified key.
 ---
 ---@generic K, V
 ---@param target table<K, V>
