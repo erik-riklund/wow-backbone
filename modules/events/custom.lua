@@ -1,3 +1,6 @@
+---@class __backbone
+local context = select(2, ...)
+
 --[[~ Updated: 2025/01/10 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
@@ -18,7 +21,7 @@ local events = ({} --[[@as table<string, backbone.custom-event>]])
 ---@param event string
 ---@return string
 ---
-local getEventId = function(event)
+context.getEventId = function(event)
   return string.upper(event)
 end
 
@@ -27,10 +30,10 @@ end
 ---
 ---@param token backbone.token
 ---@param name string
----@param access 'public'|'private'
+---@param access? 'public'|'private'
 ---
 backbone.createCustomEvent = function(token, name, access)
-  local eventId = getEventId(name)
+  local eventId = context.getEventId(name)
   assert(
     not hashmap.contains(events, eventId), string.format(
       'A custom event with the name `%s` already exists.', name
@@ -59,7 +62,7 @@ end
 ---@param payload? table
 ---
 backbone.triggerCustomEvent = function(token, eventName, payload)
-  local eventId = getEventId(eventName)
+  local eventId = context.getEventId(eventName)
   assert(
     hashmap.contains(events, eventId), string.format(
       'The specified event `%s` does not exist.', eventName
@@ -81,7 +84,7 @@ end
 ---@param listener backbone.custom-event-listener|backbone.observer-callback
 ---
 backbone.registerCustomEventListener = function(eventName, listener)
-  local eventId = getEventId(eventName)
+  local eventId = context.getEventId(eventName)
   assert(
     hashmap.contains(events, eventId), string.format(
       'The specified event `%s` does not exist.', eventName
@@ -109,7 +112,7 @@ end
 ---@param listener backbone.custom-event-listener|backbone.observer-callback
 ---
 backbone.removeCustomEventListener = function(eventName, listener)
-  local eventId = getEventId(eventName)
+  local eventId = context.getEventId(eventName)
   assert(
     hashmap.contains(events, eventId), string.format(
       'The specified event `%s` does not exist.', eventName
@@ -126,3 +129,8 @@ backbone.removeCustomEventListener = function(eventName, listener)
   )
   event.observers:unsubscribe(listener.callback)
 end
+
+---
+---
+---
+backbone.createCustomEvent(context.token, 'ADDON_READY')

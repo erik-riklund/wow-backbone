@@ -1,3 +1,6 @@
+---@class __backbone
+local context = select(2, ...)
+
 --[[~ Updated: 2025/01/09 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
@@ -10,4 +13,40 @@
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
+local events = ({} --[[@as table<string, backbone.observable>]])
+local eventFrame = CreateFrame 'Frame' --[[@as Frame]]
+eventFrame:RegisterEvent 'ADDON_LOADED'
 
+---
+---
+---
+eventFrame:SetScript(
+  'OnEvent', function(_, eventName, ...)
+    local payload = { ... }
+    -- TODO: implement.
+  end
+)
+
+---
+---
+---
+backbone.registerEventListener = function() end
+
+---
+---
+---
+backbone.removeEventListener = function() end
+
+---
+---
+---
+---@param addonName string
+---@param callback backbone.observer-callback
+---
+backbone.onAddonReady = function(addonName, callback)
+  if backbone.isAddonLoaded(addonName) then
+    backbone.queueTask(function() callback({}) end)
+    return -- the addon is already loaded, exit early.
+  end
+  -- TODO: implement.
+end
