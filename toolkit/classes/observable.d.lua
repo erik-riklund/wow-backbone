@@ -16,7 +16,6 @@
 ---Represents an observer, used to react to notifications from an observable object.
 ---
 ---@class backbone.observer
----
 ---@field callback backbone.observer-callback
 ---@field persistent? boolean
 ---
