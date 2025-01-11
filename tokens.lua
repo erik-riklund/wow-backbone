@@ -38,7 +38,9 @@ backbone.createToken = function(addonName)
       'A token with the name "%s" already exists.', addonName
     )
   )
-  return hashmap.set(tokens, addonId, { name = addonName })
+  return hashmap.set(tokens, addonId,
+    createProtectedProxy({ name = addonName })
+  )
 end
 
 ---
