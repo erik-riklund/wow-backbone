@@ -35,6 +35,25 @@ hashmap.contains = function(target, key)
 end
 
 ---
+---Remove the value associated with the specified key and return it.
+---
+---@generic K, V
+---@param target table<K, V>
+---@param key K
+---@return V
+---
+hashmap.drop = function(target, key)
+  assert(
+    target[key] ~= nil, string.format(
+      'The key `%s` does not exist in the target table.', key
+    )
+  )
+  local value = target[key]
+  target[key] = nil
+  return value
+end
+
+---
 ---Retrieve the value associated with the specified key.
 ---
 ---@generic K, V

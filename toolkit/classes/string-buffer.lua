@@ -19,7 +19,7 @@ assert(stringBuffer == nil,
 ---building and manipulating a string.
 ---
 ---@class backbone.string-buffer
----@field protected content string[]
+---@field content string[]
 ---
 _G.stringBuffer = {}
 

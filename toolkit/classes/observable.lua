@@ -18,7 +18,7 @@ assert(observable == nil,
 ---Represents an observable object to which observers can be subscribed.
 ---
 ---@class backbone.observable
----@field private observers backbone.observer[]
+---@field observers array<backbone.observer>
 ---
 _G.observable = {}
 
@@ -30,6 +30,39 @@ _G.observable = {}
 ---
 observable.new = function(self)
   return inherit(self, { observers = {} })
+end
+
+---
+---Remove observers that are not marked as persistent from the observable.
+---
+observable.cleanup = function(self)
+  local count = #self.observers
+  if count > 0 then
+    for index = count, 1, -1 do
+      if not self.observers[index].persistent then
+        array.remove(self.observers, index)
+      end
+    end
+  end
+end
+
+---
+---Notify all subscribed observers, passing along the provided `payload`.
+---
+---@param payload? table
+---
+observable.notify = function(self, payload)
+  assert(
+    payload == nil or type(payload) == 'table', string.format(
+      'Expected `payload` to be a table, got %s instead.', type(payload)
+    )
+  )
+  for _, observer in ipairs(self.observers) do
+    backbone.queueTask(
+      function() observer.callback(payload or {}) end
+    )
+  end
+  self:cleanup()
 end
 
 ---
@@ -59,39 +92,6 @@ observable.unsubscribe = function(self, observer)
   for index, object in ipairs(self.observers) do
     if observer == object or observer == object.callback then
       return array.remove(self.observers, index)
-    end
-  end
-end
-
----
----Notify all subscribed observers, passing along the provided `payload`.
----
----@param payload? table
----
-observable.notify = function(self, payload)
-  assert(
-    payload == nil or type(payload) == 'table', string.format(
-      'Expected `payload` to be a table, got %s instead.', type(payload)
-    )
-  )
-  for _, observer in ipairs(self.observers) do
-    backbone.queueTask(
-      function() observer.callback(payload or {}) end
-    )
-  end
-  self:cleanup()
-end
-
----
----Remove observers that are not marked as persistent from the observable.
----
-observable.cleanup = function(self)
-  local count = #self.observers
-  if count > 0 then
-    for index = count, 1, -1 do
-      if not self.observers[index].persistent then
-        array.remove(self.observers, index)
-      end
     end
   end
 end
