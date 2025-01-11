@@ -13,7 +13,13 @@ local context = select(2, ...)
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
-local tokens = ({} --[[@as table<string, backbone.token>]])
+---
+---A table storing tokens, where each key is an identifier for
+---an addon and each value is a `backbone.token` instance.
+---
+---@type table<string, backbone.token>
+---
+local tokens = {}
 
 ---
 ---Create an identifier for an addon based on its name.
@@ -23,6 +29,33 @@ local tokens = ({} --[[@as table<string, backbone.token>]])
 ---
 context.getTokenId = function(addonName)
   return string.lower(addonName)
+end
+
+---
+---Retrieve the token associated with an addon.
+---
+---@param addonName string
+---@return backbone.token
+---
+context.getToken = function(addonName)
+  local addonId = context.getTokenId(addonName)
+  assert(
+    hashmap.contains(tokens, addonId), string.format(
+      'A token with the name "%s" does not exist.', addonName
+    )
+  )
+  return hashmap.get(tokens, addonId)
+end
+
+---
+---Validate the provided token by comparing it to the
+---registered token for the specified addon.
+---
+---@param token backbone.token
+---@return boolean
+---
+context.validateToken = function(token)
+  return context.getToken(token.name) == token
 end
 
 ---
