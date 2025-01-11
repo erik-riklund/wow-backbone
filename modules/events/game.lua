@@ -99,7 +99,7 @@ end
 ---@param addonName string
 ---@param callback backbone.observer-callback
 ---
-backbone.onAddonReady = function(addonName, callback)
+backbone.onAddonLoaded = function(addonName, callback)
   if backbone.isAddonLoaded(addonName) then
     backbone.queueTask(function() callback({}) end)
     return -- the addon is already loaded, exit early.
