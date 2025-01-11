@@ -17,9 +17,12 @@ toolkit/logic/switch.lua
 toolkit/logic/when.lua
 toolkit/classes/observable.lua
 toolkit/classes/string-buffer.lua
+toolkit/functions/protected-proxy.lua
 
 tokens.lua
 modules/events/custom.lua
 modules/events/game.lua
+modules/services.lua
+modules/addon-loader.lua
 
 testing.lua
