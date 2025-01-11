@@ -54,6 +54,21 @@ hashmap.drop = function(target, key)
 end
 
 ---
+---Apply a function to each key/value pair of the table.
+---The function can return a new value to replace the old value.
+---
+---@generic K, V
+---@param target table<K, V>
+---@param callback fun(key: K, value: V): V?
+---
+hashmap.iterate = function(target, callback)
+  for key, value in pairs(target) do
+    local result = callback(key, value)
+    if result ~= nil then target[key] = result end
+  end
+end
+
+---
 ---Retrieve the value associated with the specified key.
 ---
 ---@generic K, V
