@@ -129,8 +129,3 @@ backbone.removeCustomEventListener = function(eventName, listener)
   )
   event.observers:unsubscribe(listener.callback)
 end
-
----
----
----
-backbone.createCustomEvent(context.token, 'ADDON_READY')
