@@ -19,3 +19,28 @@
 backbone.isAddonLoaded = function(addonName)
   return select(2, C_AddOns.IsAddOnLoaded(addonName))
 end
+
+---
+---Parse the metadata for the specified addon and key. The specified separator
+---will be used to split the metadata into an array.
+---
+---@param addon string|number
+---@param key string
+---@param separator? string
+---@return array<string>?
+---
+backbone.parseAddonMetadata = function(addon, key, separator)
+  assert(
+    separator == nil or type(separator) == 'string', string.format(
+      'Expected `separator` to be a string, got %s instead.', type(separator)
+    )
+  )
+  local metadata = C_AddOns.GetAddOnMetadata(addon, key)
+  if type(metadata) == 'string' and string.len(metadata) > 0 then
+    local data = { string.split(separator or ',', metadata) }
+    array.iterate(data,
+      function(_, value) return string.trim(value) end
+    )
+    return data
+  end
+end
