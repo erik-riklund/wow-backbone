@@ -12,4 +12,8 @@
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
----@alias array<V> V[]
+---
+---Represents a sequential table with values of type `V`.
+---
+---@class array<V> : { [number]: V }
+---

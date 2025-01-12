@@ -74,6 +74,17 @@ array.iterate = function(target, callback)
 end
 
 ---
+---Remove and return the last element from the array.
+---
+---@generic V
+---@param target array<V>
+---@return V
+---
+array.pop = function(target)
+  return array.remove(target, #target)
+end
+
+---
 ---Remove an element from the array. The removed value is returned.
 ---
 ---@generic V
