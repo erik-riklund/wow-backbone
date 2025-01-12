@@ -15,6 +15,11 @@ assert(backbone == nil,
 )
 
 ---
+---Used to control the current environment of the framework.
+---
+local environment = 'development'
+
+---
 --- The API for the Backbone framework, facilitating access
 --- to its provided functionality.
 ---
@@ -33,5 +38,28 @@ _G.backbone =
   ---@see EXPANSION_LEVEL
   ---@type number
   ---
-  currentExpansion = GetExpansionLevel()
+  currentExpansion = GetExpansionLevel(),
+
+  ---
+  ---Determine if the framework is currently in development mode.
+  ---
+  ---@return boolean
+  ---
+  isDevelopment = function()
+    return (environment == 'development')
+  end,
+
+  ---
+  ---Set the current environment of the framework.
+  ---
+  ---@param mode 'development'|'production'
+  ---
+  setEnvironment = function(mode)
+    assert(
+      array.contains({ 'development', 'production' }, mode), string.format(
+        'Expected `mode` to be one of "development" or "production", got "%s" instead.', mode
+      )
+    )
+    environment = mode
+  end
 }

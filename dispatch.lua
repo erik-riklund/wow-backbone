@@ -26,12 +26,13 @@ backbone.executeTask = function(task)
   )
   local success, result = pcall(task)
   if not success then
-    local file, line, message = string.split(':', result, 3)
-    backbone.printf('<error>[Backbone]%s</end>', message)
-
-    local folders = { string.split('/', file) }
-    if folders[3] ~= 'Backbone' then
+    if backbone.isDevelopment() then
+      local file, line, message = string.split(':', result, 3)
+      backbone.printf('<error>[Backbone]%s</end>', message)
       backbone.printf('%s (line %d)', file, line)
+    else
+      -- TODO: implement error handling in production mode.
+      backbone.print 'Production mode error handling not implemented yet.'
     end
   end
 end
