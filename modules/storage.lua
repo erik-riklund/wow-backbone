@@ -1,3 +1,6 @@
+---@class __backbone
+local context = select(2, ...)
+
 --[[~ Updated: 2025/01/11 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
@@ -18,14 +21,24 @@
 ---
 backbone.useStorage = function(token, scope)
   assert(
-    backbone.isAddonLoaded(token.name), string.format(
-      'The addon "%s" is not fully loaded, saved variables are not available.', token.name
-    )
+    context.validateToken(token), 'The provided token "%s" is invalid.'
   )
   assert(
-    scope == nil or scope == 'account' or scope == 'character', string.format(
+    backbone.isAddonLoaded(token.name), string.format(
+      'Saved variables are not available yet for the addon "%s".', token.name
+    )
+  )
+
+  scope = scope or 'account'
+  assert(
+    array.contains({ 'account', 'character' }, scope), string.format(
       'Invalid scope "%s", must be "account" or "character".', scope
     )
   )
   
+  local variable = string.format(
+    '%s%sVariables', token.name, capitalize(scope)
+  )
+  if _G[variable] == nil then _G[variable] = {} end
+  return storageUnit:new(_G[variable])
 end

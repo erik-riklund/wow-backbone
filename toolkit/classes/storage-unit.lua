@@ -15,7 +15,7 @@ assert(storageUnit == nil,
 )
 
 ---
----
+---Represents a storage unit for managing and accessing hierarchical data.
 ---
 ---@class backbone.storage-unit
 ---@field data table
@@ -23,7 +23,7 @@ assert(storageUnit == nil,
 _G.storageUnit = {}
 
 ---
----
+---Create a new storage unit that use the provided data source.
 ---
 ---@private
 ---@param source table
@@ -39,11 +39,30 @@ storageUnit.new = function(self, source)
 end
 
 ---
+---Retrieve the value associated with the provided key.
 ---
+---@param key string
+---@return unknown
 ---
-storageUnit.get = function(self, key) end
+storageUnit.get = function(self, key)
+  return traverseTable(self.data, { string.split('/', key) })
+end
 
 ---
+---Set the value associated with the provided key. If the key does not exist,
+---it will be created. The provided value is returned for chainability.
 ---
+---@generic V
+---@param key string
+---@param value V
+---@return V
 ---
-storageUnit.set = function(self, key, value) end
+storageUnit.set = function(self, key, value)
+  local keys = { string.split('/', key) }
+  local variable = array.pop(keys)
+
+  ---@type table
+  local target = traverseTable(self.data, keys, 'build')
+  target[variable] = value
+  return value
+end
