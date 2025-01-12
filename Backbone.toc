@@ -18,6 +18,7 @@ toolkit/logic/when.lua
 toolkit/classes/observable.lua
 toolkit/classes/string-buffer.lua
 toolkit/classes/storage-unit.lua
+toolkit/classes/toggleable-list.lua
 toolkit/functions/capitalize-string.lua
 toolkit/functions/protected-proxy.lua
 toolkit/functions/traverse-table.lua
@@ -28,5 +29,6 @@ modules/events/game.lua
 modules/services.lua
 modules/addon-loader.lua
 modules/storage.lua
+modules/settings.lua
 
 testing.lua

@@ -39,6 +39,15 @@ array.append = function(target, element)
 end
 
 ---
+---
+---
+---@generic V
+---@param target array<V>
+---@return array<V>
+---
+array.clear = function(target) return wipe(target) end
+
+---
 ---Determine if the array contains the specified value.
 ---
 ---@generic V
@@ -59,7 +68,7 @@ array.contains = function(target, searchValue)
 end
 
 ---
----Apply a function to each element of the array.
+---Apply a callback function to each element of the array.
 ---The function can return a new value to replace the old value.
 ---
 ---@generic V
