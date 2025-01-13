@@ -49,11 +49,9 @@ backbone.registerService = function(name, object)
   local serviceId = getServiceId(name)
   if hashmap.contains(services, serviceId) then
     local service = hashmap.get(services, serviceId)
-    assert(
-      service.object == nil, string.format(
-        'The service "%s" is already registered.', name
-      )
-    )
+    if service.object ~= nil then
+      throw('The service "%s" already exists.', name)
+    end
     service.object = object
   else
     hashmap.set(services, serviceId, { object = object })
@@ -69,11 +67,9 @@ end
 ---
 backbone.requestService = function(name)
   local serviceId = getServiceId(name)
-  assert(
-    hashmap.contains(services, serviceId), string.format(
-      'The requested service "%s" does not exist.', name
-    )
-  )
+  if not hashmap.contains(services, serviceId) then
+    throw('The requested service "%s" does not exist.', name)
+  end
 
   local service = hashmap.get(services, serviceId)
   if service.object == nil then
@@ -82,7 +78,6 @@ backbone.requestService = function(name)
       -- defer execution until the addon is loaded.
     end
   end
-
   if not hashmap.contains(cache, serviceId) then
     hashmap.set(cache, serviceId, createProtectedProxy(service.object))
   end
@@ -97,10 +92,8 @@ end
 ---
 context.registerLoadableService = function(addon, service)
   local serviceId = getServiceId(service)
-  assert(
-    not hashmap.contains(services, serviceId), string.format(
-      'The service "%s" already exists.', service
-    )
-  )
+  if hashmap.contains(services, serviceId) then
+    throw('The service "%s" already exists.', service)
+  end
   hashmap.set(services, serviceId, { supplier = addon })
 end

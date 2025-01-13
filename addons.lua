@@ -30,11 +30,9 @@ end
 ---@return array<string>?
 ---
 backbone.parseAddonMetadata = function(addon, key, separator)
-  assert(
-    separator == nil or type(separator) == 'string', string.format(
-      'Expected `separator` to be a string, got %s instead.', type(separator)
-    )
-  )
+  if separator ~= nil and type(separator) ~= 'string' then
+    throw('Expected `separator` to be a string, got %s.', type(separator))
+  end
   local metadata = C_AddOns.GetAddOnMetadata(addon, key)
   if type(metadata) == 'string' and string.len(metadata) > 0 then
     local data = { string.split(separator or ',', metadata) }

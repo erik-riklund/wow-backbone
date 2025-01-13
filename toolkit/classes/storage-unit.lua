@@ -30,11 +30,9 @@ _G.storageUnit = {}
 ---@return backbone.storage-unit
 ---
 storageUnit.new = function(self, source)
-  assert(
-    type(source) == 'table', string.format(
-      'Expected `source` to be a table, got %s instead.', type(source)
-    )
-  )
+  if type(source) ~= 'table' then
+    throw('Expected `source` to be a table, got %s.', type(source))
+  end
   return inherit(self, { data = source })
 end
 

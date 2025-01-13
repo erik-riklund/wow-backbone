@@ -5,6 +5,7 @@
 ## Notes: An addon development framework.
 
 core.lua
+error.lua
 enums.lua
 output.lua
 addons.lua

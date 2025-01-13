@@ -55,10 +55,8 @@ end
 ---@param defaults table
 ---
 backbone.useSettings = function(token, defaults)
-  assert(
-    not hashmap.contains(registry, token), string.format(
-      'A settings manager has already been registered for the provided token (%s).', token.name
-    )
-  )
+  if hashmap.contains(registry, token) then
+    throw('A settings manager has already been registered for the provided token (%s).', token.name)
+  end
   return hashmap.set(registry, token, manager:new(token, defaults))
 end

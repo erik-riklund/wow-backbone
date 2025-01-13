@@ -52,11 +52,9 @@ end
 ---@param payload? table
 ---
 observable.notify = function(self, payload)
-  assert(
-    payload == nil or type(payload) == 'table', string.format(
-      'Expected `payload` to be a table, got %s instead.', type(payload)
-    )
-  )
+  if payload ~= nil and type(payload) ~= 'table' then
+    throw('Expected `payload` to be a table, got %s.', type(payload))
+  end
   for _, observer in ipairs(self.observers) do
     backbone.queueTask(
       function() observer.callback(payload or {}) end

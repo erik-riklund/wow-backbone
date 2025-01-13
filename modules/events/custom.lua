@@ -34,18 +34,15 @@ end
 ---
 backbone.createCustomEvent = function(token, name, access)
   local eventId = context.getEventId(name)
-  assert(
-    not hashmap.contains(events, eventId), string.format(
-      'A custom event with the name `%s` already exists.', name
-    )
-  )
-  assert(
-    access == nil or access == 'public' or access == 'private', string.format(
-      'Invalid access level `%s` for custom event `%s`, must be `public` or `private`.', access, name
-    )
-  )
-  hashmap.set(
-    events, eventId, {
+  if hashmap.contains(events, eventId) then
+    throw('A custom event with the name "%s" already exists.', name)
+  end
+  if access ~= nil and access ~= 'public' and access ~= 'private' then
+    throw('Invalid access level `%s` for custom event `%s`, must be `public` or `private`.', access, name)
+  end
+
+  hashmap.set(events,
+    eventId, {
       owner = token,
       name = name,
       access = access or 'public',
@@ -63,17 +60,13 @@ end
 ---
 backbone.triggerCustomEvent = function(token, eventName, payload)
   local eventId = context.getEventId(eventName)
-  assert(
-    hashmap.contains(events, eventId), string.format(
-      'The specified event `%s` does not exist.', eventName
-    )
-  )
+  if not hashmap.contains(events, eventId) then
+    throw('The specified event `%s` does not exist.', eventName)
+  end
   local event = hashmap.get(events, eventId)
-  assert(
-    event.owner == token, string.format(
-      'The specified token `%s` does not own the event `%s`.', token.name, eventName
-    )
-  )
+  if event.owner ~= token then
+    throw('The specified token `%s` does not own the event `%s`.', token.name, eventName)
+  end
   event.observers:notify(payload)
 end
 
@@ -85,23 +78,18 @@ end
 ---
 backbone.registerCustomEventListener = function(eventName, listener)
   local eventId = context.getEventId(eventName)
-  assert(
-    hashmap.contains(events, eventId), string.format(
-      'The specified event `%s` does not exist.', eventName
-    )
-  )
+  if not hashmap.contains(events, eventId) then
+    throw('The specified event `%s` does not exist.', eventName)
+  end
   if type(listener) == 'function' then
     listener = { callback = listener }
   end
   local event = hashmap.get(events, eventId)
-  assert(
-    event.access == 'public' or event.owner == listener.token, string.format(
-      'The event `%s` is not accessible by the provided token.', eventName
-    )
-  )
+  if event.access ~= 'public' and event.owner ~= listener.token then
+    throw('The event `%s` is not accessible by the provided token.', eventName)
+  end
   event.observers:subscribe {
-    callback = listener.callback,
-    persistent = listener.persistent
+    callback = listener.callback, persistent = listener.persistent
   }
 end
 
@@ -113,19 +101,15 @@ end
 ---
 backbone.removeCustomEventListener = function(eventName, listener)
   local eventId = context.getEventId(eventName)
-  assert(
-    hashmap.contains(events, eventId), string.format(
-      'The specified event `%s` does not exist.', eventName
-    )
-  )
+  if not hashmap.contains(events, eventId) then
+    throw('The specified event `%s` does not exist.', eventName)
+  end
   if type(listener) == 'function' then
     listener = { callback = listener }
   end
   local event = hashmap.get(events, eventId)
-  assert(
-    event.access == 'public' or event.owner == listener.token, string.format(
-      'The event `%s` is not accessible by the provided token.', eventName
-    )
-  )
+  if event.access ~= 'public' and event.owner ~= listener.token then
+    throw('The event `%s` is not accessible by the provided token.', eventName)
+  end
   event.observers:unsubscribe(listener.callback)
 end

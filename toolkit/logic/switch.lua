@@ -25,11 +25,10 @@ assert(switch == nil,
 ---@return unknown?
 ---
 switch = function(value, cases)
-  assert(value ~= nil, 
-    'Expected argument `value` to be non-nil.'
-  )
+  if value == nil then
+    throw('Expected argument `value` to be non-nil.')
+  end
   local case = cases[value]
-
   if case == nil then
     for key, content in pairs(cases) do
       if type(key) == 'table' then
@@ -42,7 +41,6 @@ switch = function(value, cases)
       end
     end
   end
-
   if case == nil then case = cases['default'] end
   return (type(case) == 'function' and case()) or nil
 end

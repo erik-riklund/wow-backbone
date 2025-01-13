@@ -27,20 +27,14 @@ assert(traverseTable == nil,
 ---@return unknown
 ---
 _G.traverseTable = function(target, steps, mode)
-  mode = mode or 'exit'
-  assert(
-    array.contains({ 'exit', 'build', 'error' }, mode), string.format(
-      'Expected `mode` to be one of "exit", "build", or "error", got "%s" instead.', mode
-    )
-  )
+  if mode ~= nil and mode ~= 'exit' and mode ~= 'build' and mode ~= 'error' then
+    throw('Expected `mode` to be one of "exit", "build", or "error", got "%s".', mode)
+  end
   ---@type unknown
   local value = target
   local stepCount = #steps
 
   for index, step in ipairs(steps) do
-    assert(
-      step ~= nil, 'Expected argument `step` to be non-nil.'
-    )
     local currentValue = value[step]
     local currentValueType = type(currentValue)
     local isLastStep = (index == stepCount)

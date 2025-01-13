@@ -31,9 +31,9 @@ _G.array = {}
 ---@return V
 ---
 array.append = function(target, element)
-  assert(element ~= nil,
-    'Expected argument `element` to be non-nil.'
-  )
+  if element == nil then
+    throw('Expected argument `element` to be non-nil.')
+  end
   table.insert(target, element)
   return element
 end
@@ -56,9 +56,9 @@ array.clear = function(target) return wipe(target) end
 ---@return boolean
 ---
 array.contains = function(target, searchValue)
-  assert(searchValue ~= nil,
-    'Expected argument `searchValue` to be non-nil.'
-  )
+  if searchValue == nil then
+    throw('Expected argument `searchValue` to be non-nil.')
+  end
   if #target > 0 then
     for _, value in ipairs(target) do
       if value == searchValue then return true end
@@ -102,8 +102,8 @@ end
 ---@return V
 ---
 array.remove = function(target, index)
-  assert(target[index] ~= nil,
-    'Expected argument `index` to be within the bounds of the array.'
-  )
+  if target[index] == nil then
+    throw('Expected argument `index` to be within the bounds of the array.')
+  end
   return table.remove(target, index)
 end

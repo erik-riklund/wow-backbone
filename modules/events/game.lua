@@ -61,9 +61,9 @@ eventFrame:SetScript(
 ---@param listener backbone.observer|backbone.observer-callback
 ---
 backbone.registerEventListener = function(eventName, listener)
-  assert(eventName ~= 'ADDON_LOADED',
-    'Use `onAddonReady` instead of `registerEventListener` for the "ADDON_LOADED" event.'
-  )
+  if eventName == 'ADDON_LOADED' then
+    throw('Use `onAddonReady` instead of `registerEventListener` for the "ADDON_LOADED" event.')
+  end
   if type(listener) == 'function' then
     listener = { callback = listener }
   end

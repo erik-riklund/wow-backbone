@@ -53,11 +53,9 @@ stringBuffer.append = function(self, string, lineIndex)
     array.append(self.content, string)
   else
     lineIndex = lineIndex or #self.content
-    assert(
-      self.content[lineIndex] ~= nil, string.format(
-        'The specified line (%d) does not exist.', lineIndex
-      )
-    )
+    if self.content[lineIndex] == nil then
+      throw('The specified line (%d) does not exist.', lineIndex)
+    end
     self.content[lineIndex] = self.content[lineIndex] .. string
   end
 end

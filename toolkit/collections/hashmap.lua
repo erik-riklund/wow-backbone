@@ -43,11 +43,9 @@ end
 ---@return V
 ---
 hashmap.drop = function(target, key)
-  assert(
-    target[key] ~= nil, string.format(
-      'The key `%s` does not exist in the target table.', key
-    )
-  )
+  if target[key] == nil then
+    throw('The key `%s` does not exist in the target table.', key)
+  end
   local value = target[key]
   target[key] = nil
   return value
@@ -77,11 +75,9 @@ end
 ---@return V
 ---
 hashmap.get = function(target, key)
-  assert(
-    target[key] ~= nil, string.format(
-      'The key `%s` does not exist in the target table.', key
-    )
-  )
+  if target[key] == nil then
+    throw('The key `%s` does not exist in the target table.', key)
+  end
   return target[key]
 end
 
@@ -95,9 +91,9 @@ end
 ---@return V
 ---
 hashmap.set = function(target, key, value)
-  assert(value ~= nil,
-    'Expected argument `value` to be non-nil.'
-  )
+  if value == nil then
+    throw('Expected argument `value` to be non-nil.')
+  end
   target[key] = value
   return value
 end

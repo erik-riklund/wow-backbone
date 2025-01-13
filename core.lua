@@ -55,11 +55,9 @@ _G.backbone =
   ---@param mode 'development'|'production'
   ---
   setEnvironment = function(mode)
-    assert(
-      array.contains({ 'development', 'production' }, mode), string.format(
-        'Expected `mode` to be one of "development" or "production", got "%s" instead.', mode
-      )
-    )
+    if mode ~= 'development' and mode ~= 'production' then
+      throw('Expected `mode` to be one of "development" or "production", got "%s".', mode)
+    end
     environment = mode
   end
 }

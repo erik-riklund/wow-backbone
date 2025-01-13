@@ -39,11 +39,9 @@ end
 ---
 context.getToken = function(addonName)
   local addonId = context.getTokenId(addonName)
-  assert(
-    hashmap.contains(tokens, addonId), string.format(
-      'A token with the name "%s" does not exist.', addonName
-    )
-  )
+  if not hashmap.contains(tokens, addonId) then
+    throw('A token with the name "%s" does not exist.', addonName)
+  end
   return hashmap.get(tokens, addonId)
 end
 
@@ -66,13 +64,11 @@ end
 ---
 backbone.createToken = function(addonName)
   local addonId = context.getTokenId(addonName)
-  assert(
-    not hashmap.contains(tokens, addonId), string.format(
-      'A token with the name "%s" already exists.', addonName
-    )
-  )
-  return hashmap.set(tokens, addonId,
-    createProtectedProxy({ name = addonName })
+  if hashmap.contains(tokens, addonId) then
+    throw('A token with the name "%s" already exists.', addonName)
+  end
+  return hashmap.set(tokens,
+    addonId, createProtectedProxy({ name = addonName })
   )
 end
 

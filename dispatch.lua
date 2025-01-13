@@ -19,11 +19,9 @@ local taskFrame = CreateFrame 'Frame' --[[@as Frame]]
 ---@param task backbone.task
 ---
 backbone.executeTask = function(task)
-  assert(
-    type(task) == 'function', string.format(
-      'Expected `task` to be a function, got %s instead.', type(task)
-    )
-  )
+  if type(task) ~= 'function' then
+    throw('Expected `task` to be a function, got %s.', type(task))
+  end
   local success, result = pcall(task)
   if not success then
     if backbone.isDevelopment() then
@@ -44,11 +42,9 @@ end
 ---@param task backbone.task
 ---
 backbone.queueTask = function(task)
-  assert(
-    type(task) == 'function', string.format(
-      'Expected `task` to be a function, got %s instead.', type(task)
-    )
-  )
+  if type(task) ~= 'function' then
+    throw('Expected `task` to be a function, got %s.', type(task))
+  end
   array.append(tasks, task)
 end
 
