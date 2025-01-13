@@ -21,6 +21,22 @@ backbone.isAddonLoaded = function(addonName)
 end
 
 ---
+---Obtain the version number for the specified addon.
+---* Returned as a number, e.g. `1.3.5` returns `10305`.
+---
+---@param addon string|number
+---@return number
+---
+backbone.getAddonVersionNumber = function(addon)
+  local version = C_AddOns.GetAddOnMetadata(addon, 'Version')
+  if type(version) ~= 'string' or string.len(version) == 0 then
+    return 0 -- no version is specified in the addon metadata.
+  end
+  local major, minor, patch = string.split('.', version)
+  return (tonumber(major) * 10000) + (tonumber(minor or 0) * 100) + tonumber(patch or 0)
+end
+
+---
 ---Parse the metadata for the specified addon and key. The specified separator
 ---will be used to split the metadata into an array.
 ---

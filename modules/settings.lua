@@ -21,6 +21,8 @@ local registry = {}
 ---
 ---
 ---@class backbone.settings-manager
+---@field defaults backbone.storage-unit
+---@field storage backbone.storage-unit
 ---
 local manager = {}
 
@@ -28,24 +30,113 @@ local manager = {}
 ---
 ---
 ---@param token backbone.token
----@param defaults table
+---@param settings table
 ---
-manager.new = function(self, token, defaults)
+manager.new = function(self, token, settings)
+  local defaults = storageUnit:new(settings)
+  local variables = backbone.useStorage(token)
 
+  if variables:get('__settings') == nil then
+    variables:set('__settings', {})
+  end
+  manager.initialize(token, defaults, variables)
+  return inherit(self, { defaults = defaults, storage = variables })
 end
 
 ---
 ---
 ---
----@param elements array<string|number>
----@return table<string, boolean>
+---@param token backbone.token
+---@param defaults backbone.storage-unit
+---@param variables backbone.storage-unit
 ---
-backbone.createToggleableList = function(elements)
-  local list = ({} --[[@as table<string, boolean>]])
-  array.iterate(elements,
-    function(_, key) list[tostring(key)] = true end
-  )
-  return list
+manager.initialize = function(token, defaults, variables)
+  local updateSettings = true
+  local addonVersion = backbone.getAddonVersionNumber(token.name)
+  if not backbone.isDevelopment() then
+    local storedVersion = variables:get('__version')
+    updateSettings = (storedVersion or -1) < addonVersion
+  end
+
+  if updateSettings then
+    local syncSettings
+    ---
+    ---Synchronizes settings between a source table and a target table.
+    ---
+    ---@param source table
+    ---@param target table
+    ---
+    syncSettings = function(source, target)
+      -- Iterate over all keys and values in the source table.
+      for sourceKey, sourceValue in pairs(source) do
+        -- If the value in the source is a table, handle nested or toggleable logic.
+        if type(sourceValue) == 'table' then
+          -- Ensure the target has a table for this key.
+          if target[sourceKey] == nil then
+            target[sourceKey] = {}
+          end
+
+          if sourceValue.__toggleable then
+            -- Synchronize toggleable states: add missing toggle states to the target.
+            for toggleKey, toggleState in pairs(sourceValue) do
+              if target[sourceKey][toggleKey] == nil then
+                target[sourceKey][toggleKey] = toggleState
+              end
+            end
+          else
+            -- Recursively synchronize nested tables.
+            syncSettings(sourceValue, target[sourceKey])
+          end
+        else
+          -- If the value is not a table, add it to the target only if it's missing.
+          if target[sourceKey] == nil then
+            target[sourceKey] = sourceValue
+          end
+        end
+      end
+
+      if not target.__toggleable then
+        for targetKey in pairs(target) do
+          if source[targetKey] == nil then
+            target[targetKey] = nil -- remove keys that don't exist in the source.
+          end
+        end
+      end
+    end
+
+    syncSettings(defaults.data, variables:get('__settings'))
+    variables:set('__version', addonVersion)
+  end
+end
+
+---
+---
+---
+---@param key string
+---@return unknown
+---
+manager.getDefaultValue = function(self, key)
+  ---@diagnostic disable-next-line: missing-return
+end
+
+---
+---
+---
+---@param key string
+---@return unknown
+---
+manager.getValue = function(self, key)
+  ---@diagnostic disable-next-line: missing-return
+end
+
+---
+---
+---
+---@param key string
+---@return backbone.toggleable-list
+---
+manager.getToggleableList = function(self, key)
+  ---@diagnostic disable-next-line: missing-return
 end
 
 ---

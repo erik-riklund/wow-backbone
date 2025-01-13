@@ -32,3 +32,22 @@ _G.toggleableList = {}
 toggleableList.new = function(self, keys)
   ---@diagnostic disable-next-line: missing-return
 end
+
+---
+---
+---@static
+---@param elements array<string|number>
+---@return table<string, boolean>
+---
+toggleableList.prepare = function(elements)
+  ---@type table<string, boolean>
+  local list = { __toggleable = true }
+  array.iterate(elements,
+    function(_, key)
+      if key ~= '__toggleable' then
+        list[tostring(key)] = true
+      end
+    end
+  )
+  return list
+end

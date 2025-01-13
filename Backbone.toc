@@ -32,4 +32,4 @@ modules/addon-loader.lua
 modules/storage.lua
 modules/settings.lua
 
-testing.lua
+services/item-info.lua
