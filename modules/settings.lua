@@ -13,9 +13,26 @@
 ---
 ---
 ---
+---@type table<backbone.token, backbone.settings-manager>
+---
+local registry = {}
+
+---
+---
+---
 ---@class backbone.settings-manager
 ---
 local manager = {}
+
+---
+---
+---
+---@param token backbone.token
+---@param defaults table
+---
+manager.new = function(self, token, defaults)
+
+end
 
 ---
 ---
@@ -38,5 +55,10 @@ end
 ---@param defaults table
 ---
 backbone.useSettings = function(token, defaults)
-  
+  assert(
+    not hashmap.contains(registry, token), string.format(
+      'A settings manager has already been registered for the provided token (%s).', token.name
+    )
+  )
+  return hashmap.set(registry, token, manager:new(token, defaults))
 end
