@@ -36,15 +36,17 @@ manager.new = function(self, token, settings)
   local defaults = storageUnit:new(settings)
   local variables = backbone.useStorage(token)
 
-  if variables:get('__settings') == nil then
+  if variables:get '__settings' == nil then
     variables:set('__settings', {})
   end
-  manager.initialize(token, defaults, variables)
+  self.initialize(token, defaults, variables)
   return inherit(self, { defaults = defaults, storage = variables })
 end
 
 ---
----
+---Sync the default settings with the current settings stored in the addon storage.
+---* Settings are synced only when the addon version is newer than the one present in the storage,
+---or if the framework operates in development mode.
 ---
 ---@param token backbone.token
 ---@param defaults backbone.storage-unit
@@ -54,7 +56,7 @@ manager.initialize = function(token, defaults, variables)
   local updateSettings = true
   local addonVersion = backbone.getAddonVersionNumber(token.name)
   if not backbone.isDevelopment() then
-    local storedVersion = variables:get('__version')
+    local storedVersion = variables:get('__settings/__version')
     updateSettings = (storedVersion or -1) < addonVersion
   end
 
@@ -105,8 +107,29 @@ manager.initialize = function(token, defaults, variables)
     end
 
     syncSettings(defaults.data, variables:get('__settings'))
-    variables:set('__version', addonVersion)
+    variables:set('__settings/__version', addonVersion)
   end
+end
+
+---
+---
+---
+---@param key string
+---@return unknown
+---
+manager.getValue = function(self, key)
+  ---@diagnostic disable-next-line: missing-return
+end
+
+---
+---
+---
+---@param list string
+---@param key string|number
+---@return unknown
+---
+manager.getValueFromList = function(self, list, key)
+  return self:getValue(string.format('%s/%s', list, tostring(key)))
 end
 
 ---
@@ -122,11 +145,12 @@ end
 ---
 ---
 ---
----@param key string
+---@param list string
+---@param key string|number
 ---@return unknown
 ---
-manager.getValue = function(self, key)
-  ---@diagnostic disable-next-line: missing-return
+manager.getDefaultValueFromList = function(self, list, key)
+  return self:getDefaultValue(string.format('%s/%s', list, tostring(key)))
 end
 
 ---

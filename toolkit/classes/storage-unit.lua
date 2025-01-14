@@ -43,7 +43,7 @@ end
 ---@return unknown
 ---
 storageUnit.get = function(self, key)
-  return traverseTable(self.data, { string.split('/', key) })
+  return traverseTable(self.data, { string.split('/', tostring(key)) })
 end
 
 ---
@@ -56,7 +56,7 @@ end
 ---@return V
 ---
 storageUnit.set = function(self, key, value)
-  local keys = { string.split('/', key) }
+  local keys = { string.split('/', tostring(key)) }
   local variable = array.pop(keys)
 
   ---@type table
