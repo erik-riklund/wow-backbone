@@ -31,5 +31,6 @@ modules/services.lua
 modules/addon-loader.lua
 modules/storage.lua
 modules/settings.lua
+#modules/config-ui/panel.lua
 
 services/item-info.lua

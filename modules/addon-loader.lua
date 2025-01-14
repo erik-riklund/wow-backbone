@@ -1,7 +1,7 @@
 ---@class __backbone
 local context = select(2, ...)
 
---[[~ Updated: 2025/01/11 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/14 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -14,8 +14,7 @@ local context = select(2, ...)
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
----A table of addon loaders, each representing a handler
----for a specific loading condition.
+---A table of addon loaders, each representing a handler for a specific loading condition.
 ---
 ---@type table<string, backbone.addon-loader>
 ---
@@ -69,11 +68,13 @@ local loaders =
 ---
 for index = 1, C_AddOns.GetNumAddOns() do
   if C_AddOns.IsAddOnLoadOnDemand(index) then
-    hashmap.iterate(loaders, function(condition, handler)
-      local metadata = backbone.parseAddonMetadata(
-        index, string.format('X-Load-%s', condition)
-      )
-      if metadata ~= nil then handler(index, metadata) end
-    end)
+    hashmap.iterate(loaders,
+      function(condition, handler)
+        local metadata = backbone.parseAddonMetadata(
+          index, string.format('X-Load-%s', condition)
+        )
+        if metadata ~= nil then handler(index, metadata) end
+      end
+    )
   end
 end

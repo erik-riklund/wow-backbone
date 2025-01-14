@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/12 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/14 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -15,29 +15,52 @@ assert(toggleableList == nil,
 )
 
 ---
----
+---Represents a list of toggleable elements.
 ---
 ---@class backbone.toggleable-list
----@field content table<string, boolean>
+---@field content backbone.toggleable-list.content
 ---
 _G.toggleableList = {}
 
 ---
----
+---Create a new toggleable list object.
 ---
 ---@private
----@param keys array<string>
+---@param content backbone.toggleable-list.content
 ---@return backbone.toggleable-list
 ---
-toggleableList.new = function(self, keys)
-  ---@diagnostic disable-next-line: missing-return
+toggleableList.new = function(self, content)
+  return inherit(self, { content = content })
 end
 
 ---
+---Determine if the specified key is enabled (`true`).
 ---
----@static
+---@param key string|number
+---@return boolean
+---
+toggleableList.isEnabled = function(self, key)
+  return self.content[tostring(key)] == true
+end
+
+---
+---Set the state of the specified key.
+---
+---@param key string|number
+---@param state 'enabled'|'disabled'
+---
+toggleableList.setState = function(self, key, state)
+  if state ~= 'enabled' and state ~= 'disabled' then
+    throw('Expected argument `state` to be either `enabled` or `disabled`.')
+  end
+  hashmap.set(self.content, tostring(key), state == 'enabled')
+end
+
+---
+---Convert an array of elements into a toggleable list structure.
+---
 ---@param elements array<string|number>
----@return table<string, boolean>
+---@return backbone.toggleable-list.content
 ---
 toggleableList.prepare = function(elements)
   ---@type table<string, boolean>

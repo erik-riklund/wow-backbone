@@ -27,7 +27,7 @@ local registry = {}
 local manager = {}
 
 ---
----
+---Create a new settings manager for the specified addon.
 ---
 ---@param token backbone.token
 ---@param settings table
@@ -118,7 +118,13 @@ end
 ---@return unknown
 ---
 manager.getValue = function(self, key)
-  ---@diagnostic disable-next-line: missing-return
+  local value = self.storage:get(
+    string.format('__settings/%s', tostring(key))
+  )
+  if value == nil then
+    throw('The key `%s` does not exist in the settings.', key)
+  end
+  return value
 end
 
 ---
@@ -129,7 +135,11 @@ end
 ---@return unknown
 ---
 manager.getValueFromList = function(self, list, key)
-  return self:getValue(string.format('%s/%s', list, tostring(key)))
+  local content = self:getValue(list)
+  if type(content) ~= 'table' or not content.__toggleable then
+    throw('The key `%s` is not a toggleable list.', list)
+  end
+  return content[tostring(key)]
 end
 
 ---
@@ -139,7 +149,11 @@ end
 ---@return unknown
 ---
 manager.getDefaultValue = function(self, key)
-  ---@diagnostic disable-next-line: missing-return
+  local value = self.defaults:get(key)
+  if value == nil then
+    throw('The key `%s` does not exist in the default settings.', key)
+  end
+  return value
 end
 
 ---
@@ -150,7 +164,11 @@ end
 ---@return unknown
 ---
 manager.getDefaultValueFromList = function(self, list, key)
-  return self:getDefaultValue(string.format('%s/%s', list, tostring(key)))
+  local content = self:getDefaultValue(list)
+  if type(content) ~= 'table' or not content.__toggleable then
+    throw('The key `%s` is not a toggleable list.', list)
+  end
+  return content[tostring(key)]
 end
 
 ---
@@ -160,7 +178,11 @@ end
 ---@return backbone.toggleable-list
 ---
 manager.getToggleableList = function(self, key)
-  ---@diagnostic disable-next-line: missing-return
+  local list = self:getValue(key)
+  if type(list) ~= 'table' or not list.__toggleable then
+    throw('The key `%s` is not a toggleable list.', key)
+  end
+  return toggleableList:new(list)
 end
 
 ---
@@ -171,7 +193,7 @@ end
 ---
 backbone.useSettings = function(token, defaults)
   if hashmap.contains(registry, token) then
-    throw('A settings manager has already been registered for the provided token (%s).', token.name)
+    return hashmap.get(registry, token) -- reuse the existing manager.
   end
   return hashmap.set(registry, token, manager:new(token, defaults))
 end

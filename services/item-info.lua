@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/01 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/14 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -27,8 +27,8 @@ handler =
   ---@return number
   ---
   getItemId = function(link)
-    local item_id = string.match(link, 'item:(%d+)')
-    return tonumber(item_id) --[[@as number]]
+    local itemId = string.match(link, 'item:(%d+)')
+    return tonumber(itemId) --[[@as number]]
   end,
 
   ---
@@ -107,12 +107,13 @@ handler =
       ---@field copper number
       ---
       data.money = { gold = 0, silver = 0, copper = 0 }
-
       local cash = { string.split('\n', data.name) }
-      array.iterate(cash, function(_, raw_value)
-        local amount, value = string.split(' ', raw_value)
-        data.money[string.lower(value)] = tonumber(amount) or 0
-      end)
+      array.iterate(cash,
+        function(_, rawValue)
+          local amount, value = string.split(' ', rawValue)
+          data.money[string.lower(value)] = tonumber(amount) or 0
+        end
+      )
     end
 
     return data
