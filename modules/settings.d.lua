@@ -13,8 +13,8 @@
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
----Represents the content of a toggleable list.
+---Represents 
 ---
----@class backbone.toggleable-list.content : { [string]: boolean }
----@field __toggleable boolean
+---@class backbone.list-setting : { [string]: unknown }
+---@field __list boolean
 ---

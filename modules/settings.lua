@@ -135,11 +135,12 @@ end
 ---@return unknown
 ---
 manager.getValueFromList = function(self, list, key)
+  ---@type backbone.list-setting
   local content = self:getValue(list)
-  if type(content) ~= 'table' or not content.__toggleable then
-    throw('The key `%s` is not a toggleable list.', list)
+  if type(content) ~= 'table' or not content.__list then
+    throw('The key `%s` is not a list.', list)
   end
-  return content[tostring(key)]
+  return hashmap.get(content, tostring(key))
 end
 
 ---
@@ -164,25 +165,28 @@ end
 ---@return unknown
 ---
 manager.getDefaultValueFromList = function(self, list, key)
+  ---@type backbone.list-setting
   local content = self:getDefaultValue(list)
-  if type(content) ~= 'table' or not content.__toggleable then
-    throw('The key `%s` is not a toggleable list.', list)
+  if type(content) ~= 'table' or not content.__list then
+    throw('The key `%s` is not a list.', list)
   end
-  return content[tostring(key)]
+  return hashmap.get(content, tostring(key))
 end
 
 ---
+---Convert an array of elements into a toggleable list structure.
+---Each element in the array becomes a string key in the list, with a value of `true`.
 ---
+---@param elements array<string|number>
+---@return backbone.list-setting
 ---
----@param key string
----@return backbone.toggleable-list
----
-manager.getToggleableList = function(self, key)
-  local list = self:getValue(key)
-  if type(list) ~= 'table' or not list.__toggleable then
-    throw('The key `%s` is not a toggleable list.', key)
-  end
-  return toggleableList:new(list)
+backbone.createListSetting = function(elements)
+  ---@type backbone.list-setting
+  local list = { __list = true }
+  array.iterate(elements, function(_, key)
+    if key ~= '__list' then list[tostring(key)] = true end
+  end)
+  return list
 end
 
 ---
