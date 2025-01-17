@@ -238,10 +238,15 @@ backbone.createListSetting = function(valueType, elements)
   if not array.contains({ 'boolean', 'string', 'number' }, valueType) then
     throw('Invalid value type `%s`, must be `boolean`, `string` or `number`.', valueType)
   end
+  local defaultValue = switch(
+    valueType, { boolean = true, number = 0, string = '' }
+  )
   ---@type backbone.list-setting
   local list = { __list = true, __type = valueType }
   array.iterate(elements, function(_, key)
-    if key ~= '__list' then list[tostring(key)] = true end
+    if key ~= '__list' then
+      list[tostring(key)] = defaultValue
+    end
   end)
   return list
 end

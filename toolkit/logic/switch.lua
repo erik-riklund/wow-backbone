@@ -21,7 +21,7 @@ assert(switch == nil,
 ---
 ---@generic V
 ---@param value V
----@param cases table<'default'|array<V>|V, fun(): unknown?>
+---@param cases table<'default'|array<V>|V, (unknown|fun(): unknown?)>
 ---@return unknown?
 ---
 switch = function(value, cases)
@@ -42,5 +42,5 @@ switch = function(value, cases)
     end
   end
   if case == nil then case = cases['default'] end
-  return (type(case) == 'function' and case()) or nil
+  return (type(case) == 'function' and case()) or case
 end
