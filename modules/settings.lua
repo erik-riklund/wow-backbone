@@ -1,3 +1,6 @@
+---@class __backbone
+local context = select(2, ...)
+
 --[[~ Updated: 2025/01/12 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
@@ -21,6 +24,7 @@ local registry = {}
 ---
 ---
 ---@class backbone.settings-manager
+---@field token backbone.token
 ---@field defaults backbone.storage-unit
 ---@field storage backbone.storage-unit
 ---
@@ -40,7 +44,9 @@ manager.new = function(self, token, settings)
     variables:set('__settings', {})
   end
   self.initialize(token, defaults, variables)
-  return inherit(self, { defaults = defaults, storage = variables })
+  return inherit(self, {
+    token = token, defaults = defaults, storage = variables
+  })
 end
 
 ---
@@ -56,7 +62,7 @@ manager.initialize = function(token, defaults, variables)
   local updateSettings = true
   local addonVersion = backbone.getAddonVersionNumber(token.name)
   if not backbone.isDevelopment() then
-    local storedVersion = variables:get('__settings/__version')
+    local storedVersion = variables:get('__version')
     updateSettings = (storedVersion or -1) < addonVersion
   end
 
@@ -71,18 +77,18 @@ manager.initialize = function(token, defaults, variables)
     syncSettings = function(source, target)
       -- Iterate over all keys and values in the source table.
       for sourceKey, sourceValue in pairs(source) do
-        -- If the value in the source is a table, handle nested or toggleable logic.
+        -- If the value in the source is a table, handle nested tables and lists separately.
         if type(sourceValue) == 'table' then
           -- Ensure the target has a table for this key.
           if target[sourceKey] == nil then
             target[sourceKey] = {}
           end
 
-          if sourceValue.__toggleable then
-            -- Synchronize toggleable states: add missing toggle states to the target.
-            for toggleKey, toggleState in pairs(sourceValue) do
-              if target[sourceKey][toggleKey] == nil then
-                target[sourceKey][toggleKey] = toggleState
+          if sourceValue.__list then
+            -- Synchronize the content of the list.
+            for listKey, listValue in pairs(sourceValue) do
+              if target[sourceKey][listKey] == nil then
+                target[sourceKey][listKey] = listValue
               end
             end
           else
@@ -97,17 +103,16 @@ manager.initialize = function(token, defaults, variables)
         end
       end
 
-      if not target.__toggleable then
+      -- Remove keys that don't exist in the source, if the target is not a list.
+      if not target.__list then
         for targetKey in pairs(target) do
-          if source[targetKey] == nil then
-            target[targetKey] = nil -- remove keys that don't exist in the source.
-          end
+          if source[targetKey] == nil then target[targetKey] = nil end
         end
       end
     end
 
     syncSettings(defaults.data, variables:get('__settings'))
-    variables:set('__settings/__version', addonVersion)
+    variables:set('__version', addonVersion)
   end
 end
 
@@ -118,9 +123,7 @@ end
 ---@return unknown
 ---
 manager.getValue = function(self, key)
-  local value = self.storage:get(
-    string.format('__settings/%s', tostring(key))
-  )
+  local value = self.storage:get('__settings/' .. tostring(key))
   if value == nil then
     throw('The key `%s` does not exist in the settings.', key)
   end
@@ -136,9 +139,9 @@ end
 ---
 manager.getValueFromList = function(self, list, key)
   ---@type backbone.list-setting
-  local content = self:getValue(list)
+  local content = self.storage:get('__settings/' .. list)
   if type(content) ~= 'table' or not content.__list then
-    throw('The key `%s` is not a list.', list)
+    throw('The list `%s` does not exist in the settings.', list)
   end
   return hashmap.get(content, tostring(key))
 end
@@ -166,23 +169,77 @@ end
 ---
 manager.getDefaultValueFromList = function(self, list, key)
   ---@type backbone.list-setting
-  local content = self:getDefaultValue(list)
+  local content = self.defaults:get(list)
   if type(content) ~= 'table' or not content.__list then
-    throw('The key `%s` is not a list.', list)
+    throw('The list `%s` does not exist in the default settings.', list)
   end
   return hashmap.get(content, tostring(key))
+end
+
+---
+---
+---
+---@generic V
+---@param key string
+---@param value V
+---@return V
+---
+manager.setValue = function(self, key, value)
+  local currentValue = self:getValue(key)
+  local defaultValue = self:getDefaultValue(key)
+  if type(currentValue) ~= type(defaultValue) then
+    throw('The setting "%s" must be of type %s, got %s.',
+      key, type(defaultValue), type(currentValue)
+    )
+  end
+  self.storage:set('__settings/' .. key, value)
+  backbone.triggerCustomEvent(context.token,
+    'SETTING_CHANGED/' .. self.token.name, { key = key, value = value }
+  )
+  return value
+end
+
+---
+---
+---
+---@generic V
+---@param list string
+---@param key string|number
+---@param value V
+---@return V
+---
+manager.setListValue = function(self, list, key, value)
+  local defaultContent = self:getDefaultValue(list)
+  if type(defaultContent) ~= 'table' or not defaultContent.__list then
+    throw('The list `%s` does not exist in the default settings.', list)
+  end
+  if type(value) ~= defaultContent.__type then
+    throw('The list "%s" expect values of type %s, got %s.',
+      defaultContent.__type, type(value)
+    )
+  end
+  local content = self.storage:get('__settings/' .. list)
+  hashmap.set(content, key, value)
+  backbone.triggerCustomEvent(context.token,
+    'SETTING_CHANGED/' .. self.token.name, { list = list, key = key, value = value }
+  )
+  return value
 end
 
 ---
 ---Convert an array of elements into a toggleable list structure.
 ---Each element in the array becomes a string key in the list, with a value of `true`.
 ---
+---@param valueType 'boolean'|'string'|'number'
 ---@param elements array<string|number>
 ---@return backbone.list-setting
 ---
-backbone.createListSetting = function(elements)
+backbone.createListSetting = function(valueType, elements)
+  if not array.contains({ 'boolean', 'string', 'number' }, valueType) then
+    throw('Invalid value type `%s`, must be `boolean`, `string` or `number`.', valueType)
+  end
   ---@type backbone.list-setting
-  local list = { __list = true }
+  local list = { __list = true, __type = valueType }
   array.iterate(elements, function(_, key)
     if key ~= '__list' then list[tostring(key)] = true end
   end)
@@ -190,7 +247,7 @@ backbone.createListSetting = function(elements)
 end
 
 ---
----
+---Retrieve the settings manager for the specified token.
 ---
 ---@param token backbone.token
 ---@param defaults table
@@ -198,6 +255,8 @@ end
 backbone.useSettings = function(token, defaults)
   if hashmap.contains(registry, token) then
     return hashmap.get(registry, token) -- reuse the existing manager.
+  else
+    backbone.createCustomEvent(context.token, 'SETTING_CHANGED/' .. token.name)
+    return hashmap.set(registry, token, manager:new(token, defaults))
   end
-  return hashmap.set(registry, token, manager:new(token, defaults))
 end

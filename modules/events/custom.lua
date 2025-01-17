@@ -27,6 +27,7 @@ end
 
 ---
 ---Create a new custom event with the specified name and access level.
+---* The default access level is `public`.
 ---
 ---@param token backbone.token
 ---@param name string

@@ -13,8 +13,15 @@
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
----Represents 
+---
+---
+---@alias backbone.list-setting.value-type boolean|number|string
+---
+
+---
+---
 ---
 ---@class backbone.list-setting : { [string]: unknown }
+---@field __type backbone.list-setting.value-type
 ---@field __list boolean
 ---
