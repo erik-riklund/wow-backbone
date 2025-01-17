@@ -14,14 +14,14 @@ local context = select(2, ...)
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
----
+---Used to maintain a registry of active settings managers.
 ---
 ---@type table<backbone.token, backbone.settings-manager>
 ---
 local registry = {}
 
 ---
----
+---Represents a settings manager for an addon.
 ---
 ---@class backbone.settings-manager
 ---@field token backbone.token
@@ -117,7 +117,7 @@ manager.initialize = function(token, defaults, variables)
 end
 
 ---
----
+---Retrieve the value associated with the specified key.
 ---
 ---@param key string
 ---@return unknown
@@ -131,7 +131,7 @@ manager.getValue = function(self, key)
 end
 
 ---
----
+---Retrieve the value associated with the specified list key.
 ---
 ---@param list string
 ---@param key string|number
@@ -147,7 +147,7 @@ manager.getValueFromList = function(self, list, key)
 end
 
 ---
----
+---Retrieve the default value associated with the specified key.
 ---
 ---@param key string
 ---@return unknown
@@ -161,7 +161,7 @@ manager.getDefaultValue = function(self, key)
 end
 
 ---
----
+---Retrieve the default value associated with the specified key in a list.
 ---
 ---@param list string
 ---@param key string|number
@@ -177,7 +177,7 @@ manager.getDefaultValueFromList = function(self, list, key)
 end
 
 ---
----
+---Set the value associated with the specified key.
 ---
 ---@generic V
 ---@param key string
@@ -200,7 +200,7 @@ manager.setValue = function(self, key, value)
 end
 
 ---
----
+---Set the value associated with the specified list key.
 ---
 ---@generic V
 ---@param list string
@@ -218,6 +218,9 @@ manager.setListValue = function(self, list, key, value)
       defaultContent.__type, type(value)
     )
   end
+  if key == '__list' or key == '__type' then
+    throw('The key `%s` cannot be used as a list key.', key)
+  end
   local content = self.storage:get('__settings/' .. list)
   hashmap.set(content, key, value)
   backbone.triggerCustomEvent(context.token,
@@ -227,8 +230,8 @@ manager.setListValue = function(self, list, key, value)
 end
 
 ---
----Convert an array of elements into a toggleable list structure.
----Each element in the array becomes a string key in the list, with a value of `true`.
+---Convert an array of elements into a list structure.
+---* Each element in the array becomes a string key in the list, with a value of `valueType`.
 ---
 ---@param valueType 'boolean'|'string'|'number'
 ---@param elements array<string|number>
@@ -244,7 +247,7 @@ backbone.createListSetting = function(valueType, elements)
   ---@type backbone.list-setting
   local list = { __list = true, __type = valueType }
   array.iterate(elements, function(_, key)
-    if key ~= '__list' then
+    if key ~= '__list' and key ~= '__type' then
       list[tostring(key)] = defaultValue
     end
   end)
