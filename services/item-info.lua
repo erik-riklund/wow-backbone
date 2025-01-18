@@ -16,7 +16,7 @@ local LOOT_TYPE = BNUM.LOOT_TYPE
 ---
 ---?
 ---
----@class backbone.item-handler : backbone.service-object
+---@class backbone.item-info : backbone.service-object
 ---
 handler =
 {
@@ -143,4 +143,4 @@ handler =
 ---
 ---Register the item handler with the framework.
 ---
-backbone.registerService('backbone.item-handler', handler)
+backbone.registerService('backbone.item-info', handler)

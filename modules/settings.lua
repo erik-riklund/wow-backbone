@@ -1,7 +1,7 @@
 ---@class __backbone
 local context = select(2, ...)
 
---[[~ Updated: 2025/01/12 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/17 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -77,7 +77,7 @@ manager.initialize = function(token, defaults, variables)
     syncSettings = function(source, target)
       -- Iterate over all keys and values in the source table.
       for sourceKey, sourceValue in pairs(source) do
-        -- If the value in the source is a table, handle nested tables and lists separately.
+        -- Handle nested tables and lists.
         if type(sourceValue) == 'table' then
           -- Ensure the target has a table for this key.
           if target[sourceKey] == nil then
@@ -143,7 +143,7 @@ manager.getValueFromList = function(self, list, key)
   if type(content) ~= 'table' or not content.__list then
     throw('The list `%s` does not exist in the settings.', list)
   end
-  return hashmap.get(content, tostring(key))
+  return content[tostring(key)]
 end
 
 ---
@@ -173,7 +173,7 @@ manager.getDefaultValueFromList = function(self, list, key)
   if type(content) ~= 'table' or not content.__list then
     throw('The list `%s` does not exist in the default settings.', list)
   end
-  return hashmap.get(content, tostring(key))
+  return content[tostring(key)]
 end
 
 ---

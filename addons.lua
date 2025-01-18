@@ -52,9 +52,7 @@ backbone.parseAddonMetadata = function(addon, key, separator)
   local metadata = C_AddOns.GetAddOnMetadata(addon, key)
   if type(metadata) == 'string' and string.len(metadata) > 0 then
     local data = { string.split(separator or ',', metadata) }
-    array.iterate(data,
-      function(_, value) return string.trim(value) end
-    )
+    array.iterate(data, function(_, value) return string.trim(value) end)
     return data
   end
 end
