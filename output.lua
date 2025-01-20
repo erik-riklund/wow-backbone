@@ -16,11 +16,12 @@
 local palette =
 {
   normal    = 'F5DEB3', -- Warm, wheat color.
-  neutral   = 'BEBEBE', -- Neutral light gray.
+  neutral   = 'FFFFFF', -- Plain white.
+  faded     = 'BEBEBE', -- Neutral light gray.
   info      = '4682B4', -- Steel blue.
   error     = 'CC4733', -- Dark red-orange.
   highlight = 'FCD462', -- Soft golden-yellow.
-  success   = '6B8E23', -- Dark olive green.
+  success   = '00AC00', -- Bright green.
 }
 
 ---
@@ -43,7 +44,7 @@ backbone.colorizeText = function(text)
           return switch(
             colorCode,
             {
-              [{ 'normal', 'error', 'highlight', 'success', 'neutral', 'info' }] = function()
+              [{ 'normal', 'error', 'highlight', 'success', 'neutral', 'faded', 'info' }] = function()
                 return '|cFF' .. palette[colorCode]
               end,
 
