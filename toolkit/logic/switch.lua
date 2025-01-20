@@ -20,7 +20,7 @@ assert(switch == nil,
 ---
 ---@generic V
 ---@param value V
----@param cases table<'default'|array<V>|V, (unknown|fun(): unknown?)>
+---@param cases table<'default'|array<V>|V, unknown|(fun(): unknown?)>
 ---@return unknown?
 ---
 switch = function(value, cases)
