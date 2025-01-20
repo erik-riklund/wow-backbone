@@ -58,7 +58,9 @@ taskFrame:SetScript(
       local time_limit = 0.01667 -- 60 fps
       local time_started = GetTimePreciseSec()
 
-      while tasks[1] ~= nil and (GetTimePreciseSec() - time_started < time_limit) do
+      while tasks[1] ~= nil and (
+          GetTimePreciseSec() - time_started < time_limit
+        ) do
         backbone.executeTask(table.remove(tasks, 1))
       end
     end

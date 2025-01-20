@@ -13,6 +13,8 @@
 ---
 ---The color palette used to visually enhance messages.
 ---
+---@enum (key) backbone.color
+---
 local palette =
 {
   normal    = 'F5DEB3', -- Warm, wheat color.
@@ -44,11 +46,12 @@ backbone.colorizeText = function(text)
           return switch(
             colorCode,
             {
-              [{ 'normal', 'error', 'highlight', 'success', 'neutral', 'faded', 'info' }] = function()
-                return '|cFF' .. palette[colorCode]
+              default = function()
+                return '<' .. colorCode .. '>'
               end,
-
-              default = function() return '<' .. colorCode .. '>' end,
+              [hashmap.keys(palette)] = function()
+                return '|cFF' .. palette[colorCode]
+              end
             }
           )
         end

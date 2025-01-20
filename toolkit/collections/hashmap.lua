@@ -52,6 +52,21 @@ hashmap.drop = function(target, key)
 end
 
 ---
+---Retrieve the value associated with the specified key.
+---
+---@generic K, V
+---@param target table<K, V>
+---@param key K
+---@return V
+---
+hashmap.get = function(target, key)
+  if target[key] == nil then
+    throw('The key `%s` does not exist in the target table.', key)
+  end
+  return target[key]
+end
+
+---
 ---Apply a function to each key/value pair of the table.
 ---The function can return a new value to replace the old value.
 ---
@@ -67,18 +82,18 @@ hashmap.iterate = function(target, callback)
 end
 
 ---
----Retrieve the value associated with the specified key.
+---Return an array with the keys in the target table.
 ---
----@generic K, V
----@param target table<K, V>
----@param key K
----@return V
+---@generic K
+---@param target table<K, unknown>
+---@return array<K>
 ---
-hashmap.get = function(target, key)
-  if target[key] == nil then
-    throw('The key `%s` does not exist in the target table.', key)
+hashmap.keys = function(target)
+  local keys = {}
+  for key in pairs(target) do
+    array.append(keys, key)
   end
-  return target[key]
+  return keys
 end
 
 ---
