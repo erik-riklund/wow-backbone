@@ -12,4 +12,8 @@
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
+---
+---Represents the available locales for World of Warcraft.
+---
 ---@alias backbone.locale 'enUS'|'koKR'|'frFR'|'deDE'|'zhCN'|'zhTW'|'esES'|'esMX'|'ruRU'|'ptBR'|'itIT'
+---
