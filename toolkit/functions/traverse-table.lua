@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/12 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -14,12 +14,6 @@ assert(traverseTable == nil,
   'Global variable conflict: `traverseTable` has already been defined.'
 )
 
----
----Traverse a nested table structure using a series of keys (steps).
----Supports different modes of behavior when encountering missing or invalid keys:
---- - `exit` (default): Stops and returns `nil` if a step does not exist, or if a non-table step is encountered.
---- - `build`: Creates intermediate tables for missing steps.
---- - `error`: Throws an error if a step is missing or invalid.
 ---
 ---@param target table
 ---@param steps array<backbone.hashmap-key-type>

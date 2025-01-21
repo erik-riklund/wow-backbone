@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/11 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -14,17 +14,13 @@ assert(createProtectedProxy == nil,
   'Global variable conflict: `createProtectedProxy` has already been defined.'
 )
 
----
----Blocks attempts to modify a protected table.
----
 local blocker = function()
   error('Blocked attempt to modify a protected table.', 2)
 end
 
 ---
----Retrieve values from a protected table using closures.
----
 ---@generic T:table
+---
 ---@param target T
 ---@param key unknown
 ---@return unknown?
@@ -35,16 +31,13 @@ local retriever = function(target, key)
 end
 
 ---
----Create a read-only proxy to protect a table from modification. The proxy can be
----used to retrieve values from the target table, but any attempts to modify the table
----will result in an error. Nested tables are also protected when accessed.
----
 ---@generic T:table
+---
 ---@param target T
 ---@return T
 ---
 _G.createProtectedProxy = function(target)
-  local proxy = setmetatable({},
+  return setmetatable({},
     {
       __newindex = blocker,
       __index = function(_, key)
@@ -52,5 +45,4 @@ _G.createProtectedProxy = function(target)
       end
     }
   )
-  return proxy
 end

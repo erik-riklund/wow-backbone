@@ -1,7 +1,7 @@
 ---@class __backbone
 local context = select(2, ...)
 
---[[~ Updated: 2025/01/09 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -14,25 +14,16 @@ local context = select(2, ...)
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
----A table storing tokens, where each key is an identifier for
----an addon and each value is a `backbone.token` instance.
----
 ---@type table<string, backbone.token>
 ---
 local tokens = {}
 
 ---
----Create an identifier for an addon based on its name.
----
 ---@param addonName string
----@return string
+---@return string id
 ---
-context.getTokenId = function(addonName)
-  return string.lower(addonName)
-end
+context.getTokenId = function(addonName) return string.lower(addonName) end
 
----
----Retrieve the token associated with an addon.
 ---
 ---@param addonName string
 ---@return backbone.token
@@ -46,18 +37,13 @@ context.getToken = function(addonName)
 end
 
 ---
----Validate the provided token by comparing it to the
----registered token for the specified addon.
----
 ---@param token backbone.token
----@return boolean
+---@return boolean isValid
 ---
 context.validateToken = function(token)
   return context.getToken(token.name) == token
 end
 
----
----Create a token used to identify an addon within the Backbone ecosystem.
 ---
 ---@param addonName string
 ---@return backbone.token
@@ -72,7 +58,5 @@ backbone.createToken = function(addonName)
   )
 end
 
----
----Used internally to represent the framework itself.
---
+--The token used by the framework to create and trigger custom events.
 context.token = backbone.createToken 'Backbone'

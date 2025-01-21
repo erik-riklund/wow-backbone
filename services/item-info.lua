@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/14 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -14,17 +14,13 @@ local handler
 local LOOT_TYPE = BNUM.LOOT_TYPE
 
 ---
----?
----
 ---@class backbone.item-info : backbone.service-object
 ---
 handler =
 {
   ---
-  ---Returns the id for an item.
-  ---
   ---@param link string
-  ---@return number
+  ---@return number id
   ---
   getItemId = function(link)
     local itemId = string.match(link, 'item:(%d+)')
@@ -32,14 +28,10 @@ handler =
   end,
 
   ---
-  ---Returns data about an item.
-  ---
   ---@param item number|string
   ---@return backbone.item-data
   ---
   getItemData = function(item)
-    ---
-    ---Contains data about an item.
     ---
     ---@class backbone.item-data
     ---
@@ -72,14 +64,10 @@ handler =
   end,
 
   ---
-  ---Returns data about a loot slot.
-  ---
   ---@param slot number
   ---@return backbone.loot-data
   ---
   getLootData = function(slot)
-    ---
-    ---Contains data about a loot slot.
     ---
     ---@class backbone.loot-data
     ---
@@ -120,8 +108,6 @@ handler =
   end,
 
   ---
-  ---Determines the actual item level of an item, after any modifiers.
-  ---
   ---@param item number|string
   ---@return number actual, boolean preview, number sparse
   ---
@@ -129,8 +115,6 @@ handler =
     return C_Item.GetDetailedItemLevelInfo(item)
   end,
 
-  ---
-  ---Determine if the player knows the appearance of an item.
   ---
   ---@param item number|string
   ---@return boolean
@@ -140,7 +124,4 @@ handler =
   end
 }
 
----
----Register the item handler with the framework.
----
 backbone.registerService('backbone.item-info', handler)

@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/07 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -15,17 +15,13 @@ assert(stringBuffer == nil,
 )
 
 ---
----Represents a string buffer that provide methods for incrementally
----building and manipulating a string.
----
 ---@class backbone.string-buffer
 ---@field content string[]
 ---
 _G.stringBuffer = {}
 
 ---
----Create a new string buffer.
----
+---@private
 ---@return backbone.string-buffer
 ---
 stringBuffer.new = function(self)
@@ -33,17 +29,12 @@ stringBuffer.new = function(self)
 end
 
 ---
----Append a new line to the string buffer.
----
 ---@param string string
 ---
 stringBuffer.appendLine = function(self, string)
   array.append(self.content, string)
 end
 
----
----Append a string to a specific line of the string buffer. If `lineIndex`
----is not provided, the string will be appended to the last line.
 ---
 ---@param string string
 ---@param lineIndex? number
@@ -61,8 +52,6 @@ stringBuffer.append = function(self, string, lineIndex)
 end
 
 ---
----Merge the lines of the string buffer into a single string.
----
 ---@param separator? string
 ---@return string
 ---
@@ -70,9 +59,6 @@ stringBuffer.merge = function(self, separator)
   return table.concat(self.content, separator or '\n')
 end
 
----
----Apply a function to each line of the string buffer. If the function
----returns a new string, it will replace the original line.
 ---
 ---@param callback fun(line: string): string?
 ---

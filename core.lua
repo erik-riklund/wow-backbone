@@ -21,15 +21,13 @@ assert(backbone == nil,
 _G.backbone =
 {
   ---
-  ---Specifies the currently active locale.
   ---@type backbone.locale
   ---
   activeLocale = GetLocale(),
 
   ---
-  ---Specifies the current expansion level as a numeric value.
-  ---@see EXPANSION_LEVEL
   ---@type number
+  ---@see EXPANSION_LEVEL
   ---
   currentExpansion = GetExpansionLevel()
 }

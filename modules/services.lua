@@ -1,7 +1,7 @@
 ---@class __backbone
 local context = select(2, ...)
 
---[[~ Updated: 2025/01/11 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -14,33 +14,21 @@ local context = select(2, ...)
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
----A table storing registered services, where each key is a service identifier
----and each value is a `backbone.service` instance.
----
 ---@type table<string, backbone.service>
 ---
 local services = {}
 
----
----A table used to cache and reuse existing service proxies for better performance.
----Cached objects are weakly referenced to allow garbage collection when no longer in use.
 ---
 ---@type table<string, backbone.service-object>
 ---
 local cache = setmetatable({}, { __mode = 'v' })
 
 ---
----Create an identifier for a service based on its name.
----
 ---@param name string
----@return string
+---@return string id
 ---
-local getServiceId = function(name)
-  return string.lower(name)
-end
+local getServiceId = function(name) return string.lower(name) end
 
----
----Register a service with the given name and object.
 ---
 ---@param name string
 ---@param object backbone.service-object
@@ -59,9 +47,8 @@ backbone.registerService = function(name, object)
 end
 
 ---
----Request access to a registered service by its name.
----
 ---@generic T
+---
 ---@param name `T`
 ---@return T
 ---
@@ -84,8 +71,6 @@ backbone.requestService = function(name)
   return hashmap.get(cache, serviceId)
 end
 
----
----Used internally to register services that should be loaded on demand.
 ---
 ---@param addon string
 ---@param service string

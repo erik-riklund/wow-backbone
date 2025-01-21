@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/12 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -15,11 +15,9 @@ assert(capitalize == nil,
 )
 
 ---
----Convert the first character of a string to uppercase, leaving the rest unchanged.
----
 ---@param target string
 ---@return string
 ---
 _G.capitalize = function(target)
-  return target:sub(1, 1):upper() .. target:sub(2)
+  return string.sub(target, 1, 1):upper() .. string.sub(target, 2)
 end

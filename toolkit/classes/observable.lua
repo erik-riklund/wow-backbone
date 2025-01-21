@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/08 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -15,15 +15,11 @@ assert(observable == nil,
 )
 
 ---
----Represents an observable object to which observers can be subscribed.
----
 ---@class backbone.observable
 ---@field observers array<backbone.observer>
 ---
 _G.observable = {}
 
----
----Create a new observable instance.
 ---
 ---@private
 ---@return backbone.observable
@@ -33,7 +29,7 @@ observable.new = function(self)
 end
 
 ---
----Remove observers that are not marked as persistent from the observable.
+---@protected
 ---
 observable.cleanup = function(self)
   local count = #self.observers
@@ -47,8 +43,6 @@ observable.cleanup = function(self)
 end
 
 ---
----Notify all subscribed observers, passing along the provided `payload`.
----
 ---@param payload? table
 ---
 observable.notify = function(self, payload)
@@ -56,19 +50,11 @@ observable.notify = function(self, payload)
     throw('Expected `payload` to be a table, got %s.', type(payload))
   end
   for _, observer in ipairs(self.observers) do
-    backbone.queueTask(
-      function() observer.callback(payload or {}) end
-    )
+    backbone.queueTask(function() observer.callback(payload or {}) end)
   end
   self:cleanup()
 end
 
----
----Subscribe an observer to the observable. The observer can be either an object
----with a `callback` function and an optional `persistent` flag, or a standalone
----callback function.
----
----* Observers are marked as persistent by default unless specified otherwise.
 ---
 ---@param observer backbone.observer|backbone.observer-callback
 ---
@@ -80,9 +66,6 @@ observable.subscribe = function(self, observer)
   array.append(self.observers, observer)
 end
 
----
----Unsubscribes an observer from the observable. The provided `observer` must be a
----reference to an observer object or its callback function.
 ---
 ---@param observer backbone.observer|backbone.observer-callback
 ---

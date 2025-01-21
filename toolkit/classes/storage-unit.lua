@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/11 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -15,15 +15,11 @@ assert(storageUnit == nil,
 )
 
 ---
----Represents a storage unit for managing and accessing hierarchical data.
----
 ---@class backbone.storage-unit
 ---@field data table
 ---
 _G.storageUnit = {}
 
----
----Create a new storage unit that use the provided data source.
 ---
 ---@private
 ---@param source table
@@ -37,8 +33,6 @@ storageUnit.new = function(self, source)
 end
 
 ---
----Retrieve the value associated with the provided key.
----
 ---@param key string
 ---@return unknown
 ---
@@ -47,10 +41,8 @@ storageUnit.get = function(self, key)
 end
 
 ---
----Set the value associated with the provided key. If the key does not exist,
----it will be created. The provided value is returned for chainability.
----
 ---@generic V
+---
 ---@param key string
 ---@param value V
 ---@return V

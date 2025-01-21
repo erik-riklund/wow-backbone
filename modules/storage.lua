@@ -1,7 +1,7 @@
 ---@class __backbone
 local context = select(2, ...)
 
---[[~ Updated: 2025/01/11 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -13,8 +13,6 @@ local context = select(2, ...)
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
----
----
 ---
 ---@param token backbone.token
 ---@param scope? backbone.storage-scope

@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/08 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -15,10 +15,8 @@ assert(inherit == nil,
 )
 
 ---
----Set the metatable of `child` to inherit from `parent`, establishing an
----inheritance relationship. The return type matches the type of `parent`.
----
 ---@generic P:table
+---
 ---@param parent P
 ---@param child table
 ---@return P

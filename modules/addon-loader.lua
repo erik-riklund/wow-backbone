@@ -1,7 +1,7 @@
 ---@class __backbone
 local context = select(2, ...)
 
---[[~ Updated: 2025/01/14 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -14,14 +14,12 @@ local context = select(2, ...)
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
----A table of addon loaders, each representing a handler for a specific loading condition.
----
 ---@type table<string, backbone.addon-loader>
 ---
 local loaders =
 {
   ---
-  ---Handles loading of addons based on specific events.
+  ---Handle loading of addons based on specific events.
   ---
   OnEvent = function(index, metadata)
     array.iterate(metadata, function(_, eventName)
@@ -39,7 +37,7 @@ local loaders =
   end,
 
   ---
-  ---Handles loading of addons when a specific addon is loaded.
+  ---Handle loading of addons when a specific addon is loaded.
   ---
   OnAddonLoaded = function(index, metadata)
     array.iterate(metadata, function(_, addonName)
@@ -52,7 +50,7 @@ local loaders =
   end,
 
   ---
-  ---Handles loading of addons when a specific service is requested.
+  ---Handle loading of addons when a specific service is requested.
   ---
   OnServiceRequest = function(index, metadata)
     local addonName = C_AddOns.GetAddOnInfo(index)

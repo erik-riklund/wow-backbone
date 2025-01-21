@@ -1,7 +1,7 @@
 ---@class __backbone
 local context = select(2, ...)
 
---[[~ Updated: 2025/01/17 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -14,24 +14,19 @@ local context = select(2, ...)
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
----Used to maintain a registry of active settings managers.
----
 ---@type table<backbone.token, backbone.settings-manager>
 ---
 local registry = {}
 
 ---
----Represents a settings manager for an addon.
----
 ---@class backbone.settings-manager
+---
 ---@field token backbone.token
 ---@field defaults backbone.storage-unit
 ---@field storage backbone.storage-unit
 ---
 local settingsManager = {}
 
----
----Create a new settings manager for the specified addon.
 ---
 ---@param token backbone.token
 ---@param settings table
@@ -44,9 +39,7 @@ settingsManager.new = function(self, token, settings)
 end
 
 ---
----Sync the default settings with the current settings stored in the addon storage.
----* Settings are synced only when the addon version is newer than the one present in the storage,
----or if the framework operates in development mode.
+---Synchronize the default settings with the stored settings.
 ---
 settingsManager.initialize = function(self)
   if self.storage ~= nil then
@@ -66,8 +59,6 @@ settingsManager.initialize = function(self)
 
   if updateSettings then
     local syncSettings
-    ---
-    ---Synchronizes settings between a source table and a target table.
     ---
     ---@param source table
     ---@param target table
@@ -115,8 +106,6 @@ settingsManager.initialize = function(self)
 end
 
 ---
----Retrieve the value associated with the specified key.
----
 ---@param key string
 ---@return unknown
 ---
@@ -128,8 +117,6 @@ settingsManager.getValue = function(self, key)
   return value
 end
 
----
----Retrieve the value associated with the specified list key.
 ---
 ---@param list string
 ---@param key string|number
@@ -145,8 +132,6 @@ settingsManager.getValueFromList = function(self, list, key)
 end
 
 ---
----Retrieve the default value associated with the specified key.
----
 ---@param key string
 ---@return unknown
 ---
@@ -158,8 +143,6 @@ settingsManager.getDefaultValue = function(self, key)
   return value
 end
 
----
----Retrieve the default value associated with the specified key in a list.
 ---
 ---@param list string
 ---@param key string|number
@@ -175,9 +158,8 @@ settingsManager.getDefaultValueFromList = function(self, list, key)
 end
 
 ---
----Set the value associated with the specified key.
----
 ---@generic V
+---
 ---@param key string
 ---@param value V
 ---@return V
@@ -198,9 +180,8 @@ settingsManager.setValue = function(self, key, value)
 end
 
 ---
----Set the value associated with the specified list key.
----
 ---@generic V
+---
 ---@param list string
 ---@param key string|number
 ---@param value V
@@ -228,9 +209,6 @@ settingsManager.setListValue = function(self, list, key, value)
 end
 
 ---
----Convert an array of elements into a list structure.
----* Each element in the array becomes a string key in the list, with a value of `valueType`.
----
 ---@param valueType 'boolean'|'string'|'number'
 ---@param elements array<string|number>
 ---@return backbone.list-setting
@@ -252,8 +230,6 @@ backbone.createListSetting = function(valueType, elements)
   return list
 end
 
----
----Retrieve the settings manager for the specified token.
 ---
 ---@param token backbone.token
 ---@param defaults table

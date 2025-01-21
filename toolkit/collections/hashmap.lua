@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/07 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -15,17 +15,13 @@ assert(hashmap == nil,
 )
 
 ---
----Provides a set of functions for working with hashmaps.
----Built-in access checks help avoid errors that may be hard to debug.
----
 ---@class backbone.hashmap
 ---
 _G.hashmap = {}
 
 ---
----Determines whether the target table contains the specified key.
----
 ---@generic K
+---
 ---@param target table<K, unknown>
 ---@param key K
 ---@return boolean
@@ -35,9 +31,8 @@ hashmap.contains = function(target, key)
 end
 
 ---
----Remove the value associated with the specified key and return it.
----
 ---@generic K, V
+---
 ---@param target table<K, V>
 ---@param key K
 ---@return V
@@ -52,9 +47,8 @@ hashmap.drop = function(target, key)
 end
 
 ---
----Retrieve the value associated with the specified key.
----
 ---@generic K, V
+---
 ---@param target table<K, V>
 ---@param key K
 ---@return V
@@ -67,10 +61,8 @@ hashmap.get = function(target, key)
 end
 
 ---
----Apply a function to each key/value pair of the table.
----The function can return a new value to replace the old value.
----
 ---@generic K, V
+---
 ---@param target table<K, V>
 ---@param callback fun(key: K, value: V): V?
 ---
@@ -82,9 +74,8 @@ hashmap.iterate = function(target, callback)
 end
 
 ---
----Return an array with the keys in the target table.
----
 ---@generic K
+---
 ---@param target table<K, unknown>
 ---@return array<K>
 ---
@@ -97,9 +88,8 @@ hashmap.keys = function(target)
 end
 
 ---
----Set the value associated with the specified key.
----
 ---@generic K, V
+---
 ---@param target table<K, V>
 ---@param key K
 ---@param value V

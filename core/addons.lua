@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/10 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -11,18 +11,13 @@
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
----Determines if the specified addon is loaded.
----
----@param addonName string
+---@param addon string|number
 ---@return boolean
 ---
-backbone.isAddonLoaded = function(addonName)
-  return select(2, C_AddOns.IsAddOnLoaded(addonName))
+backbone.isAddonLoaded = function(addon)
+  return select(2, C_AddOns.IsAddOnLoaded(addon))
 end
 
----
----Obtain the version number for the specified addon.
----* Returned as a number, e.g. `1.3.5` returns `10305`.
 ---
 ---@param addon string|number
 ---@return number
@@ -36,9 +31,6 @@ backbone.getAddonVersionNumber = function(addon)
   return (tonumber(major) * 10000) + (tonumber(minor or 0) * 100) + tonumber(patch or 0)
 end
 
----
----Parse the metadata for the specified addon and key. The specified separator
----will be used to split the metadata into an array.
 ---
 ---@param addon string|number
 ---@param key string

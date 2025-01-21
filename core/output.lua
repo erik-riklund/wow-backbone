@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/07 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -10,8 +10,6 @@
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
----
----The color palette used to visually enhance messages.
 ---
 ---@enum (key) backbone.color
 ---
@@ -26,13 +24,6 @@ local palette =
   success   = '00AC00', -- Bright green.
 }
 
----
----Enhances text with colors using special tags.
----
----* Use `<color:#RRGGBB>` to set custom colors (replace `#RRGGBB` with your color code).
----* The predefined tags `<normal>`, `<error>`, `<highlight>`, `<success>`,
----`<neutral>` and `<info>` automatically apply specific colors.
----* End color formatting with `</end>` to reset to default.
 ---
 ---@param text string
 ---
@@ -62,26 +53,12 @@ backbone.colorizeText = function(text)
 end
 
 ---
----Print a message to the default chat frame. The message can be colorized to improve readability.
----
----* Use `<color:#RRGGBB>` to set custom colors (replace `#RRGGBB` with your color code).
----* The predefined tags `<normal>`, `<error>`, `<highlight>`, `<success>`,
----`<neutral>` and `<info>` automatically apply specific colors.
----
 ---@param message unknown
 ---
 backbone.print = function(message)
   print(backbone.colorizeText('<normal>' .. tostring(message) .. '</end>'))
 end
 
----
----Formats and prints a message with colorized output.
----
----* Uses the `string.format` function, letting you include placeholders (`%s`, `%d`, etc.) in your message,
----which are replaced by the additional arguments.
----* Use `<color:#RRGGBB>` to set custom colors (replace `#RRGGBB` with your color code).
----* The predefined tags `<normal>`, `<error>`, `<highlight>`, `<success>`,
----`<neutral>` and `<info>` automatically apply specific colors.
 ---
 ---@param message string
 ---@param ... string|number

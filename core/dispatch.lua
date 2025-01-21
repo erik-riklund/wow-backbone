@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/07 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -10,11 +10,35 @@
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
-local tasks = ({} --[[@as table<number, backbone.task>]])
-local taskFrame = CreateFrame 'Frame' --[[@as Frame]]
+---
+---@type table<number, backbone.task>
+---
+local tasks = {}
 
 ---
----Invoke the provided callback in safe mode, gracefully handling any errors.
+---@type Frame
+---
+local taskFrame = CreateFrame 'Frame'
+
+---
+---Execute tasks in a non-blocking manner.
+---
+taskFrame:SetScript(
+  'OnUpdate', function()
+    if tasks[1] ~= nil then
+      local time_limit = 0.01667 -- 60 fps
+      local time_started = GetTimePreciseSec()
+
+      while tasks[1] ~= nil and (
+          GetTimePreciseSec() - time_started < time_limit
+        ) do
+        backbone.executeTask(table.remove(tasks, 1))
+      end
+    end
+  end
+)
+
+---
 ---@param task backbone.task
 ---
 backbone.executeTask = function(task)
@@ -35,9 +59,6 @@ backbone.executeTask = function(task)
 end
 
 ---
----Queues the provided callback for execution in the next frame.
----* Useful for tasks that does not require immediate execution.
----
 ---@param task backbone.task
 ---
 backbone.queueTask = function(task)
@@ -46,22 +67,3 @@ backbone.queueTask = function(task)
   end
   array.append(tasks, task)
 end
-
----
----Responsible for handling the execution of queued tasks.
----Ensures that the tasks are executed in a non-blocking manner.
----
-taskFrame:SetScript(
-  'OnUpdate', function()
-    if tasks[1] ~= nil then
-      local time_limit = 0.01667 -- 60 fps
-      local time_started = GetTimePreciseSec()
-
-      while tasks[1] ~= nil and (
-          GetTimePreciseSec() - time_started < time_limit
-        ) do
-        backbone.executeTask(table.remove(tasks, 1))
-      end
-    end
-  end
-)

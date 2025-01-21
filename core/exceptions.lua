@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/13 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -11,16 +11,13 @@
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 assert(throw == nil,
-'Global variable conflict: `throw` has already been defined.'
+  'Global variable conflict: `throw` has already been defined.'
 )
 
----
----Throw an exception with the provided message.
----* Any extra arguments will be used to format the displayed message.
 ---
 ---@param exception string
 ---@param ... string|number
 ---
 _G.throw = function(exception, ...)
-  error(string.format(exception, ...), 2)
+  error(... and string.format(exception, ...) or exception, 2)
 end

@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/07 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -15,17 +15,13 @@ assert(array == nil,
 )
 
 ---
----Contains a set of robust utility functions for working with arrays.
----Built-in access checks help avoid errors that may be hard to debug.
----
 ---@class backbone.array
 ---
 _G.array = {}
 
 ---
----Append an element to the end of the array.
----
 ---@generic V
+---
 ---@param target array<V>
 ---@param element V
 ---@return V
@@ -39,18 +35,16 @@ array.append = function(target, element)
 end
 
 ---
----
----
 ---@generic V
+---
 ---@param target array<V>
 ---@return array<V>
 ---
 array.clear = function(target) return wipe(target) end
 
 ---
----Determine if the array contains the specified value.
----
 ---@generic V
+---
 ---@param target array<V>
 ---@param searchValue V
 ---@return boolean
@@ -68,10 +62,8 @@ array.contains = function(target, searchValue)
 end
 
 ---
----Apply a callback function to each element of the array.
----The function can return a new value to replace the old value.
----
 ---@generic V
+---
 ---@param target array<V>
 ---@param callback fun(index: number, value: V): V?
 ---
@@ -83,9 +75,8 @@ array.iterate = function(target, callback)
 end
 
 ---
----Remove and return the last element from the array.
----
 ---@generic V
+---
 ---@param target array<V>
 ---@return V
 ---
@@ -94,9 +85,8 @@ array.pop = function(target)
 end
 
 ---
----Remove an element from the array. The removed value is returned.
----
 ---@generic V
+---
 ---@param target array<V>
 ---@param index number
 ---@return V

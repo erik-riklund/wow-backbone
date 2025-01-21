@@ -1,7 +1,7 @@
 ---@class __backbone
 local context = select(2, ...)
 
---[[~ Updated: 2025/01/09 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -13,12 +13,19 @@ local context = select(2, ...)
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
-local events = ({} --[[@as table<string, backbone.observable>]])
-local eventFrame = CreateFrame 'Frame' --[[@as Frame]]
+---
+---@type table<string, backbone.observable>
+---
+local events = {}
+
+---
+---@type Frame
+---
+local eventFrame = CreateFrame 'Frame'
 eventFrame:RegisterEvent 'ADDON_LOADED'
 
 ---
----Responsible for handling the dispatching of game events.
+---Handle the dispatching of game events.
 ---
 eventFrame:SetScript(
   'OnEvent', function(_, eventName, ...)
@@ -55,8 +62,6 @@ eventFrame:SetScript(
 )
 
 ---
----Register a listener for the specified event.
----
 ---@param eventName string
 ---@param listener backbone.observer|backbone.observer-callback
 ---
@@ -77,8 +82,6 @@ backbone.registerEventListener = function(eventName, listener)
 end
 
 ---
----Remove the provided listener from the specified event.
----
 ---@param eventName string
 ---@param listener backbone.observer|backbone.observer-callback
 ---
@@ -94,8 +97,6 @@ backbone.removeEventListener = function(eventName, listener)
 end
 
 ---
----Register a listener for the "ADDON_LOADED" event.
----
 ---@param addonName string
 ---@param callback backbone.observer-callback
 ---
@@ -104,6 +105,7 @@ backbone.onAddonLoaded = function(addonName, callback)
     backbone.queueTask(function() callback({}) end)
     return -- the addon is already loaded, exit early.
   end
+  
   local eventId = string.format(
     'ADDON_LOADED/%s', context.getEventId(addonName)
   )

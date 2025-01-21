@@ -1,7 +1,7 @@
 ---@class __backbone
 local context = select(2, ...)
 
---[[~ Updated: 2025/01/10 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -13,21 +13,17 @@ local context = select(2, ...)
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
-local events = ({} --[[@as table<string, backbone.custom-event>]])
-
 ---
----Create an identifier for a custom event based on its name.
+---@type table<string, backbone.custom-event>
+---
+local events = {}
+
 ---
 ---@param event string
----@return string
+---@return string id
 ---
-context.getEventId = function(event)
-  return string.upper(event)
-end
+context.getEventId = function(event) return string.upper(event) end
 
----
----Create a new custom event with the specified name and access level.
----* The default access level is `public`.
 ---
 ---@param token backbone.token
 ---@param name string
@@ -41,19 +37,11 @@ backbone.createCustomEvent = function(token, name, access)
   if access ~= nil and access ~= 'public' and access ~= 'private' then
     throw('Invalid access level `%s` for custom event `%s`, must be `public` or `private`.', access, name)
   end
-
-  hashmap.set(events,
-    eventId, {
-      owner = token,
-      name = name,
-      access = access or 'public',
-      observers = observable:new()
-    }
+  hashmap.set(events, eventId,
+    { owner = token, name = name, access = access or 'public', observers = observable:new() }
   )
 end
 
----
----Trigger the specified custom event, passing the provided payload to its subscribers.
 ---
 ---@param token backbone.token
 ---@param eventName string
@@ -71,8 +59,6 @@ backbone.triggerCustomEvent = function(token, eventName, payload)
   event.observers:notify(payload)
 end
 
----
----Register a listener for the specified custom event.
 ---
 ---@param eventName string
 ---@param listener backbone.custom-event-listener|backbone.observer-callback
@@ -94,8 +80,6 @@ backbone.registerCustomEventListener = function(eventName, listener)
   }
 end
 
----
----Remove the provided listener from the specified custom event.
 ---
 ---@param eventName string
 ---@param listener backbone.custom-event-listener|backbone.observer-callback

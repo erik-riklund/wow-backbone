@@ -11,13 +11,11 @@
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
----Used to control the current environment of the framework.
 ---@type 'development'|'production'
 ---
 local environment = 'development'
 
 ---
----Determine if the framework is currently in development mode.
 ---@return boolean
 ---
 backbone.isDevelopment = function()
@@ -25,10 +23,9 @@ backbone.isDevelopment = function()
 end
 
 ---
----Set the current environment of the framework.
 ---@param mode 'development'|'production'
 ---
-setEnvironment = function(mode)
+backbone.setEnvironment = function(mode)
   if mode ~= 'development' and mode ~= 'production' then
     throw('Expected `mode` to be one of "development" or "production", got "%s".', mode)
   end

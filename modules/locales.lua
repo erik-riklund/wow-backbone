@@ -1,7 +1,7 @@
 ---@class __backbone
 local context = select(2, ...)
 
---[[~ Updated: 2025/01/19 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -13,20 +13,13 @@ local context = select(2, ...)
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
----
----The default language used by the framework.
----
 local defaultLocale = 'enUS'
 
----
----
 ---
 ---@type table<backbone.token, backbone.locale-manager>
 ---
 local localeManagers = {}
 
----
----
 ---
 ---@class backbone.locale-manager
 ---@field token backbone.token
@@ -35,8 +28,6 @@ local localeManagers = {}
 local localeManager = {}
 
 ---
----
----
 ---@private
 ---@param token backbone.token
 ---
@@ -44,8 +35,6 @@ localeManager.new = function(self, token)
   return inherit(self, { token = token, locales = {} })
 end
 
----
----
 ---
 ---@param locale backbone.locale
 ---@param strings table<string, string>
@@ -63,27 +52,18 @@ localeManager.register = function(self, locale, strings)
 end
 
 ---
----
----
 ---@param key string
 ---@return string
 ---
 localeManager.get = function(self, key)
-  return (
-        type(self.locales[backbone.activeLocale]) == 'table'
-        and self.locales[backbone.activeLocale][key]
-      )
-      or (
-        type(self.locales[defaultLocale]) == 'table'
-        and self.locales[defaultLocale][key]
-      )
-      or string.format(
-        '[Missing localized string: %s (%s)]', key, self.token.name
-      )
+  local activeLocale = self.locales[backbone.activeLocale]
+  local fallbackLocale = self.locales[defaultLocale]
+
+  return (type(activeLocale) == 'table' and activeLocale[key])
+      or (type(fallbackLocale) == 'table' and fallbackLocale[key])
+      or string.format('[Missing localized string: %s (%s)]', key, self.token.name)
 end
 
----
----
 ---
 ---@param token backbone.token
 ---
@@ -96,8 +76,6 @@ backbone.useLocales = function(token)
   )
 end
 
----
----
 ---
 ---@param addon string
 ---@param locale backbone.locale
