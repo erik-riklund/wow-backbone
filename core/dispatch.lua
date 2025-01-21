@@ -15,7 +15,6 @@ local taskFrame = CreateFrame 'Frame' --[[@as Frame]]
 
 ---
 ---Invoke the provided callback in safe mode, gracefully handling any errors.
----
 ---@param task backbone.task
 ---
 backbone.executeTask = function(task)
@@ -37,7 +36,7 @@ end
 
 ---
 ---Queues the provided callback for execution in the next frame.
----Useful for tasks that does not require immediate execution.
+---* Useful for tasks that does not require immediate execution.
 ---
 ---@param task backbone.task
 ---

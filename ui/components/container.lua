@@ -10,26 +10,4 @@
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
-assert(backbone == nil,
-  'Global variable conflict: `backbone` has already been defined.'
-)
 
----
----@class backbone
----The API for the Backbone framework.
----
-_G.backbone =
-{
-  ---
-  ---Specifies the currently active locale.
-  ---@type backbone.locale
-  ---
-  activeLocale = GetLocale(),
-
-  ---
-  ---Specifies the current expansion level as a numeric value.
-  ---@see EXPANSION_LEVEL
-  ---@type number
-  ---
-  currentExpansion = GetExpansionLevel()
-}

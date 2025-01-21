@@ -5,11 +5,12 @@
 ## Notes: An addon development framework.
 
 core.lua
-error.lua
-enums.lua
-output.lua
-addons.lua
-dispatch.lua
+core/environment.lua
+core/exceptions.lua
+library/enums.lua
+core/output.lua
+core/addons.lua
+core/dispatch.lua
 
 toolkit/collections/array.lua
 toolkit/collections/hashmap.lua
@@ -23,7 +24,7 @@ toolkit/functions/capitalize-string.lua
 toolkit/functions/protected-proxy.lua
 toolkit/functions/traverse-table.lua
 
-tokens.lua
+core/tokens.lua
 modules/events/custom.lua
 modules/events/game.lua
 modules/services.lua

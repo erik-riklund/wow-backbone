@@ -10,26 +10,27 @@
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
-assert(backbone == nil,
-  'Global variable conflict: `backbone` has already been defined.'
-)
+---
+---Used to control the current environment of the framework.
+---@type 'development'|'production'
+---
+local environment = 'development'
 
 ---
----@class backbone
----The API for the Backbone framework.
+---Determine if the framework is currently in development mode.
+---@return boolean
 ---
-_G.backbone =
-{
-  ---
-  ---Specifies the currently active locale.
-  ---@type backbone.locale
-  ---
-  activeLocale = GetLocale(),
+backbone.isDevelopment = function()
+  return environment == 'development'
+end
 
-  ---
-  ---Specifies the current expansion level as a numeric value.
-  ---@see EXPANSION_LEVEL
-  ---@type number
-  ---
-  currentExpansion = GetExpansionLevel()
-}
+---
+---Set the current environment of the framework.
+---@param mode 'development'|'production'
+---
+setEnvironment = function(mode)
+  if mode ~= 'development' and mode ~= 'production' then
+    throw('Expected `mode` to be one of "development" or "production", got "%s".', mode)
+  end
+  environment = mode
+end

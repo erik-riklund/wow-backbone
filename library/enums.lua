@@ -11,17 +11,15 @@
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
+---@class backbone.enums
 ---Provides both abstractions of existing enumerations as well as custom ones.
 ---* The abstractions are provided to guard against potential future changes to the game's enumerations.
----
----@class backbone.enums
 ---
 _G.BNUM = {}
 
 ---
----Represents anchor points for positioning UI elements.
----
 ---@enum ANCHOR_POINT
+---Represents anchor points for positioning UI elements.
 ---
 BNUM.ANCHOR_POINT =
 {
@@ -37,10 +35,9 @@ BNUM.ANCHOR_POINT =
 }
 
 ---
+---@enum EXPANSION_LEVEL
 ---Represents the expansion levels in the game, mapping each expansion
 ---to its corresponding numerical identifier.
----
----@enum EXPANSION_LEVEL
 ---
 BNUM.EXPANSION_LEVEL =
 {
@@ -58,9 +55,8 @@ BNUM.EXPANSION_LEVEL =
 }
 
 ---
----Represents the binding types for items in the game.
----
 ---@enum ITEM_BIND
+---Represents the binding types for items in the game.
 ---
 BNUM.ITEM_BIND =
 {
@@ -75,9 +71,8 @@ BNUM.ITEM_BIND =
 }
 
 ---
----Represents the main categories of items in the game.
----
 ---@enum ITEM_TYPE
+---Represents the main categories of items in the game.
 ---
 BNUM.ITEM_TYPE =
 {
@@ -97,9 +92,8 @@ BNUM.ITEM_TYPE =
 }
 
 ---
----Represents the quality levels of items in the game.
----
 ---@enum ITEM_QUALITY
+---Represents the quality levels of items in the game.
 ---
 BNUM.ITEM_QUALITY =
 {
@@ -115,9 +109,8 @@ BNUM.ITEM_QUALITY =
 }
 
 ---
----Represents the different types of loot slots in the game.
----
 ---@enum LOOT_TYPE
+---Represents the different types of loot slots in the game.
 ---
 BNUM.LOOT_TYPE =
 {
@@ -128,9 +121,8 @@ BNUM.LOOT_TYPE =
 }
 
 ---
----Represents the subtypes of trade skill items used in crafting professions.
----
 ---@enum REAGENT_TYPE
+---Represents the subtypes of trade skill items used in crafting professions.
 ---
 BNUM.REAGENT_TYPE =
 {
