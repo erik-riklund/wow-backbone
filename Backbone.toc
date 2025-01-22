@@ -4,10 +4,11 @@
 ## Version: 1.0.0
 ## Notes: An addon development framework.
 
+library/enums.lua
+
 core.lua
 core/environment.lua
 core/exceptions.lua
-library/enums.lua
 core/output.lua
 core/addons.lua
 core/dispatch.lua
@@ -25,6 +26,7 @@ toolkit/functions/protected-proxy.lua
 toolkit/functions/traverse-table.lua
 
 core/tokens.lua
+
 modules/events/custom.lua
 modules/events/game.lua
 modules/services.lua
@@ -32,5 +34,6 @@ modules/addon-loader.lua
 modules/storage.lua
 modules/settings.lua
 modules/locales.lua
+modules/commands.lua
 
 services/item-info.lua

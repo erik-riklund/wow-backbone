@@ -193,15 +193,14 @@ settingsManager.setListValue = function(self, list, key, value)
     throw('The list `%s` does not exist in the default settings.', list)
   end
   if type(value) ~= defaultContent.__type then
-    throw('The list "%s" expect values of type %s, got %s.',
-      defaultContent.__type, type(value)
-    )
+    throw('The list "%s" expect values of type %s, got %s.', defaultContent.__type, type(value))
   end
   if key == '__list' or key == '__type' then
     throw('The key `%s` cannot be used as a list key.', key)
   end
+  
   local content = self.storage:get('__settings/' .. list)
-  hashmap.set(content, key, value)
+  hashmap.set(content, tostring(key), value)
   backbone.triggerCustomEvent(context.token,
     'SETTING_CHANGED/' .. self.token.name, { list = list, key = key, value = value }
   )

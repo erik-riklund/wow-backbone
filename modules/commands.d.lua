@@ -1,3 +1,5 @@
+---@meta
+
 --[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
@@ -10,4 +12,8 @@
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
-
+---
+---Represents the callback function associated with a command.
+---
+---@alias backbone.command-handler fun(payload: table)
+---
