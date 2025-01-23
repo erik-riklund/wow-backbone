@@ -17,7 +17,7 @@ local palette =
 {
   normal    = 'F5DEB3', -- Warm, wheat color.
   neutral   = 'FFFFFF', -- Plain white.
-  faded     = 'BEBEBE', -- Neutral light gray.
+  faded     = 'BEBEBE', -- Light gray.
   info      = '4682B4', -- Steel blue.
   error     = 'CC4733', -- Dark red-orange.
   highlight = 'FCD462', -- Soft golden-yellow.

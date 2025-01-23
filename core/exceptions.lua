@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/23 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -19,5 +19,9 @@ assert(throw == nil,
 ---@param ... string|number
 ---
 _G.throw = function(exception, ...)
-  error(... and string.format(exception, ...) or exception, 2)
+  if backbone.isDevelopment() then
+    error(... and string.format(exception, ...) or exception, 2)
+  else
+    backbone.print 'Production mode error handling not implemented yet.'
+  end
 end

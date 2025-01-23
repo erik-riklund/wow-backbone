@@ -40,6 +40,7 @@ taskFrame:SetScript(
 
 ---
 ---@param task backbone.task
+---@return unknown
 ---
 backbone.executeTask = function(task)
   if type(task) ~= 'function' then
@@ -48,7 +49,7 @@ backbone.executeTask = function(task)
   local success, result = pcall(task)
   if not success then
     if backbone.isDevelopment() then
-      local file, line, message = string.split(':', result, 3)
+      local file, line, message = string.split(':', result --[[@as string]], 3)
       backbone.printf('<error>[Backbone]%s</end>', message)
       backbone.printf('%s (line %d)', file, line)
     else
@@ -56,6 +57,7 @@ backbone.executeTask = function(task)
       backbone.print 'Production mode error handling not implemented yet.'
     end
   end
+  return result
 end
 
 ---

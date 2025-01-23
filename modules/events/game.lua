@@ -40,7 +40,7 @@ eventFrame:SetScript(
             'ADDON_LOADED/%s', context.getEventId(addonName)
           )
           if hashmap.contains(events, eventId) then
-            hashmap.drop(events, eventId):notify()
+            hashmap.drop(events, eventId):notify(payload)
           end
         end,
 
