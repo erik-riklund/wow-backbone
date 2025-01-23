@@ -12,4 +12,4 @@
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
----@alias backbone.storage-scope 'account'|'character'
+---@alias backbone.storage-scope 'account'|'realm'|'character'

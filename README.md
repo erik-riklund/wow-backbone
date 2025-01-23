@@ -10,6 +10,8 @@ This project is open source and available under the [GNU General Public License]
 - [Getting started](#getting-started)
 - [Event handling](#event-handling)
 - [Custom events](#custom-events)
+- [State management](#state-management)
+- [Define settings](#define-settings)
 
 ## Getting started
 
@@ -26,5 +28,43 @@ local token = backbone.createToken 'MyAddon'
 ?
 
 ## Custom events
+
+?
+
+## State management
+
+In order to use the framework's state management features, you must specify the saved variables in your addon's `.TOC` file. The names of the saved variables must follow the naming rules below:
+
+```
+## SavedVariables: MyAddonAccountVariables
+## SavedVariablesPerCharacter: MyAddonCharacterVariables
+```
+
+The example above assumes that the addon's name is `MyAddon`.
+
+> To use `account` or `realm` storage, the `##SavedVariables` key must be defined.
+
+Once these lines have been added, you can use `backbone.useStorage` to obtain a storage manager:
+
+```lua
+local accountStorageByDefault = backbone.useStorage(token)
+local accountStorage = backbone.useStorage(token, 'account')
+local realmStorage = backbone.useStorage(token, 'realm')
+local characterStorage = backbone.useStorage(token, 'character')
+```
+
+> Note that the framework will throw an error if the addon is not fully loaded, so you should use `backbone.onAddonLoaded` to ensure that the addon is fully loaded.
+
+```lua
+backbone.onAddonLoaded('MyAddon', function()
+  -- It's safe to use the storage here, as the saved variables have been loaded.
+end)
+```
+
+### Using the storage manager
+
+...
+
+## Define settings
 
 ?

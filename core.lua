@@ -23,11 +23,16 @@ _G.backbone =
   ---
   ---@type backbone.locale
   ---
-  activeLocale = GetLocale(),
-
+  currentLocale = GetLocale(),
+  
   ---
   ---@type number
   ---@see EXPANSION_LEVEL
   ---
-  currentExpansion = GetExpansionLevel()
+  currentExpansion = GetExpansionLevel(),
+
+  ---
+  ---@type string
+  ---
+  currentRealm = GetRealmName()
 }

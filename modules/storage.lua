@@ -1,7 +1,7 @@
 ---@class __backbone
 local context = select(2, ...)
 
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+--[[~ Updated: 2025/01/23 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -16,6 +16,7 @@ local context = select(2, ...)
 ---
 ---@param token backbone.token
 ---@param scope? backbone.storage-scope
+---@return backbone.storage-unit
 ---
 backbone.useStorage = function(token, scope)
   if not context.validateToken(token) then
@@ -24,13 +25,22 @@ backbone.useStorage = function(token, scope)
   if not backbone.isAddonLoaded(token.name) then
     throw('Saved variables are not available yet for the addon "%s".', token.name)
   end
-  if scope ~= nil and scope ~= 'account' and scope ~= 'character' then
-    throw('Invalid scope "%s", must be "account" or "character".', scope)
+  if scope ~= nil and scope ~= 'account' and scope ~= 'realm' and scope ~= 'character' then
+    throw('Invalid scope "%s", must be "account", "realm" or "character".', scope)
   end
-  
-  local variable = string.format(
-    '%s%sVariables', token.name, capitalize(scope or 'account')
+
+  local variable = string.format('%s%sVariables', token.name,
+    scope == 'character' and 'Character' or 'Account'
   )
-  if _G[variable] == nil then _G[variable] = {} end
-  return storageUnit:new(_G[variable])
+
+  _G[variable] = _G[variable] or {}
+  if scope ~= 'realm' then
+    return storageUnit:new(_G[variable]) -- account-level storage.
+  end
+
+  _G[variable]['__realms'] = _G[variable]['__realms'] or {}
+  _G[variable]['__realms'][backbone.currentRealm] =
+      _G[variable]['__realms'][backbone.currentRealm] or {}
+
+  return storageUnit:new(_G[variable]['__realms'][backbone.currentRealm])
 end

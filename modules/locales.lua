@@ -56,7 +56,7 @@ end
 ---@return string
 ---
 localeManager.get = function(self, key)
-  local activeLocale = self.locales[backbone.activeLocale]
+  local activeLocale = self.locales[backbone.currentLocale]
   local fallbackLocale = self.locales[defaultLocale]
 
   return (type(activeLocale) == 'table' and activeLocale[key])

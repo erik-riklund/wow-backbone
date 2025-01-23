@@ -52,7 +52,7 @@ end
 ---@param name `T`
 ---@return T
 ---
-backbone.requestService = function(name)
+backbone.useService = function(name)
   local serviceId = getServiceId(name)
   if not hashmap.contains(services, serviceId) then
     throw('The requested service "%s" does not exist.', name)

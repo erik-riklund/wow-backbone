@@ -15,53 +15,82 @@
 ---@param callback backbone.command-handler
 ---
 local processCommand = function(message, callback)
-  local payload = { message = message, arguments = {} }
+  local payload = { message = message }
   local arguments = payload.arguments
 
-  local parser = {
+  local parser =
+  {
     isArgument = false,
     isValue = false,
     isQuotedValue = false,
     currentArgument = '',
     currentValue = ''
   }
+
+  local resetParser = function()
+    parser.isArgument = false
+    parser.isValue = false
+    parser.currentArgument = ''
+    parser.currentValue = ''
+  end
+
+  local handleDash = function()
+    if not parser.isQuotedValue then
+      parser.isArgument = true
+    else
+      parser.currentValue = parser.currentValue .. '-'
+    end
+  end
+
+  local handleEquals = function()
+    if not parser.isQuotedValue then
+      parser.isArgument = false
+      parser.isValue = true
+      parser.currentValue = ''
+    else
+      parser.currentValue = parser.currentValue .. '='
+    end
+  end
+
+  local handleSpace = function()
+    if not parser.isQuotedValue then
+      if parser.currentArgument ~= '' then
+        arguments[parser.currentArgument] = parser.currentValue
+      end
+      resetParser()
+    else
+      parser.currentValue = parser.currentValue .. ' '
+    end
+  end
+
+  local handleDoubleQuote = function()
+    parser.isQuotedValue = not parser.isQuotedValue
+  end
+
+  local handleCharacter = function(character)
+    if parser.isArgument then
+      parser.currentArgument = parser.currentArgument .. character
+    elseif parser.isValue then
+      parser.currentValue = parser.currentValue .. character
+    end
+  end
+
   for n = 1, #message do
     local character = string.sub(message, n, n)
 
     if character == '-' then
-      if not parser.isQuotedValue then
-        parser.isArgument = true
-      else
-        parser.currentValue = parser.currentValue .. character
-      end
+      handleDash()
     elseif character == '=' then
-      if not parser.isQuotedValue then
-        parser.isArgument = false
-        parser.isValue = true
-        parser.currentValue = ''
-      else
-        parser.currentValue = parser.currentValue .. character
-      end
+      handleEquals()
     elseif character == ' ' then
-      if not parser.isQuotedValue then
-        parser.isValue = false
-        arguments[parser.currentArgument] = parser.currentValue
-        parser.currentArgument = ''
-        parser.currentValue = ''
-      else
-        parser.currentValue = parser.currentValue .. character
-      end
+      handleSpace()
     elseif character == '"' then
-      parser.isQuotedValue = not parser.isQuotedValue
+      handleDoubleQuote()
     else
-      if parser.isArgument then
-        parser.currentArgument = parser.currentArgument .. character
-      elseif parser.isValue then
-        parser.currentValue = parser.currentValue .. character
-      end
+      handleCharacter(character)
     end
 
-    if n == #message then
+    if n == #message and parser.currentArgument ~= '' then
       arguments[parser.currentArgument] = parser.currentValue
     end
   end

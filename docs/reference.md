@@ -6,10 +6,6 @@ This is the API reference for the Backbone framework, where you can find all the
 
 ---
 
-## activeLocale
-
-Contains a string representation of the currently active locale, such as `enUS` or `frFR`.
-
 ## colorizeText
 
 Parses the provided string for color tags, and returns a string with the specified colors applied.
@@ -53,6 +49,14 @@ backbone.createToken(name: string): backbone.token
 ## currentExpansion
 
 Contains a number representing the current expansion level of the game.
+
+## currentLocale
+
+Contains the name of the currently active locale, such as `enUS` or `frFR`.
+
+## currentRealm
+
+Contains the name of the current realm.
 
 ## executeTask
 
@@ -138,6 +142,16 @@ backbone.queueTask(task: (fun(): unknown?)): void
 
 > *Queued tasks are executed in "safe mode", meaning that errors will be handled gracefully by the framework. In `development` mode, any error messages are printed to the console.*
 
+## registerCommand
+
+Registers a slash command with the specified name.
+
+```
+backbone.registerCommand(name: string, callback: function): void
+```
+
+The `callback` parameter expects a function with the signature `fun(payload: table): void`.
+
 ## registerCustomEventListener
 
 Registers an event listener for the specified custom event.
@@ -158,15 +172,64 @@ The `listener` parameter accepts either an object with the following properties:
 
 ... or a function with the signature `fun(payload: table): void`.
 
+## registerEventListener
+
+Registers a listener for the specified event.
+
+```
+backbone.registerEventListener(eventName: string, listener: object|function): void
+```
+
+The `listener` parameter accepts either an object with the following properties:
+
+```
+{
+  callback: fun(payload: table): void
+  persistent: boolean -- optional, default: true
+}
+```
+
+... or a function with the signature `fun(payload: table): void`.
+
+## registerLocalizedStrings
+
+Registers localized strings for the specified addon and locale.
+
+```
+backbone.registerLocalizedStrings(addon: string, locale: string, strings: table<string, string>): void
+```
+
+This method can be used to contribute localized strings to other addons. To avoid conflicts, contributed strings are registered after the addon is loaded, and existing strings will not be overwritten.
+
+## registerService
+
+Registers a service with the specified name and implementation.
+
+```
+backbone.registerService(name: string, service: object): void
+```
+
+> The `service` parameter must be an object (table).
+
 ## removeCustomEventListener
 
-Removes a listener from the specified custom event.
+Removes the provided listener from the specified custom event.
 
 ```
 backbone.removeCustomEventListener(eventName: string, listener: object|function): void
 ```
 
 The `listener` parameter requires a reference to the object or function that was registered with [`backbone.registerCustomEventListener`](#registercustomeventlistener).
+
+## removeEventListener
+
+Removes the provided listener from the specified event.
+
+```
+backbone.removeEventListener(eventName: string, listener: object|function): void
+```
+
+The `listener` parameter requires a reference to the object or function that was registered with [`backbone.registerEventListener`](#registereventlistener).
 
 ## setEnvironment
 
@@ -182,4 +245,37 @@ Notify the observers of the specified custom event. The provided `payload` is pa
 
 ```
 backbone.triggerCustomEvent(token: backbone.token, name: string, payload?: table): void
+```
+
+## useLocales
+
+Returns a locale manager for the specified token.
+
+```
+backbone.useLocales(token: backbone.token): backbone.locale-manager
+```
+
+The returned object has methods for registering and retrieving localized strings:
+
+```
+{
+  get: fun(self, key: string): string;
+  register: fun(self, locale: string, strings: table<string, string>): void
+}
+```
+
+## useService
+
+Retrieves the object for the specified service. The returned object type is inferred from the name of the service.
+
+```
+backbone.useService(name: <T>): T
+```
+
+## useStorage
+
+Returns a storage manager for the specified token.
+
+```
+backbone.useStorage(token: backbone.token, scope?: 'account'|'character'): backbone.storage-unit
 ```
