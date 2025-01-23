@@ -37,3 +37,5 @@ modules/locales.lua
 modules/commands.lua
 
 services/item-info.lua
+
+protect.lua

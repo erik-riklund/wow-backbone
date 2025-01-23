@@ -23,7 +23,36 @@ Every addon should register themselves with the framework by creating a token. T
 local token = backbone.createToken 'MyAddon'
 ```
 
+> This documentation uses `MyAddon` as the example addon name throughout. The `token` variable represents the addon instance in code samples.
+
 ## Event handling
+
+Listening for events is a fundamental part of addons. The framework provides a simple and efficient way to register event handlers:
+
+```lua
+backbone.registerEventListener(
+  'LOOT_OPENED', function(payload)
+    -- the implementation for this event handler --
+  end
+)
+```
+
+The second parameter can also be an object with the properties `callback` and `persistent`:
+
+```lua
+backbone.registerEventListener(
+  'LOOT_OPENED', {
+    persistent = false, -- optional, default: true
+    callback = function(payload)
+      -- the implementation for this event handler --
+    end
+  }
+)
+```
+
+> If the `persistent` property is explicitly set to `false`, the event handler will be automatically removed after the first invocation.
+
+### Removing a listener
 
 ?
 
@@ -40,30 +69,37 @@ In order to use the framework's state management features, you must specify the 
 ## SavedVariablesPerCharacter: MyAddonCharacterVariables
 ```
 
-The example above assumes that the addon's name is `MyAddon`.
-
-> To use `account` or `realm` storage, the `##SavedVariables` key must be defined.
+> To use `account` or `realm` storage, the `SavedVariables` key must be defined.
 
 Once these lines have been added, you can use `backbone.useStorage` to obtain a storage manager:
 
 ```lua
-local accountStorageByDefault = backbone.useStorage(token)
 local accountStorage = backbone.useStorage(token, 'account')
-local realmStorage = backbone.useStorage(token, 'realm')
-local characterStorage = backbone.useStorage(token, 'character')
 ```
 
-> Note that the framework will throw an error if the addon is not fully loaded, so you should use `backbone.onAddonLoaded` to ensure that the addon is fully loaded.
+> The second parameter accepts `account`, `realm` and `character` as valid values. If omitted, the default value is `account`.
 
-```lua
-backbone.onAddonLoaded('MyAddon', function()
+The framework will throw an error if you attempt to use the storage while the addon is not fully loaded, so you should use `backbone.onAddonLoaded` to ensure that the saved variables are available.
+
+ ```lua
+ backbone.onAddonLoaded('MyAddon', function()
+  local accountStorage = backbone.useStorage(token)
   -- It's safe to use the storage here, as the saved variables have been loaded.
 end)
 ```
 
 ### Using the storage manager
 
-...
+The storage manager provides methods for setting and getting values from the addon's saved variables. The methods use a key to identify the value to be set or retrieved. Nested keys can be specified by using a slash-separated path.
+
+```lua
+backbone.onAddonLoaded('MyAddon', function()
+  local realmStorage = backbone.useStorage(token, 'realm')
+  realmStorage:set('my/nested/key', 'Hello world')
+
+  print(realmStorage:get 'my/nested/key') -- output: Hello world
+end)
+```
 
 ## Define settings
 
