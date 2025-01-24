@@ -11,7 +11,7 @@ This project is open source and available under the [GNU General Public License]
 - [Event handling](#event-handling)
 - [Custom events](#custom-events)
 - [State management](#state-management)
-- [Define and use settings](#define-and-use-settings)
+- [Settings](#settings)
 - [Localization](#localization)
 - [Services](#services)
 
@@ -79,7 +79,7 @@ The framework allows you to create your own event types. These events can be tri
 backbone.createCustomEvent(yourToken, 'YourEvent', 'public')
 ```
 
-The second parameter controls the event's visibility. The default value is `public`, which means that the event is visible to all addons. If you want to make the event private, you can set it to `private`.
+The third parameter controls the event's visibility. The default value is `public`, which means that the event is visible to all addons. If you want to make the event private, you can set it to `private`.
 
 > Regardless of visibility, the event can only be triggered by the addon that created it.
 
@@ -151,9 +151,78 @@ backbone.onAddonLoaded('YourAddon', function()
 end)
 ```
 
-## Define and use settings
+## Settings
 
-?
+The framework provides functionality for managing addon settings. It allows you to define the default settings for your addon, and you have the option to use specific scopes, such as `account`, `realm` and `character`. The default settings are defined as follows:
+
+```lua
+local defaultSettings = {
+  someSetting = 'Hello world',
+  anotherSetting = { nestedValue = 12345 }
+}
+
+local settings = backbone.useSettings(yourToken, defaultSettings, 'account')
+```
+
+> The third parameter define the scope of the settings. It is optional and defaults to `account`.
+
+### Using the settings manager
+
+The settings manager provides methods for getting and setting values. The methods use a key to identify the value to be set or retrieved. Nested keys can be specified by using a slash-separated path.
+
+```lua
+-- We assume that we have access to the settings defined in the previous example.
+print(settings:getValue 'someSetting') -- output: Hello world
+```
+
+When setting values, the framework will perform a type-check against the default value. If the type of the value to be set does not match the type of the default value, an error will be thrown.
+
+```lua
+settings:setValue('anotherSetting/nestedValue', '54321') -- expects a number, got a string.
+```
+
+### Handling lists
+
+The settings manager supports lists, which are arrays of values. Lists are defined as follows:
+
+```lua
+local defaultSettings = {
+  interestingItems = backbone.createListSetting('boolean', { 1, 2, 3 })
+  -- result -> { [1] = true, [2] = true, [3] = true }
+}
+```
+
+> The first parameter defines the expected type of values in the list. It must be one of `boolean`, `string` or `number`.
+
+To retrieve a value from a list, use the `getListValue` method:
+
+```lua
+if settings:getListValue('interestingItems', 1) == true then
+  print 'Item 1 is interesting!'
+end
+```
+
+> The second parameter specifies the key of the value to retrieve. It is automatically converted to a string, as list keys are always strings.
+
+In the same way, to set a value in a list, use the `setListValue` method:
+
+```lua
+settings:setListValue('interestingItems', 4, true) -- item 4 is now interesting!
+```
+
+If you need to obtain values from the default settings, the methods `getDefaultValue` and `getDefaultValueFromList` are available. These work the same way as the `getValue` and `getListValue` methods, respectively.
+
+### Custom event for changed settings
+
+The framework provides custom events, named `SETTING_CHANGED/{addonName}`, which can be used to react to changes in settings. For simple values, the payload is the `key` and its new `value`. For lists, the payload has the following properties:
+
+```lua
+{
+  list: string   -- the path to the list, e.g. 'interestingItems'
+  key: string    -- the key that was changed, e.g. '1'
+  value: unknown -- the new value
+}
+```
 
 ## Localization
 
@@ -165,3 +234,4 @@ end)
 
 ---
 
+You have reached the end of the documentation. [Return to the table of contents.](#table-of-contents)
