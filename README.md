@@ -20,10 +20,10 @@ After installing Backbone, you will gain access to the global `backbone` object 
 Every addon should register themselves with the framework by creating a token. Tokens are unique objects that represent an addon within the framework's ecosystem. They are used to identify and manage the addon's settings, events, and other resources.
 
 ```lua
-local yourToken = backbone.createToken 'MyAddon'
+local yourToken = backbone.createToken 'YourAddon'
 ```
 
-> This documentation uses `MyAddon` as the example addon name throughout. The `yourToken` variable represents the addon instance in code samples.
+> This documentation uses `YourAddon` as the example addon name throughout. The `yourToken` variable represents the addon instance in code samples.
 
 ## Event handling
 
@@ -74,7 +74,7 @@ backbone.removeEventListener('LOOT_OPENED', listener)
 The framework allows you to create your own event types. These events can be triggered by your addon, and can be used to communicate and share data, both internally and between addons.
 
 ```lua
-backbone.createCustomEvent(yourToken, 'MyEvent', 'public')
+backbone.createCustomEvent(yourToken, 'YourEvent', 'public')
 ```
 
 The second parameter controls the event's visibility. The default value is `public`, which means that the event is visible to all addons. If you want to make the event private, you can set it to `private`.
@@ -87,7 +87,7 @@ Triggering a custom event is simple:
 
 ```lua
 local payload = { alpha = 'a', beta = 'b' }
-backbone.triggerCustomEvent(yourToken, 'MyEvent', payload)
+backbone.triggerCustomEvent(yourToken, 'YourEvent', payload)
 ```
 
 The third argument is optional and can be used to pass data to the event listeners.
@@ -98,7 +98,7 @@ Registering and removing listeners for custom events follow the same pattern as 
 
 ```lua
 backbone.registerCustomEventListener(
-  'LOOT_OPENED', {
+  'YourPrivateEvent', {
     token = yourToken,
     persistent = false, -- optional, default: true
     callback = function(payload)
@@ -113,8 +113,8 @@ backbone.registerCustomEventListener(
 In order to use the framework's state management features, you must specify the saved variables in your addon's `.TOC` file. The names of the saved variables must follow the naming rules below:
 
 ```
-## SavedVariables: MyAddonAccountVariables
-## SavedVariablesPerCharacter: MyAddonCharacterVariables
+## SavedVariables: YourAddonAccountVariables
+## SavedVariablesPerCharacter: YourAddonCharacterVariables
 ```
 
 > To use `account` or `realm` storage, the `SavedVariables` key must be defined.
@@ -130,7 +130,7 @@ local accountStorage = backbone.useStorage(yourToken, 'account')
 The framework will throw an error if you attempt to use the storage while the addon is not fully loaded, so you should use `backbone.onAddonLoaded` to ensure that the saved variables are available.
 
  ```lua
- backbone.onAddonLoaded('MyAddon', function()
+ backbone.onAddonLoaded('YourAddon', function()
   local accountStorage = backbone.useStorage(yourToken)
   -- It's safe to use the storage here, as the saved variables have been loaded.
 end)
@@ -141,7 +141,7 @@ end)
 The storage manager provides methods for setting and getting values from the addon's saved variables. The methods use a key to identify the value to be set or retrieved. Nested keys can be specified by using a slash-separated path.
 
 ```lua
-backbone.onAddonLoaded('MyAddon', function()
+backbone.onAddonLoaded('YourAddon', function()
   local realmStorage = backbone.useStorage(yourToken, 'realm')
   realmStorage:set('my/nested/key', 'Hello world')
 
