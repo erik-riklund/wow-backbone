@@ -54,7 +54,7 @@ backbone.triggerCustomEvent = function(token, eventName, payload)
   end
   local event = hashmap.get(events, eventId)
   if event.owner ~= token then
-    throw('The specified token `%s` does not own the event `%s`.', token.name, eventName)
+    throw('The provided token `%s` does not own the event `%s`.', token.name, eventName)
   end
   event.observers:notify(payload)
 end

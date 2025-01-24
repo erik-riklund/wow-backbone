@@ -25,8 +25,6 @@
 ---
 ---Represents a listener for a custom event.
 ---
----@class backbone.custom-event-listener
----@field callback backbone.observer-callback
----@field persistent? boolean
+---@class backbone.custom-event-listener: backbone.observer
 ---@field token? backbone.token
 ---

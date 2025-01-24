@@ -20,10 +20,10 @@ After installing Backbone, you will gain access to the global `backbone` object 
 Every addon should register themselves with the framework by creating a token. Tokens are unique objects that represent an addon within the framework's ecosystem. They are used to identify and manage the addon's settings, events, and other resources.
 
 ```lua
-local token = backbone.createToken 'MyAddon'
+local yourToken = backbone.createToken 'MyAddon'
 ```
 
-> This documentation uses `MyAddon` as the example addon name throughout. The `token` variable represents the addon instance in code samples.
+> This documentation uses `MyAddon` as the example addon name throughout. The `yourToken` variable represents the addon instance in code samples.
 
 ## Event handling
 
@@ -54,11 +54,59 @@ backbone.registerEventListener(
 
 ### Removing a listener
 
-?
+To remove an existing listener, a reference to the original object or function is required:
+
+```lua
+local listener = {
+  persistent = true,
+  callback = function(payload)
+    -- the implementation for this event handler --
+  end
+}
+
+backbone.registerEventListener('LOOT_OPENED', listener)
+-- one eternity later...
+backbone.removeEventListener('LOOT_OPENED', listener)
+```
 
 ## Custom events
 
-?
+The framework allows you to create your own event types. These events can be triggered by your addon, and can be used to communicate and share data, both internally and between addons.
+
+```lua
+backbone.createCustomEvent(yourToken, 'MyEvent', 'public')
+```
+
+The second parameter controls the event's visibility. The default value is `public`, which means that the event is visible to all addons. If you want to make the event private, you can set it to `private`.
+
+> Regardless of visibility, the event can only be triggered by the addon that created it.
+
+### Triggering a custom event
+
+Triggering a custom event is simple:
+
+```lua
+local payload = { alpha = 'a', beta = 'b' }
+backbone.triggerCustomEvent(yourToken, 'MyEvent', payload)
+```
+
+The third argument is optional and can be used to pass data to the event listeners.
+
+### Managing listeners for custom events
+
+Registering and removing listeners for custom events follow the same pattern as for regular events, with one exception. To be able to listen to a private event, the `listener` object requires a `token` property to verify the event owner.
+
+```lua
+backbone.registerCustomEventListener(
+  'LOOT_OPENED', {
+    token = yourToken,
+    persistent = false, -- optional, default: true
+    callback = function(payload)
+      -- the implementation for this event handler --
+    end
+  }
+)
+```
 
 ## State management
 
@@ -74,7 +122,7 @@ In order to use the framework's state management features, you must specify the 
 Once these lines have been added, you can use `backbone.useStorage` to obtain a storage manager:
 
 ```lua
-local accountStorage = backbone.useStorage(token, 'account')
+local accountStorage = backbone.useStorage(yourToken, 'account')
 ```
 
 > The second parameter accepts `account`, `realm` and `character` as valid values. If omitted, the default value is `account`.
@@ -83,7 +131,7 @@ The framework will throw an error if you attempt to use the storage while the ad
 
  ```lua
  backbone.onAddonLoaded('MyAddon', function()
-  local accountStorage = backbone.useStorage(token)
+  local accountStorage = backbone.useStorage(yourToken)
   -- It's safe to use the storage here, as the saved variables have been loaded.
 end)
 ```
@@ -94,7 +142,7 @@ The storage manager provides methods for setting and getting values from the add
 
 ```lua
 backbone.onAddonLoaded('MyAddon', function()
-  local realmStorage = backbone.useStorage(token, 'realm')
+  local realmStorage = backbone.useStorage(yourToken, 'realm')
   realmStorage:set('my/nested/key', 'Hello world')
 
   print(realmStorage:get 'my/nested/key') -- output: Hello world
