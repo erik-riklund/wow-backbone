@@ -22,6 +22,7 @@ local registry = {}
 ---@class backbone.settings-manager
 ---
 ---@field token backbone.token
+---@field scope backbone.storage-scope
 ---@field defaults backbone.storage-unit
 ---@field storage backbone.storage-unit
 ---
@@ -29,11 +30,12 @@ local settingsManager = {}
 
 ---
 ---@param token backbone.token
+---@param scope backbone.storage-scope
 ---@param settings table
 ---
-settingsManager.new = function(self, token, settings)
+settingsManager.new = function(self, token, scope, settings)
   local defaults = storageUnit:new(settings)
-  local manager = inherit(self, { token = token, defaults = defaults })
+  local manager = inherit(self, { token = token, scope = scope, defaults = defaults })
   backbone.onAddonLoaded(token.name, function() manager:initialize() end)
   return manager
 end
@@ -42,16 +44,12 @@ end
 ---Synchronize the default settings with the stored settings.
 ---
 settingsManager.initialize = function(self)
-  if self.storage ~= nil then
-    throw('The settings manager has already been initialized (%s).', self.token.name)
-  end
-  self.storage = backbone.useStorage(self.token)
-  if self.storage:get '__settings' == nil then
-    self.storage:set('__settings', {})
-  end
+  self.storage = backbone.useStorage(self.token, self.scope)
+  if self.storage:get '__settings' == nil then self.storage:set('__settings', {}) end
 
   local updateSettings = true
   local addonVersion = backbone.getAddonVersionNumber(self.token.name)
+
   if not backbone.isDevelopment() then
     local storedVersion = self.storage:get '__version' --[[@as number]]
     updateSettings = (storedVersion or -1) < addonVersion
@@ -103,6 +101,17 @@ settingsManager.initialize = function(self)
     syncSettings(self.defaults.data, self.storage:get '__settings')
     self.storage:set('__version', addonVersion)
   end
+end
+
+---
+---@param scope backbone.storage-scope
+---
+settingsManager.setScope = function(self, scope)
+  if scope ~= 'account' and scope ~= 'realm' and scope ~= 'character' then
+    throw('Invalid scope "%s", must be "account", "realm" or "character".', scope)
+  end
+  self.scope = scope
+  self:initialize()
 end
 
 ---
@@ -198,7 +207,7 @@ settingsManager.setListValue = function(self, list, key, value)
   if key == '__list' or key == '__type' then
     throw('The key `%s` cannot be used as a list key.', key)
   end
-  
+
   local content = self.storage:get('__settings/' .. list)
   hashmap.set(content, tostring(key), value)
   backbone.triggerCustomEvent(context.token,
@@ -232,15 +241,19 @@ end
 ---
 ---@param token backbone.token
 ---@param defaults table
+---@param scope? backbone.storage-scope
 ---
-backbone.useSettings = function(token, defaults)
+backbone.useSettings = function(token, defaults, scope)
   if not context.validateToken(token) then
     throw 'The provided token is not registered.'
   end
+
   if hashmap.contains(registry, token) then
     return hashmap.get(registry, token) -- reuse the existing manager.
-  else
-    backbone.createCustomEvent(context.token, 'SETTING_CHANGED/' .. token.name)
-    return hashmap.set(registry, token, settingsManager:new(token, defaults))
   end
+
+  backbone.createCustomEvent(context.token, 'SETTING_CHANGED/' .. token.name)
+  return hashmap.set(registry, token,
+    settingsManager:new(token, scope or 'account', defaults)
+  )
 end
