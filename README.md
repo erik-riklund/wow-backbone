@@ -11,7 +11,9 @@ This project is open source and available under the [GNU General Public License]
 - [Event handling](#event-handling)
 - [Custom events](#custom-events)
 - [State management](#state-management)
-- [Define settings](#define-settings)
+- [Define and use settings](#define-and-use-settings)
+- [Localization](#localization)
+- [Services](#services)
 
 ## Getting started
 
@@ -90,7 +92,7 @@ local payload = { alpha = 'a', beta = 'b' }
 backbone.triggerCustomEvent(yourToken, 'YourEvent', payload)
 ```
 
-The third argument is optional and can be used to pass data to the event listeners.
+> The third argument is optional and can be used to pass data to the event listeners.
 
 ### Managing listeners for custom events
 
@@ -149,6 +151,17 @@ backbone.onAddonLoaded('YourAddon', function()
 end)
 ```
 
-## Define settings
+## Define and use settings
 
 ?
+
+## Localization
+
+?
+
+## Services
+
+?
+
+---
+
