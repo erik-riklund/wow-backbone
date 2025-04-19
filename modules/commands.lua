@@ -18,8 +18,6 @@ local processCommand = function(message, callback)
   local arguments = {}
   local payload = { message = message, arguments = arguments }
 
-  backbone.printf('Processing command: %s', message)
-
   local parserState =
   {
     currentValue = '',
