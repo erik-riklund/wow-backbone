@@ -3,6 +3,7 @@
 ## Author: Gopher
 ## Version: 1.0.0
 ## Notes: An addon development framework.
+## Category: Developer framework
 
 library/enums.lua
 

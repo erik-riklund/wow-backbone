@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+--[[~ Updated: 2025/04/19 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -15,83 +15,58 @@
 ---@param callback backbone.command-handler
 ---
 local processCommand = function(message, callback)
-  local payload = { message = message }
-  local arguments = payload.arguments
+  local arguments = {}
+  local payload = { message = message, arguments = arguments }
 
-  local parser =
+  backbone.printf('Processing command: %s', message)
+
+  local parserState =
   {
-    isArgument = false,
-    isValue = false,
+    currentValue = '',
     isQuotedValue = false,
-    currentArgument = '',
-    currentValue = ''
+    isItemLink = false
   }
 
-  local resetParser = function()
-    parser.isArgument = false
-    parser.isValue = false
-    parser.currentArgument = ''
-    parser.currentValue = ''
+  local clearParserState = function()
+    parserState.currentValue = ''
+    parserState.isQuotedValue = false
+    parserState.isItemLink = false
   end
 
-  local handleDash = function()
-    if not parser.isQuotedValue then
-      parser.isArgument = true
-    else
-      parser.currentValue = parser.currentValue .. '-'
+  local appendCommandArgument = function()
+    table.insert(arguments, parserState.currentValue)
+    clearParserState()
+  end
+
+  for i = 1, #message do
+    local continue = false
+    local currentCharacter = string.sub(message, i, i)
+
+    if currentCharacter == ' ' and not parserState.isItemLink then
+      appendCommandArgument()
+      continue = true
     end
-  end
 
-  local handleEquals = function()
-    if not parser.isQuotedValue then
-      parser.isArgument = false
-      parser.isValue = true
-      parser.currentValue = ''
-    else
-      parser.currentValue = parser.currentValue .. '='
-    end
-  end
+    if not continue and currentCharacter == '"' then
+      local previousCharacter = string.sub(message, i - 1, i - 1)
 
-  local handleSpace = function()
-    if not parser.isQuotedValue then
-      if parser.currentArgument ~= '' then
-        arguments[parser.currentArgument] = parser.currentValue
+      if previousCharacter ~= '\\' then
+        parserState.isQuotedValue = not parserState.isQuotedValue
+        continue = true
       end
-      resetParser()
-    else
-      parser.currentValue = parser.currentValue .. ' '
-    end
-  end
-
-  local handleDoubleQuote = function()
-    parser.isQuotedValue = not parser.isQuotedValue
-  end
-
-  local handleCharacter = function(character)
-    if parser.isArgument then
-      parser.currentArgument = parser.currentArgument .. character
-    elseif parser.isValue then
-      parser.currentValue = parser.currentValue .. character
-    end
-  end
-
-  for n = 1, #message do
-    local character = string.sub(message, n, n)
-
-    if character == '-' then
-      handleDash()
-    elseif character == '=' then
-      handleEquals()
-    elseif character == ' ' then
-      handleSpace()
-    elseif character == '"' then
-      handleDoubleQuote()
-    else
-      handleCharacter(character)
     end
 
-    if n == #message and parser.currentArgument ~= '' then
-      arguments[parser.currentArgument] = parser.currentValue
+    if not continue and not parserState.isQuotedValue and
+        (currentCharacter == '[' or currentCharacter == ']') then
+      parserState.isItemLink = not parserState.isItemLink
+    end
+
+    if not continue then
+      parserState.currentValue = parserState.currentValue .. currentCharacter
+    end
+
+    if i == #message then
+      appendCommandArgument()
     end
   end
 
