@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/16 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -10,29 +10,20 @@
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
-assert(backbone == nil,
-  'Global variable conflict: `backbone` has already been defined.'
+assert(inherit == nil,
+  'Global variable conflict: `inherit` has already been defined.'
 )
 
 ---
----@class backbone
----The API for the Backbone framework.
+---Establishes an inheritance relationship between a child table and a parent table.
+---The child table will inherit methods and properties from the parent table.
 ---
-backbone =
-{
-  ---
-  ---@type backbone.locale
-  ---
-  currentLocale = GetLocale(),
-
-  ---
-  ---@type number
-  ---@see EXPANSION_LEVEL
-  ---
-  currentExpansion = GetExpansionLevel(),
-
-  ---
-  ---@type string
-  ---
-  currentRealm = GetRealmName()
-}
+---@generic P:table
+---
+---@param parent P
+---@param child table
+---@return P
+---
+_G.inherit = function(parent, child)
+  return setmetatable(child, { __index = parent })
+end

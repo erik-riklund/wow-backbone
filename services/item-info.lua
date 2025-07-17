@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/16 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -11,13 +11,17 @@
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 local handler
-local LOOT_TYPE = BNUM.LOOT_TYPE
+local LOOT_TYPE = backbone.enums.LOOT_TYPE
 
+---
+---A service object for retrieving information about items and loot.
 ---
 ---@class backbone.item-info : backbone.service-object
 ---
 handler =
 {
+  ---
+  ---?
   ---
   ---@param link string
   ---@return number id
@@ -27,6 +31,8 @@ handler =
     return tonumber(itemId) --[[@as number]]
   end,
 
+  ---
+  ---?
   ---
   ---@param item number|string
   ---@return backbone.item-data
@@ -63,6 +69,8 @@ handler =
     return data
   end,
 
+  ---
+  ---?
   ---
   ---@param slot number
   ---@return backbone.loot-data
@@ -108,6 +116,8 @@ handler =
   end,
 
   ---
+  ---?
+  ---
   ---@param item number|string
   ---@return number actual, boolean preview, number sparse
   ---
@@ -115,6 +125,8 @@ handler =
     return C_Item.GetDetailedItemLevelInfo(item)
   end,
 
+  ---
+  ---?
   ---
   ---@param item number|string
   ---@return boolean

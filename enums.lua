@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/17 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -11,14 +11,18 @@
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
+---?
+---
 ---@class backbone.enums
 ---
-_G.BNUM = {}
+backbone.enums = {}
 
+---
+---?
 ---
 ---@enum ANCHOR_POINT
 ---
-BNUM.ANCHOR_POINT =
+backbone.enums.ANCHOR_POINT =
 {
       TOPLEFT = 1,
      TOPRIGHT = 2,
@@ -32,9 +36,11 @@ BNUM.ANCHOR_POINT =
 }
 
 ---
+---?
+---
 ---@enum EXPANSION_LEVEL
 ---
-BNUM.EXPANSION_LEVEL =
+backbone.enums.EXPANSION_LEVEL =
 {
        CLASSIC = 0, -- Vanilla
        OUTLAND = 1, -- The Burning Crusade
@@ -50,9 +56,11 @@ BNUM.EXPANSION_LEVEL =
 }
 
 ---
+---?
+---
 ---@enum ITEM_BIND
 ---
-BNUM.ITEM_BIND =
+backbone.enums.ITEM_BIND =
 {
         NONE = Enum.ItemBind.None, -- The item is not bound to the player.
   ON_ACQUIRE = Enum.ItemBind.OnAcquire, -- Binds to the player when the item is picked up.
@@ -65,9 +73,11 @@ BNUM.ITEM_BIND =
 }
 
 ---
+---?
+---
 ---@enum ITEM_TYPE
 ---
-BNUM.ITEM_TYPE =
+backbone.enums.ITEM_TYPE =
 {
   CONSUMABLE = Enum.ItemClass.Consumable,
    CONTAINER = Enum.ItemClass.Container,
@@ -85,9 +95,11 @@ BNUM.ITEM_TYPE =
 }
 
 ---
+---?
+---
 ---@enum ITEM_QUALITY
 ---
-BNUM.ITEM_QUALITY =
+backbone.enums.ITEM_QUALITY =
 {
        POOR = Enum.ItemQuality.Poor,
      COMMON = Enum.ItemQuality.Common,
@@ -101,9 +113,11 @@ BNUM.ITEM_QUALITY =
 }
 
 ---
+---?
+---
 ---@enum LOOT_TYPE
 ---
-BNUM.LOOT_TYPE =
+backbone.enums.LOOT_TYPE =
 {
       NONE = Enum.LootSlotType.None,
       ITEM = Enum.LootSlotType.Item,
@@ -112,9 +126,11 @@ BNUM.LOOT_TYPE =
 }
 
 ---
+---?
+---
 ---@enum REAGENT_TYPE
 ---
-BNUM.REAGENT_TYPE =
+backbone.enums.REAGENT_TYPE =
 {
        PART = 1,
       JEWEL = 4,

@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/16 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -15,15 +15,23 @@ assert(traverseTable == nil,
 )
 
 ---
+---Traverses a table through a series of steps (keys).
+---It can operate in different modes:
+---- `exit` returns `nil` if a step is missing
+---- `build` creates new tables for missing steps
+---- `error` throws an error for missing or invalid steps
+---
 ---@param target table
 ---@param steps array<backbone.hashmap-key-type>
 ---@param mode? 'exit'|'build'|'error'
+---
 ---@return unknown
 ---
 _G.traverseTable = function(target, steps, mode)
   if mode ~= nil and mode ~= 'exit' and mode ~= 'build' and mode ~= 'error' then
-    throw('Expected `mode` to be one of "exit", "build", or "error", got "%s".', mode)
+    throw('Expected `mode` to be one of "exit", "build", or "error"; got "%s".', mode)
   end
+
   ---@type unknown
   local value = target
   local stepCount = #steps
@@ -35,7 +43,9 @@ _G.traverseTable = function(target, steps, mode)
 
     if currentValueType == 'nil' then
       if mode == 'error' then
-        error(string.format('The step "%s" does not exist.', tostring(step)))
+        error(string.format(
+          'The step "%s" does not exist.', tostring(step)
+        ))
       elseif mode == 'build' then
         currentValue = hashmap.set(value, step, {})
       else
@@ -43,7 +53,9 @@ _G.traverseTable = function(target, steps, mode)
       end
     elseif not isLastStep and currentValueType ~= 'table' then
       if mode == 'error' then
-        error(string.format('The step "%s" is not a table.', tostring(step)))
+        error(string.format(
+          'The step "%s" is not a table.', tostring(step)
+        ))
       else
         return nil -- the step does not exist, exit early.
       end
@@ -51,5 +63,6 @@ _G.traverseTable = function(target, steps, mode)
 
     value = currentValue --[[@as unknown]]
   end
+
   return value
 end

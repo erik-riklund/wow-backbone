@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/16 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -15,10 +15,14 @@ assert(hashmap == nil,
 )
 
 ---
+---A utility library providing common hash map (table) manipulation functions.
+---
 ---@class backbone.hashmap
 ---
 _G.hashmap = {}
 
+---
+---Checks if the target hash map contains a specific key.
 ---
 ---@generic K
 ---
@@ -27,9 +31,11 @@ _G.hashmap = {}
 ---@return boolean
 ---
 hashmap.contains = function(target, key)
-  return target[key] ~= nil
+  return (target[key] ~= nil)
 end
 
+---
+---Removes a key-value pair from the target hash map and returns the removed value.
 ---
 ---@generic K, V
 ---
@@ -41,11 +47,15 @@ hashmap.drop = function(target, key)
   if target[key] == nil then
     throw('The key `%s` does not exist in the target table.', key)
   end
+
   local value = target[key]
   target[key] = nil
+
   return value
 end
 
+---
+---Retrieves the value associated with a specific key from the target hash map.
 ---
 ---@generic K, V
 ---
@@ -57,9 +67,13 @@ hashmap.get = function(target, key)
   if target[key] == nil then
     throw('The key `%s` does not exist in the target table.', key)
   end
+
   return target[key]
 end
 
+---
+---Iterates over the key-value pairs of the target hash map, applying a callback function to each.
+---If the callback returns a non-nil value, that value replaces the original value for the key.
 ---
 ---@generic K, V
 ---
@@ -69,10 +83,15 @@ end
 hashmap.iterate = function(target, callback)
   for key, value in pairs(target) do
     local result = callback(key, value)
-    if result ~= nil then target[key] = result end
+
+    if result ~= nil then
+      target[key] = result
+    end
   end
 end
 
+---
+---Returns an array containing all the keys present in the target hash map.
 ---
 ---@generic K
 ---
@@ -81,12 +100,16 @@ end
 ---
 hashmap.keys = function(target)
   local keys = {}
+  
   for key in pairs(target) do
     array.append(keys, key)
   end
+
   return keys
 end
 
+---
+---Sets a key-value pair in the target hash map.
 ---
 ---@generic K, V
 ---
@@ -99,6 +122,7 @@ hashmap.set = function(target, key, value)
   if value == nil then
     throw('Expected argument `value` to be non-nil.')
   end
+
   target[key] = value
   return value
 end

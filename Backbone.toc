@@ -1,41 +1,42 @@
-## Interface: 110005
+## Interface: 110107
 ## Title: Backbone (framework)
 ## Author: Gopher
 ## Version: 1.0.0
 ## Notes: An addon development framework.
-## Category: Developer framework
-
-library/enums.lua
+## Category: Developer frameworks
 
 core.lua
+enums.lua
 core/environment.lua
 core/exceptions.lua
-core/output.lua
 core/addons.lua
 core/dispatch.lua
 
-toolkit/collections/array.lua
-toolkit/collections/hashmap.lua
-toolkit/logic/inherit.lua
-toolkit/logic/switch.lua
-toolkit/logic/when.lua
-toolkit/classes/observable.lua
-toolkit/classes/string-buffer.lua
-toolkit/classes/storage-unit.lua
-toolkit/functions/capitalize-string.lua
-toolkit/functions/protected-proxy.lua
-toolkit/functions/traverse-table.lua
+library/collections/array.lua
+library/collections/hashmap.lua
+library/logic/inherit.lua
+library/logic/switch.lua
+library/logic/when.lua
+library/classes/observable.lua
+library/classes/string-buffer.lua
+library/classes/storage-unit.lua
+library/functions/capitalize-string.lua
+library/functions/protected-proxy.lua
+library/functions/traverse-table.lua
 
+core/output.lua
+core/inspect.lua
 core/tokens.lua
 
-modules/events/custom.lua
-modules/events/game.lua
-modules/services.lua
-modules/addon-loader.lua
-modules/storage.lua
-modules/settings.lua
-modules/locales.lua
-modules/commands.lua
+modules/custom-events/index.lua
+modules/game-events/index.lua
+modules/services/index.lua
+modules/addon-loader/index.lua
+modules/storage/index.lua
+modules/settings/index.lua
+modules/locales/index.lua
+modules/commands/index.lua
+modules/tooltip/index.lua
 
 services/item-info.lua
 

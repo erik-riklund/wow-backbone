@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/16 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -15,11 +15,16 @@ assert(storageUnit == nil,
 )
 
 ---
+---Represents a unit for storing and managing data,
+---allowing access and modification via string keys.
+---
 ---@class backbone.storage-unit
 ---@field data table
 ---
 _G.storageUnit = {}
 
+---
+---Creates a new storage unit instance, initialized with a source table.
 ---
 ---@private
 ---@param source table
@@ -29,9 +34,13 @@ storageUnit.new = function(self, source)
   if type(source) ~= 'table' then
     throw('Expected `source` to be a table, got %s.', type(source))
   end
+
   return inherit(self, { data = source })
 end
 
+---
+---Retrieves a value from the storage unit using a key,
+---which can represent a path within the data table.
 ---
 ---@param key string
 ---@return unknown
@@ -40,6 +49,9 @@ storageUnit.get = function(self, key)
   return traverseTable(self.data, { string.split('/', tostring(key)) })
 end
 
+---
+---Sets a value within the storage unit using a key,
+---which can represent a path within the data table.
 ---
 ---@generic V
 ---
@@ -54,5 +66,6 @@ storageUnit.set = function(self, key, value)
   ---@type table
   local target = traverseTable(self.data, keys, 'build')
   target[variable] = value
+
   return value
 end

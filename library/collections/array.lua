@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/16 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -15,10 +15,14 @@ assert(array == nil,
 )
 
 ---
+---A utility library providing common array manipulation functions.
+---
 ---@class backbone.array
 ---
 _G.array = {}
 
+---
+---Appends an element to the end of the target array.
 ---
 ---@generic V
 ---
@@ -30,10 +34,13 @@ array.append = function(target, element)
   if element == nil then
     throw('Expected argument `element` to be non-nil.')
   end
+
   table.insert(target, element)
   return element
 end
 
+---
+---Clears all elements from the target array.
 ---
 ---@generic V
 ---
@@ -42,6 +49,8 @@ end
 ---
 array.clear = function(target) return wipe(target) end
 
+---
+---Checks if the target array contains a specific search value.
 ---
 ---@generic V
 ---
@@ -53,14 +62,19 @@ array.contains = function(target, searchValue)
   if searchValue == nil then
     throw('Expected argument `searchValue` to be non-nil.')
   end
+
   if #target > 0 then
     for _, value in ipairs(target) do
       if value == searchValue then return true end
     end
   end
+
   return false
 end
 
+---
+---Iterates over the elements of the target array, applying a callback function to each.
+---If the callback returns a non-nil value, that value replaces the original element.
 ---
 ---@generic V
 ---
@@ -70,10 +84,15 @@ end
 array.iterate = function(target, callback)
   for index, value in ipairs(target) do
     local result = callback(index, value)
-    if result ~= nil then target[index] = result end
+
+    if result ~= nil then
+      target[index] = result
+    end
   end
 end
 
+---
+---Removes and returns the last element from the target array.
 ---
 ---@generic V
 ---
@@ -85,6 +104,8 @@ array.pop = function(target)
 end
 
 ---
+---Removes and returns the element at the specified index from the target array.
+---
 ---@generic V
 ---
 ---@param target array<V>
@@ -95,5 +116,6 @@ array.remove = function(target, index)
   if target[index] == nil then
     throw('Expected argument `index` to be within the bounds of the array.')
   end
+  
   return table.remove(target, index)
 end

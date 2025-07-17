@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/16 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -10,17 +10,16 @@
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
-assert(inherit == nil,
-  'Global variable conflict: `inherit` has already been defined.'
+assert(capitalize == nil,
+  'Global variable conflict: `capitalize` has already been defined.'
 )
 
 ---
----@generic P:table
+---Capitalizes the first letter of a given string.
 ---
----@param parent P
----@param child table
----@return P
+---@param target string
+---@return string
 ---
-_G.inherit = function(parent, child)
-  return setmetatable(child, { __index = parent })
+_G.capitalize = function(target)
+  return string.sub(target, 1, 1):upper() .. string.sub(target, 2)
 end

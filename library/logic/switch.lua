@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/16 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -15,6 +15,8 @@ assert(switch == nil,
 )
 
 ---
+---A pseudo-switch statement function that returns the result of a case.
+---
 ---@generic V
 ---
 ---@param value V
@@ -25,19 +27,30 @@ switch = function(value, cases)
   if value == nil then
     throw('Expected argument `value` to be non-nil.')
   end
+
   local case = cases[value]
+
   if case == nil then
     for key, content in pairs(cases) do
       if type(key) == 'table' then
         for _, target in ipairs(key) do
           if target == value then
             case = content
+
             break -- the value was caught by a multi-case pattern.
           end
         end
       end
     end
   end
-  if case == nil then case = cases.default end
-  return (type(case) == 'function' and case()) or case
+
+  if case == nil then
+    case = cases.default
+  end
+
+  if type(case) == 'function' then
+    return case() -- return the result of the function.
+  end
+
+  return case -- return the value.
 end

@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/08 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -10,18 +10,13 @@
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
-assert(when == nil,
-  'Global variable conflict: `when` has already been defined.'
-)
-
 ---
----@param condition boolean
----@param onTrue unknown
----@param onFalse unknown
----@return unknown?
 ---
-_G.when = function(condition, onTrue, onFalse)
-  local result = onFalse
-  if condition == true then result = onTrue end
-  return (type(result) == 'function' and result()) or result
+---
+backbone.inspect = function(object)
+  for key, value in pairs(object) do
+    print(key, value)
+  end
 end
+
+-- backbone.inspect(TooltipDataProcessor)

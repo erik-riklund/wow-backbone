@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/16 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -15,11 +15,15 @@ assert(observable == nil,
 )
 
 ---
+---Represents an observable object that can be subscribed to by observers.
+---
 ---@class backbone.observable
 ---@field observers array<backbone.observer>
 ---
 _G.observable = {}
 
+---
+---Creates a new observable instance.
 ---
 ---@private
 ---@return backbone.observable
@@ -29,10 +33,13 @@ observable.new = function(self)
 end
 
 ---
+---Cleans up non-persistent observers from the observable.
+---
 ---@protected
 ---
 observable.cleanup = function(self)
   local count = #self.observers
+
   if count > 0 then
     for index = count, 1, -1 do
       if not self.observers[index].persistent then
@@ -43,18 +50,24 @@ observable.cleanup = function(self)
 end
 
 ---
+---Notifies all registered observers with an optional payload.
+---
 ---@param payload? table
 ---
 observable.notify = function(self, payload)
   if payload ~= nil and type(payload) ~= 'table' then
     throw('Expected `payload` to be a table, got %s.', type(payload))
   end
+
   for _, observer in ipairs(self.observers) do
     backbone.queueTask(function() observer.callback(payload or {}) end)
   end
+  
   self:cleanup()
 end
 
+---
+---Subscribes an observer or a callback function to the observable.
 ---
 ---@param observer backbone.observer|backbone.observer-callback
 ---
@@ -62,10 +75,13 @@ observable.subscribe = function(self, observer)
   if type(observer) == 'function' then
     observer = { callback = observer }
   end
+
   observer.persistent = (observer.persistent == nil) or observer.persistent
   array.append(self.observers, observer)
 end
 
+---
+---Unsubscribes an observer or a callback function from the observable.
 ---
 ---@param observer backbone.observer|backbone.observer-callback
 ---

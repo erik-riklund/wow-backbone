@@ -1,4 +1,7 @@
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+---@class __backbone
+local context = select(2, ...)
+
+--[[~ Updated: 2025/07/08 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -10,14 +13,7 @@
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
-assert(capitalize == nil,
-  'Global variable conflict: `capitalize` has already been defined.'
-)
-
 ---
----@param target string
----@return string
+---@class backbone.tooltip-manager
 ---
-_G.capitalize = function(target)
-  return string.sub(target, 1, 1):upper() .. string.sub(target, 2)
-end
+local tooltipManager = {}

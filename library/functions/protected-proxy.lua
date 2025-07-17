@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/16 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -19,6 +19,9 @@ local blocker = function()
 end
 
 ---
+---Retrieves a value from the target table,
+---returning a protected proxy if the value is a table.
+---
 ---@generic T:table
 ---
 ---@param target T
@@ -27,9 +30,13 @@ end
 ---
 local retriever = function(target, key)
   local value = target[key]
+  
   return (type(value) == 'table' and createProtectedProxy(value)) or value
 end
 
+---
+---Creates a protected proxy for a given table,
+---preventing external modification and providing controlled access.
 ---
 ---@generic T:table
 ---

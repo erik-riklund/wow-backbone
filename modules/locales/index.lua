@@ -67,7 +67,7 @@ end
 ---
 ---@param token backbone.token
 ---
-backbone.useLocales = function(token)
+backbone.getLocaleManager = function(token)
   if not context.validateToken(token) then
     throw 'The provided token is not registered.'
   end
@@ -82,11 +82,10 @@ end
 ---@param strings table<string, string>
 ---
 backbone.registerLocalizedStrings = function(addon, locale, strings)
-  backbone.onAddonLoaded(
-    addon, function()
+  backbone.onAddonLoaded(addon, function()
       local token = context.getToken(addon)
       local manager = localeManagers[token] or throw(
-        'No locale manager available for `%s`.', addon
+        'No locale manager available for addon `%s`.', addon
       )
       manager:register(locale, strings)
     end

@@ -31,6 +31,7 @@ context.getEventId = function(event) return string.upper(event) end
 ---
 backbone.createCustomEvent = function(token, name, access)
   local eventId = context.getEventId(name)
+
   if hashmap.contains(events, eventId) then
     throw('A custom event with the name "%s" already exists.', name)
   end
