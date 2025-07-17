@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/17 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -11,17 +11,23 @@
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
+---Defines the current operational environment.
+---
 ---@type 'development'|'production'
 ---
 local environment = 'development'
 
 ---
+---Checks if the current environment is set to `development`.
+---
 ---@return boolean
 ---
 backbone.isDevelopment = function()
-  return environment == 'development'
+  return (environment == 'development')
 end
 
+---
+---Sets the operational environment (either `development` or `production`).
 ---
 ---@param mode 'development'|'production'
 ---
@@ -29,5 +35,6 @@ backbone.setEnvironment = function(mode)
   if mode ~= 'development' and mode ~= 'production' then
     throw('Expected `mode` to be one of "development" or "production", got "%s".', mode)
   end
+
   environment = mode
 end

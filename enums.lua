@@ -11,14 +11,17 @@
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
----?
+---A collection of enumerations used throughout the Backbone framework.
+---
+---These are abstractions of constants defined in the game's API,
+---implemented as a safeguard against future changes.
 ---
 ---@class backbone.enums
 ---
 backbone.enums = {}
 
 ---
----?
+---Defines anchor points for UI elements.
 ---
 ---@enum ANCHOR_POINT
 ---
@@ -36,7 +39,7 @@ backbone.enums.ANCHOR_POINT =
 }
 
 ---
----?
+---Represents the different expansion levels of the game.
 ---
 ---@enum EXPANSION_LEVEL
 ---
@@ -56,7 +59,7 @@ backbone.enums.EXPANSION_LEVEL =
 }
 
 ---
----?
+---Describes the various ways an item can bind to a player.
 ---
 ---@enum ITEM_BIND
 ---
@@ -73,7 +76,7 @@ backbone.enums.ITEM_BIND =
 }
 
 ---
----?
+---Categorizes different types of items in the game.
 ---
 ---@enum ITEM_TYPE
 ---
@@ -95,7 +98,7 @@ backbone.enums.ITEM_TYPE =
 }
 
 ---
----?
+---Defines the quality levels for items.
 ---
 ---@enum ITEM_QUALITY
 ---
@@ -113,7 +116,7 @@ backbone.enums.ITEM_QUALITY =
 }
 
 ---
----?
+---Specifies the types of loot that can be obtained.
 ---
 ---@enum LOOT_TYPE
 ---
@@ -126,7 +129,7 @@ backbone.enums.LOOT_TYPE =
 }
 
 ---
----?
+---Categorizes various reagent types used in professions.
 ---
 ---@enum REAGENT_TYPE
 ---

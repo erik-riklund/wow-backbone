@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/17 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -15,22 +15,29 @@ assert(backbone == nil,
 )
 
 ---
----@class backbone
 ---The API for the Backbone framework.
+---
+---@class backbone
 ---
 backbone =
 {
+  ---
+  ---The currently active locale, such as `enUS` or `frFR`.
   ---
   ---@type backbone.locale
   ---
   currentLocale = GetLocale(),
 
   ---
+  ---The current expansion level of the game client.
+  ---
   ---@type number
   ---@see EXPANSION_LEVEL
   ---
   currentExpansion = GetExpansionLevel(),
 
+  ---
+  ---The name of the current realm the player is on.
   ---
   ---@type string
   ---

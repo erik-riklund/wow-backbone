@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/17 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -10,6 +10,8 @@
 --without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
+---
+---A predefined set of color codes for text formatting.
 ---
 ---@enum (key) backbone.color
 ---
@@ -24,6 +26,8 @@ local palette =
   success   = '00AC00', -- Bright green.
 }
 
+---
+---Applies color formatting to a given string using custom tags or hex codes.
 ---
 ---@param text string
 ---
@@ -53,12 +57,18 @@ backbone.colorizeText = function(text)
 end
 
 ---
+---Prints a message to the chat frame,
+---automatically applying the default `normal` color.
+---
 ---@param message unknown
 ---
 backbone.print = function(message)
   print(backbone.colorizeText('<normal>' .. tostring(message) .. '</end>'))
 end
 
+---
+---Prints the provided message, formatted using the `string.format` function.
+---The default `normal` color is applied to the resulting message.
 ---
 ---@param message string
 ---@param ... string|number

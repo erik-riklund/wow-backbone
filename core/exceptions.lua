@@ -1,4 +1,4 @@
---[[~ Updated: 2025/01/23 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/17 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -15,6 +15,9 @@ assert(throw == nil,
 )
 
 ---
+---Throws an error in development mode,
+---and prints a generic error message in production mode.
+---
 ---@param exception string
 ---@param ... string|number
 ---
@@ -22,6 +25,11 @@ _G.throw = function(exception, ...)
   if backbone.isDevelopment() then
     error(... and string.format(exception, ...) or exception, 2)
   else
-    backbone.print 'Production mode error handling not implemented yet.'
+    -- TODO: implement user-friendly error handling.
+
+    backbone.printf(
+      '<error>[Backbone] An internal error has occured.</end>\n'
+      .. 'Try /reload to see if the issue persists.'
+    )
   end
 end

@@ -1,7 +1,7 @@
 ---@class __backbone
 local context = select(2, ...)
 
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/17 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -14,49 +14,66 @@ local context = select(2, ...)
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
+---A collection of registered tokens, indexed by their lowercase addon name.
+---
 ---@type table<string, backbone.token>
 ---
 local tokens = {}
 
 ---
----@param addonName string
----@return string id
----
-context.getTokenId = function(addonName) return string.lower(addonName) end
-
+---Retrieves a previously created token by its addon name.
 ---
 ---@param addonName string
 ---@return backbone.token
 ---
 context.getToken = function(addonName)
   local addonId = context.getTokenId(addonName)
+
   if not hashmap.contains(tokens, addonId) then
     throw('A token with the name "%s" does not exist.', addonName)
   end
+
   return hashmap.get(tokens, addonId)
 end
 
+---
+---Generates a standardized token ID from an addon name.
+---
+---@param addonName string
+---@return string id
+---
+context.getTokenId = function(addonName)
+  return string.lower(addonName)
+end
+
+---
+---Validates if a given token object is legitimate and
+---matches the stored token for its addon name.
 ---
 ---@param token backbone.token
 ---@return boolean isValid
 ---
 context.validateToken = function(token)
-  return context.getToken(token.name) == token
+  return (context.getToken(token.name) == token)
 end
 
+---
+---Creates and registers a new token for a given addon name.
 ---
 ---@param addonName string
 ---@return backbone.token
 ---
 backbone.createToken = function(addonName)
   local addonId = context.getTokenId(addonName)
+
   if hashmap.contains(tokens, addonId) then
     throw('A token with the name "%s" already exists.', addonName)
   end
+
   return hashmap.set(tokens,
     addonId, createProtectedProxy({ name = addonName })
   )
 end
 
---The token used by the framework to create and trigger custom events.
-context.token = backbone.createToken 'Backbone'
+--The token used internally by the framework to create and trigger custom events.
+context.token = backbone.createToken('Backbone')
