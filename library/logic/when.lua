@@ -1,4 +1,4 @@
---[[~ Updated: 2025/07/16 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/19 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -19,16 +19,16 @@ assert(when == nil,
 ---based on a boolean condition, similar to a ternary operator.
 ---
 ---@param condition boolean
----@param onTrue unknown
----@param onFalse unknown
+---@param on_true unknown
+---@param on_false unknown
 ---
 ---@return unknown?
 ---
-_G.when = function(condition, onTrue, onFalse)
-  local result = onFalse
+_G.when = function(condition, on_true, on_false)
+  local result = on_false
 
   if condition == true then
-    result = onTrue
+    result = on_true
   end
 
   if type(result) == 'function' then

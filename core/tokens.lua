@@ -1,7 +1,7 @@
 ---@class __backbone
 local context = select(2, ...)
 
---[[~ Updated: 2025/07/17 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/19 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -23,27 +23,27 @@ local tokens = {}
 ---
 ---Retrieves a previously created token by its addon name.
 ---
----@param addonName string
+---@param addon_name string
 ---@return backbone.token
 ---
-context.getToken = function(addonName)
-  local addonId = context.getTokenId(addonName)
+context.getToken = function(addon_name)
+  local addon_id = context.getTokenId(addon_name)
 
-  if not hashmap.contains(tokens, addonId) then
-    throw('A token with the name "%s" does not exist.', addonName)
+  if not hashmap.contains(tokens, addon_id) then
+    throw('A token with the name "%s" does not exist.', addon_name)
   end
 
-  return hashmap.get(tokens, addonId)
+  return hashmap.get(tokens, addon_id)
 end
 
 ---
 ---Generates a standardized token ID from an addon name.
 ---
----@param addonName string
+---@param addon_name string
 ---@return string id
 ---
-context.getTokenId = function(addonName)
-  return string.lower(addonName)
+context.getTokenId = function(addon_name)
+  return string.lower(addon_name)
 end
 
 ---
@@ -60,18 +60,18 @@ end
 ---
 ---Creates and registers a new token for a given addon name.
 ---
----@param addonName string
+---@param addon_name string
 ---@return backbone.token
 ---
-backbone.createToken = function(addonName)
-  local addonId = context.getTokenId(addonName)
+backbone.createToken = function(addon_name)
+  local addon_id = context.getTokenId(addon_name)
 
-  if hashmap.contains(tokens, addonId) then
-    throw('A token with the name "%s" already exists.', addonName)
+  if hashmap.contains(tokens, addon_id) then
+    throw('A token with the name "%s" already exists.', addon_name)
   end
 
   return hashmap.set(tokens,
-    addonId, createProtectedProxy({ name = addonName })
+    addon_id, createProtectedProxy({ name = addon_name })
   )
 end
 

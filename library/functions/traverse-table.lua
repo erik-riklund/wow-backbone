@@ -1,4 +1,4 @@
---[[~ Updated: 2025/07/16 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/19 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -34,24 +34,24 @@ _G.traverseTable = function(target, steps, mode)
 
   ---@type unknown
   local value = target
-  local stepCount = #steps
+  local step_count = #steps
 
   for index, step in ipairs(steps) do
-    local currentValue = value[step]
-    local currentValueType = type(currentValue)
-    local isLastStep = (index == stepCount)
+    local current_value = value[step]
+    local current_value_type = type(current_value)
+    local is_last_step = (index == step_count)
 
-    if currentValueType == 'nil' then
+    if current_value_type == 'nil' then
       if mode == 'error' then
         error(string.format(
           'The step "%s" does not exist.', tostring(step)
         ))
       elseif mode == 'build' then
-        currentValue = hashmap.set(value, step, {})
+        current_value = hashmap.set(value, step, {})
       else
         return nil -- the step does not exist, exit early.
       end
-    elseif not isLastStep and currentValueType ~= 'table' then
+    elseif not is_last_step and current_value_type ~= 'table' then
       if mode == 'error' then
         error(string.format(
           'The step "%s" is not a table.', tostring(step)
@@ -61,7 +61,7 @@ _G.traverseTable = function(target, steps, mode)
       end
     end
 
-    value = currentValue --[[@as unknown]]
+    value = current_value --[[@as unknown]]
   end
 
   return value

@@ -1,4 +1,4 @@
---[[~ Updated: 2025/07/16 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/18 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -21,7 +21,7 @@ local LOOT_TYPE = backbone.enums.LOOT_TYPE
 handler =
 {
   ---
-  ---?
+  ---Retrieves the item ID from an item link.
   ---
   ---@param link string
   ---@return number id
@@ -32,7 +32,7 @@ handler =
   end,
 
   ---
-  ---?
+  ---Retrieves information about an item, based on its item link or ID.
   ---
   ---@param item number|string
   ---@return backbone.item-data
@@ -70,7 +70,7 @@ handler =
   end,
 
   ---
-  ---?
+  ---Retrieves information about a loot slot.
   ---
   ---@param slot number
   ---@return backbone.loot-data
@@ -104,6 +104,7 @@ handler =
       ---
       data.money = { gold = 0, silver = 0, copper = 0 }
       local cash = { string.split('\n', data.name) }
+
       array.iterate(cash,
         function(_, rawValue)
           local amount, value = string.split(' ', rawValue)
@@ -116,7 +117,7 @@ handler =
   end,
 
   ---
-  ---?
+  ---Retrieves the item level of an item.
   ---
   ---@param item number|string
   ---@return number actual, boolean preview, number sparse
@@ -126,7 +127,7 @@ handler =
   end,
 
   ---
-  ---?
+  ---Determines if the player knows the appearance of an item.
   ---
   ---@param item number|string
   ---@return boolean

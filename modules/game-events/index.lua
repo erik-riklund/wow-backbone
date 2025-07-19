@@ -1,7 +1,7 @@
 ---@class __backbone
 local context = select(2, ...)
 
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/19 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -14,45 +14,51 @@ local context = select(2, ...)
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
+---A collection of registered game event handlers.
+---
 ---@type table<string, backbone.observable>
 ---
 local events = {}
 
 ---
+---A hidden UI frame used to register and receive game events.
+---
 ---@type Frame
 ---
-local eventFrame = CreateFrame 'Frame'
-eventFrame:RegisterEvent 'ADDON_LOADED'
+local event_frame = CreateFrame 'Frame'
+event_frame:RegisterEvent 'ADDON_LOADED'
 
 ---
----Handle the dispatching of game events.
+---This script dispatches incoming game events to registered listeners.
 ---
-eventFrame:SetScript(
-  'OnEvent', function(_, eventName, ...)
+event_frame:SetScript(
+  'OnEvent', function(_, event_name, ...)
     local payload = { ... }
 
     switch(
-      eventName,
+      event_name,
       {
         ADDON_LOADED = function()
-          local addonName = payload[1] --[[@as string]]
-          local eventId = string.format(
-            'ADDON_LOADED/%s', context.getEventId(addonName)
+          local addon_name = payload[1] --[[@as string]]
+          local event_id = string.format(
+            'ADDON_LOADED/%s', context.getEventId(addon_name)
           )
-          if hashmap.contains(events, eventId) then
-            hashmap.drop(events, eventId):notify(payload)
+
+          if hashmap.contains(events, event_id) then
+            hashmap.drop(events, event_id):notify(payload)
           end
         end,
 
         default = function()
-          local eventId = context.getEventId(eventName)
-          if hashmap.contains(events, eventId) then
-            local event = hashmap.get(events, eventId)
+          local event_id = context.getEventId(event_name)
+
+          if hashmap.contains(events, event_id) then
+            local event = hashmap.get(events, event_id)
             event:notify(payload)
-            
+
             if #event.observers == 0 then
-              eventFrame:UnregisterEvent(eventName)
-              hashmap.drop(events, eventId)
+              event_frame:UnregisterEvent(event_name)
+              hashmap.drop(events, event_id)
             end
           end
         end
@@ -62,56 +68,74 @@ eventFrame:SetScript(
 )
 
 ---
----@param eventName string
+---Registers a callback function to listen for a specific game event.
+---
+---@param event_name string
 ---@param listener backbone.observer|backbone.observer-callback
 ---
-backbone.registerEventListener = function(eventName, listener)
-  if eventName == 'ADDON_LOADED' then
-    throw('Use `onAddonReady` instead of `registerEventListener` for the "ADDON_LOADED" event.')
+backbone.registerEventListener = function(event_name, listener)
+  if event_name == 'ADDON_LOADED' then
+    throw('Use `onAddonLoaded` instead of `registerEventListener` for the "ADDON_LOADED" event.')
   end
+
   if type(listener) == 'function' then
     listener = { callback = listener }
   end
-  local eventId = context.getEventId(eventName)
-  if not hashmap.contains(events, eventId) then
-    hashmap.set(events, eventId, observable:new())
-    eventFrame:RegisterEvent(eventName)
+
+  local event_id = context.getEventId(event_name)
+
+  if not hashmap.contains(events, event_id) then
+    hashmap.set(events, event_id, observable:new())
+    event_frame:RegisterEvent(event_name)
   end
-  local event = hashmap.get(events, eventId)
-  event:subscribe { callback = listener.callback, persistent = listener.persistent }
+
+  local event = hashmap.get(events, event_id)
+
+  event:subscribe {
+    callback = listener.callback,
+    persistent = listener.persistent
+  }
 end
 
 ---
----@param eventName string
+---Removes a previously registered listener from a game event.
+---
+---@param event_name string
 ---@param listener backbone.observer|backbone.observer-callback
 ---
-backbone.removeEventListener = function(eventName, listener)
-  local eventId = context.getEventId(eventName)
-  if hashmap.contains(events, eventId) then
+backbone.removeEventListener = function(event_name, listener)
+  local event_id = context.getEventId(event_name)
+
+  if hashmap.contains(events, event_id) then
     if type(listener) == 'function' then
       listener = { callback = listener }
     end
-    local event = hashmap.get(events, eventId)
+    
+    local event = hashmap.get(events, event_id)
     event:unsubscribe(listener.callback)
   end
 end
 
 ---
----@param addonName string
+---Registers a callback to be executed once a specific addon has finished loading.
+---
+---@param addon_name string
 ---@param callback backbone.observer-callback
 ---
-backbone.onAddonLoaded = function(addonName, callback)
-  if backbone.isAddonLoaded(addonName) then
+backbone.onAddonLoaded = function(addon_name, callback)
+  if backbone.isAddonLoaded(addon_name) then
     backbone.queueTask(function() callback({}) end)
     return -- the addon is already loaded, exit early.
   end
-  
-  local eventId = string.format(
-    'ADDON_LOADED/%s', context.getEventId(addonName)
+
+  local event_id = string.format(
+    'ADDON_LOADED/%s', context.getEventId(addon_name)
   )
-  if not hashmap.contains(events, eventId) then
-    hashmap.set(events, eventId, observable:new())
+
+  if not hashmap.contains(events, event_id) then
+    hashmap.set(events, event_id, observable:new())
   end
-  local event = hashmap.get(events, eventId)
+  
+  local event = hashmap.get(events, event_id)
   event:subscribe { callback = callback, persistent = false }
 end

@@ -1,7 +1,7 @@
 ---@class __backbone
 local context = select(2, ...)
 
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/19 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -14,88 +14,123 @@ local context = select(2, ...)
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
+---A table storing all custom events, indexed by their standardized event ID.
+---
 ---@type table<string, backbone.custom-event>
 ---
 local events = {}
 
 ---
+---Generates a standardized event ID from a given event name.
+---
 ---@param event string
 ---@return string id
 ---
-context.getEventId = function(event) return string.upper(event) end
+context.getEventId = function(event)
+  return string.upper(event)
+end
 
+---
+---Creates and registers a new custom event, returning a dispatch function
+---that can be used by the event's owner to fire the event.
 ---
 ---@param token backbone.token
 ---@param name string
 ---@param access? 'public'|'private'
 ---
+---@return fun(payload: table)
+---
 backbone.createCustomEvent = function(token, name, access)
-  local eventId = context.getEventId(name)
+  local event_id = context.getEventId(name)
 
-  if hashmap.contains(events, eventId) then
+  if hashmap.contains(events, event_id) then
     throw('A custom event with the name "%s" already exists.', name)
-  end
-  if access ~= nil and access ~= 'public' and access ~= 'private' then
+  elseif access ~= nil and access ~= 'public' and access ~= 'private' then
     throw('Invalid access level `%s` for custom event `%s`, must be `public` or `private`.', access, name)
   end
-  hashmap.set(events, eventId,
+
+  hashmap.set(events, event_id,
     { owner = token, name = name, access = access or 'public', observers = observable:new() }
   )
+
+  return function (payload)
+    backbone.triggerCustomEvent(token, name, payload)
+  end
 end
 
 ---
+---Triggers a custom event, notifying all its registered listeners.
+---
 ---@param token backbone.token
----@param eventName string
+---@param event_name string
 ---@param payload? table
 ---
-backbone.triggerCustomEvent = function(token, eventName, payload)
-  local eventId = context.getEventId(eventName)
-  if not hashmap.contains(events, eventId) then
-    throw('The specified event `%s` does not exist.', eventName)
+backbone.triggerCustomEvent = function(token, event_name, payload)
+  local event_id = context.getEventId(event_name)
+
+  if not hashmap.contains(events, event_id) then
+    throw('The specified event `%s` does not exist.', event_name)
   end
-  local event = hashmap.get(events, eventId)
+
+  local event = hashmap.get(events, event_id)
+
   if event.owner ~= token then
-    throw('The provided token `%s` does not own the event `%s`.', token.name, eventName)
+    throw('The provided token `%s` does not own the event `%s`.', token.name, event_name)
   end
+
   event.observers:notify(payload)
 end
 
 ---
----@param eventName string
+---Registers a listener (callback function) for a custom event.
+---
+---@param event_name string
 ---@param listener backbone.custom-event-listener|backbone.observer-callback
 ---
-backbone.registerCustomEventListener = function(eventName, listener)
-  local eventId = context.getEventId(eventName)
-  if not hashmap.contains(events, eventId) then
-    throw('The specified event `%s` does not exist.', eventName)
+backbone.registerCustomEventListener = function(event_name, listener)
+  local event_id = context.getEventId(event_name)
+
+  if not hashmap.contains(events, event_id) then
+    throw('The specified event `%s` does not exist.', event_name)
   end
+
   if type(listener) == 'function' then
     listener = { callback = listener }
   end
-  local event = hashmap.get(events, eventId)
+
+  local event = hashmap.get(events, event_id)
+
   if event.access ~= 'public' and event.owner ~= listener.token then
-    throw('The event `%s` is not accessible by the provided token.', eventName)
+    throw('The event `%s` is not accessible by the provided token.', event_name)
   end
+
   event.observers:subscribe {
     callback = listener.callback, persistent = listener.persistent
   }
 end
 
 ---
----@param eventName string
+---Removes a previously registered listener from a custom event.
+---
+---@param event_name string
 ---@param listener backbone.custom-event-listener|backbone.observer-callback
 ---
-backbone.removeCustomEventListener = function(eventName, listener)
-  local eventId = context.getEventId(eventName)
-  if not hashmap.contains(events, eventId) then
-    throw('The specified event `%s` does not exist.', eventName)
+backbone.removeCustomEventListener = function(event_name, listener)
+  local event_id = context.getEventId(event_name)
+
+  if not hashmap.contains(events, event_id) then
+    throw('The specified event `%s` does not exist.', event_name)
   end
+
   if type(listener) == 'function' then
     listener = { callback = listener }
   end
-  local event = hashmap.get(events, eventId)
+
+  local event = hashmap.get(events, event_id)
+
   if event.access ~= 'public' and event.owner ~= listener.token then
-    throw('The event `%s` is not accessible by the provided token.', eventName)
+    throw('The event `%s` is not accessible by the provided token.', event_name)
   end
+
   event.observers:unsubscribe(listener.callback)
 end

@@ -1,4 +1,4 @@
---[[~ Updated: 2025/07/16 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/19 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -55,17 +55,17 @@ array.clear = function(target) return wipe(target) end
 ---@generic V
 ---
 ---@param target array<V>
----@param searchValue V
+---@param search_value V
 ---@return boolean
 ---
-array.contains = function(target, searchValue)
-  if searchValue == nil then
+array.contains = function(target, search_value)
+  if search_value == nil then
     throw('Expected argument `searchValue` to be non-nil.')
   end
 
   if #target > 0 then
     for _, value in ipairs(target) do
-      if value == searchValue then return true end
+      if value == search_value then return true end
     end
   end
 

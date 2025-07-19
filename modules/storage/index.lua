@@ -1,7 +1,7 @@
 ---@class __backbone
 local context = select(2, ...)
 
---[[~ Updated: 2025/01/23 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/19 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -14,6 +14,9 @@ local context = select(2, ...)
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
+---Retrieves a storage unit for an addon,
+---allowing persistent data saving based on scope.
+---
 ---@param token backbone.token
 ---@param scope? backbone.storage-scope
 ---@return backbone.storage-unit
@@ -21,16 +24,14 @@ local context = select(2, ...)
 backbone.useStorage = function(token, scope)
   if not context.validateToken(token) then
     throw('The provided token "%s" is invalid.', token.name)
-  end
-  if not backbone.isAddonLoaded(token.name) then
+  elseif not backbone.isAddonLoaded(token.name) then
     throw('Saved variables are not available yet for the addon "%s".', token.name)
-  end
-  if scope ~= nil and scope ~= 'account' and scope ~= 'realm' and scope ~= 'character' then
+  elseif scope ~= nil and scope ~= 'account' and scope ~= 'realm' and scope ~= 'character' then
     throw('Invalid scope "%s", must be "account", "realm" or "character".', scope)
   end
 
   local variable = string.format('%s%sVariables', token.name,
-    scope == 'character' and 'Character' or 'Account'
+    (scope == 'character' and 'Character') or 'Account'
   )
 
   _G[variable] = _G[variable] or {}

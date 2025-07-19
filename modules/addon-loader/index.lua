@@ -1,7 +1,7 @@
 ---@class __backbone
 local context = select(2, ...)
 
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/19 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -22,9 +22,10 @@ local loaders =
   ---Handle loading of addons based on specific events.
   ---
   OnEvent = function(index, metadata)
-    array.iterate(metadata, function(_, eventName)
+    array.iterate(metadata, function(_, event_name)
       backbone.registerEventListener(
-        eventName, {
+        event_name,
+        {
           persistent = false,
           callback = function()
             if not C_AddOns.IsAddOnLoaded(index) then
@@ -40,12 +41,14 @@ local loaders =
   ---Handle loading of addons when a specific addon is loaded.
   ---
   OnAddonLoaded = function(index, metadata)
-    array.iterate(metadata, function(_, addonName)
-      backbone.onAddonLoaded(addonName, function()
-        if not C_AddOns.IsAddOnLoaded(index) then
-          C_AddOns.LoadAddOn(index)
+    array.iterate(metadata, function(_, addon_name)
+      backbone.onAddonLoaded(addon_name,
+        function()
+          if not C_AddOns.IsAddOnLoaded(index) then
+            C_AddOns.LoadAddOn(index)
+          end
         end
-      end)
+      )
     end)
   end,
 
@@ -53,9 +56,9 @@ local loaders =
   ---Handle loading of addons when a specific service is requested.
   ---
   OnServiceRequest = function(index, metadata)
-    local addonName = C_AddOns.GetAddOnInfo(index)
-    array.iterate(metadata, function(_, serviceName)
-      context.registerLoadableService(addonName, serviceName)
+    local addon_name = C_AddOns.GetAddOnInfo(index)
+    array.iterate(metadata, function(_, service_name)
+      context.registerLoadableService(addon_name, service_name)
     end)
   end
 }
@@ -71,7 +74,9 @@ for index = 1, C_AddOns.GetNumAddOns() do
         local metadata = backbone.parseAddonMetadata(
           index, string.format('X-Load-%s', condition)
         )
-        if metadata ~= nil then handler(index, metadata) end
+        if metadata ~= nil then
+          handler(index, metadata)
+        end
       end
     )
   end

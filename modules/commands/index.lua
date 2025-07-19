@@ -1,4 +1,4 @@
---[[~ Updated: 2025/04/19 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/19 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -11,6 +11,8 @@
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
+---Processes a raw command string, parsing arguments and preparing a payload for a command handler.
+---
 ---@param message string
 ---@param callback backbone.command-handler
 ---
@@ -18,49 +20,49 @@ local processCommand = function(message, callback)
   local arguments = {}
   local payload = { message = message, arguments = arguments }
 
-  local parserState =
+  local parser_state =
   {
-    currentValue = '',
-    isQuotedValue = false,
-    isItemLink = false
+    current_value = '',
+    is_quoted_value = false,
+    is_item_link = false
   }
 
   local clearParserState = function()
-    parserState.currentValue = ''
-    parserState.isQuotedValue = false
-    parserState.isItemLink = false
+    parser_state.current_value = ''
+    parser_state.is_quoted_value = false
+    parser_state.is_item_link = false
   end
 
   local appendCommandArgument = function()
-    table.insert(arguments, parserState.currentValue)
+    table.insert(arguments, parser_state.current_value)
     clearParserState()
   end
 
   for i = 1, #message do
     local continue = false
-    local currentCharacter = string.sub(message, i, i)
+    local current_character = string.sub(message, i, i)
 
-    if currentCharacter == ' ' and not parserState.isItemLink then
+    if current_character == ' ' and not parser_state.is_item_link then
       appendCommandArgument()
       continue = true
     end
 
-    if not continue and currentCharacter == '"' then
-      local previousCharacter = string.sub(message, i - 1, i - 1)
+    if not continue and current_character == '"' then
+      local previous_character = string.sub(message, i - 1, i - 1)
 
-      if previousCharacter ~= '\\' then
-        parserState.isQuotedValue = not parserState.isQuotedValue
+      if previous_character ~= '\\' then
+        parser_state.is_quoted_value = not parser_state.is_quoted_value
         continue = true
       end
     end
 
-    if not continue and not parserState.isQuotedValue and
-        (currentCharacter == '[' or currentCharacter == ']') then
-      parserState.isItemLink = not parserState.isItemLink
+    if not continue and not parser_state.is_quoted_value and
+        (current_character == '[' or current_character == ']') then
+      parser_state.is_item_link = not parser_state.is_item_link
     end
 
     if not continue then
-      parserState.currentValue = parserState.currentValue .. currentCharacter
+      parser_state.current_value = parser_state.current_value .. current_character
     end
 
     if i == #message then
@@ -72,14 +74,20 @@ local processCommand = function(message, callback)
 end
 
 ---
+---Registers a new chat command that can be used in-game.
+---
+---An error will be thrown if a command with the given `name` is already registered.
+---
 ---@param name string
 ---@param callback backbone.command-handler
 ---
 backbone.registerCommand = function(name, callback)
   local variable = 'SLASH_' .. name .. '1'
+
   if _G[variable] ~= nil then
     throw('There is already a command with the name `%s`.', name)
   end
+
   _G[variable] = '/' .. name
   _G['SlashCmdList'][name] = function(message)
     processCommand(message, callback)

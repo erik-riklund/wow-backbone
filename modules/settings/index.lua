@@ -1,7 +1,7 @@
 ---@class __backbone
 local context = select(2, ...)
 
---[[~ Updated: 2025/01/21 | Author(s): Gopher ]]
+--[[~ Updated: 2025/07/19 | Author(s): Gopher ]]
 --
 -- Backbone - An addon development framework for World of Warcraft.
 --
@@ -14,10 +14,15 @@ local context = select(2, ...)
 --See the GNU General Public License <https://www.gnu.org/licenses/> for more details.
 
 ---
+---A registry of all active settings managers, indexed by their owner tokens.
+---
 ---@type table<backbone.token, backbone.settings-manager>
 ---
 local registry = {}
 
+---
+---Manages persistent settings for a specific addon,
+---handling defaults, storage, and migrations.
 ---
 ---@class backbone.settings-manager
 ---
@@ -26,14 +31,16 @@ local registry = {}
 ---@field defaults backbone.storage-unit
 ---@field storage backbone.storage-unit
 ---
-local settingsManager = {}
+local settings_manager = {}
 
+---
+---Creates a new settings manager.
 ---
 ---@param token backbone.token
 ---@param scope backbone.storage-scope
 ---@param settings table
 ---
-settingsManager.new = function(self, token, scope, settings)
+settings_manager.new = function(self, token, scope, settings)
   local defaults = storageUnit:new(settings)
   local manager = inherit(self, { token = token, scope = scope, defaults = defaults })
   backbone.onAddonLoaded(token.name, function() manager:initialize() end)
@@ -41,32 +48,36 @@ settingsManager.new = function(self, token, scope, settings)
 end
 
 ---
----Synchronize the default settings with the stored settings.
+---Initializes or re-initializes the settings manager,
+---loading data and performing migrations.
 ---
-settingsManager.initialize = function(self)
+settings_manager.initialize = function(self)
   self.storage = backbone.useStorage(self.token, self.scope)
-  if self.storage:get '__settings' == nil then self.storage:set('__settings', {}) end
 
-  local updateSettings = true
-  local addonVersion = backbone.getAddonVersionNumber(self.token.name)
+  if self.storage:get '__settings' == nil then
+    self.storage:set('__settings', {})
+  end
+
+  local update_settings = true
+  local addon_version = backbone.getAddonVersionNumber(self.token.name)
 
   if not backbone.isDevelopment() then
     local storedVersion = self.storage:get '__version' --[[@as number]]
-    updateSettings = (storedVersion or -1) < addonVersion
+    update_settings = (storedVersion or -1) < addon_version
   end
 
-  if updateSettings then
+  if update_settings then
     local syncSettings
+    ---
+    ---Recursively synchronizes settings from a source table to a target table.
     ---
     ---@param source table
     ---@param target table
     ---
     syncSettings = function(source, target)
-      -- Iterate over all keys and values in the source table.
       for sourceKey, sourceValue in pairs(source) do
         -- Handle nested tables and lists.
         if type(sourceValue) == 'table' then
-          -- Ensure the target has a table for this key.
           if target[sourceKey] == nil then
             target[sourceKey] = {}
           end
@@ -99,73 +110,94 @@ settingsManager.initialize = function(self)
     end
 
     syncSettings(self.defaults.data, self.storage:get '__settings')
-    self.storage:set('__version', addonVersion)
+    self.storage:set('__version', addon_version)
   end
 end
 
 ---
+---Changes the storage scope for the settings manager.
+---
 ---@param scope backbone.storage-scope
 ---
-settingsManager.setScope = function(self, scope)
+settings_manager.setScope = function(self, scope)
   if scope ~= 'account' and scope ~= 'realm' and scope ~= 'character' then
     throw('Invalid scope "%s", must be "account", "realm" or "character".', scope)
   end
+
   self.scope = scope
   self:initialize()
 end
 
 ---
+---Retrieves the current value of a setting.
+---
 ---@param key string
 ---@return unknown
 ---
-settingsManager.getValue = function(self, key)
+settings_manager.getValue = function(self, key)
   local value = self.storage:get('__settings/' .. tostring(key))
+
   if value == nil then
     throw('The key `%s` does not exist in the settings.', key)
   end
+  
   return value
 end
 
+---
+---Retrieves a value from a specific list setting.
 ---
 ---@param list string
 ---@param key string|number
 ---@return unknown
 ---
-settingsManager.getValueFromList = function(self, list, key)
+settings_manager.getValueFromList = function(self, list, key)
   ---@type backbone.list-setting
   local content = self.storage:get('__settings/' .. list)
+
   if type(content) ~= 'table' or not content.__list then
     throw('The list `%s` does not exist in the settings.', list)
   end
+  
   return content[tostring(key)]
 end
 
+---
+---Retrieves the default value for a setting.
 ---
 ---@param key string
 ---@return unknown
 ---
-settingsManager.getDefaultValue = function(self, key)
+settings_manager.getDefaultValue = function(self, key)
   local value = self.defaults:get(key)
+
   if value == nil then
     throw('The key `%s` does not exist in the default settings.', key)
   end
+
   return value
 end
 
+---
+---Retrieves a value from a specific default list setting.
 ---
 ---@param list string
 ---@param key string|number
 ---@return unknown
 ---
-settingsManager.getDefaultValueFromList = function(self, list, key)
+settings_manager.getDefaultValueFromList = function(self, list, key)
   ---@type backbone.list-setting
   local content = self.defaults:get(list)
+
   if type(content) ~= 'table' or not content.__list then
     throw('The list `%s` does not exist in the default settings.', list)
   end
+
   return content[tostring(key)]
 end
 
+---
+---Sets the persistent value of a setting.
 ---
 ---@generic V
 ---
@@ -173,71 +205,86 @@ end
 ---@param value V
 ---@return V
 ---
-settingsManager.setValue = function(self, key, value)
-  local currentValue = self:getValue(key)
-  local defaultValue = self:getDefaultValue(key)
-  if type(currentValue) ~= type(defaultValue) then
+settings_manager.setValue = function(self, key, value)
+  local current_value = self:getValue(key)
+  local default_value = self:getDefaultValue(key)
+  
+  if type(current_value) ~= type(default_value) then
     throw('The setting "%s" must be of type %s, got %s.',
-      key, type(defaultValue), type(currentValue)
+      key, type(default_value), type(current_value)
     )
   end
+  
   self.storage:set('__settings/' .. key, value)
   backbone.triggerCustomEvent(context.token,
     'SETTING_CHANGED/' .. self.token.name, { key = key, value = value }
   )
+  
   return value
 end
 
+---
+---Sets a persistent value within a list setting.
 ---
 ---@generic V
 ---
 ---@param list string
 ---@param key string|number
 ---@param value V
+---
 ---@return V
 ---
-settingsManager.setListValue = function(self, list, key, value)
-  local defaultContent = self:getDefaultValue(list)
-  if type(defaultContent) ~= 'table' or not defaultContent.__list then
+settings_manager.setListValue = function(self, list, key, value)
+  local default_content = self:getDefaultValue(list)
+
+  if type(default_content) ~= 'table' or not default_content.__list then
     throw('The list `%s` does not exist in the default settings.', list)
-  end
-  if type(value) ~= defaultContent.__type then
-    throw('The list "%s" expect values of type %s, got %s.', defaultContent.__type, type(value))
-  end
-  if key == '__list' or key == '__type' then
+  elseif type(value) ~= default_content.__type then
+    throw('The list "%s" expect values of type %s, got %s.', default_content.__type, type(value))
+  elseif key == '__list' or key == '__type' then
     throw('The key `%s` cannot be used as a list key.', key)
   end
 
   local content = self.storage:get('__settings/' .. list)
+
   hashmap.set(content, tostring(key), value)
   backbone.triggerCustomEvent(context.token,
     'SETTING_CHANGED/' .. self.token.name, { list = list, key = key, value = value }
   )
+  
   return value
 end
 
 ---
----@param valueType 'boolean'|'string'|'number'
+---Creates a special table structure representing a list setting with a defined value type.
+---
+---@param value_type 'boolean'|'string'|'number'
 ---@param elements array<string|number>
 ---@return backbone.list-setting
 ---
-backbone.createListSetting = function(valueType, elements)
-  if not array.contains({ 'boolean', 'string', 'number' }, valueType) then
-    throw('Invalid value type `%s`, must be `boolean`, `string` or `number`.', valueType)
+backbone.createListSetting = function(value_type, elements)
+  if not array.contains({ 'boolean', 'string', 'number' }, value_type) then
+    throw('Invalid value type `%s`, must be `boolean`, `string` or `number`.', value_type)
   end
-  local defaultValue = switch(
-    valueType, { boolean = true, number = 0, string = '' }
+
+  local default_value = switch(
+    value_type, { boolean = true, number = 0, string = '' }
   )
+
   ---@type backbone.list-setting
-  local list = { __list = true, __type = valueType }
+  local list = { __list = true, __type = value_type }
+  
   array.iterate(elements, function(_, key)
     if key ~= '__list' and key ~= '__type' then
-      list[tostring(key)] = defaultValue
+      list[tostring(key)] = default_value
     end
   end)
+  
   return list
 end
 
+---
+---Retrieves or creates a settings manager for a given addon token.
 ---
 ---@param token backbone.token
 ---@param defaults table
@@ -253,7 +300,8 @@ backbone.useSettings = function(token, defaults, scope)
   end
 
   backbone.createCustomEvent(context.token, 'SETTING_CHANGED/' .. token.name)
+  
   return hashmap.set(registry, token,
-    settingsManager:new(token, scope or 'account', defaults)
+    settings_manager:new(token, scope or 'account', defaults)
   )
 end
