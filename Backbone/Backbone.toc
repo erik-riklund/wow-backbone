@@ -1,0 +1,9 @@
+## Interface: 110207
+
+## Title: Backbone (core)
+## Author: Ghuul (aka Gopher)
+## Version: 1.0.0
+## Notes: Provides callback handling and simplified event integration.
+
+library.lua
+addon.lua
