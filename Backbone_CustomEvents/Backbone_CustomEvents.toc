@@ -1,0 +1,10 @@
+## Interface: 110207
+## RequiredDeps: Backbone
+## LoadOnDemand: 1
+
+## Title: Backbone: Custom events
+## Author: Ghuul (aka Gopher)
+## Version: 1.0.0
+## Notes: Provides a publish/subscribe mechanism, enabling communication between different modules or addons.
+
+addon.lua
