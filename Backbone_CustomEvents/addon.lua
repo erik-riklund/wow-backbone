@@ -1,41 +1,50 @@
---  ____             _    _                                          
--- | __ )  __ _  ___| | _| |__   ___  _ __   ___   _                 
--- |  _ \ / _` |/ __| |/ / '_ \ / _ \| '_ \ / _ \ (_)                
--- | |_) | (_| | (__|   <| |_) | (_) | | | |  __/  _                 
--- |____/ \__,_|\___|_|\_\_.__/ \___/|_| |_|\___| (_)        _       
---  / ___|   _ ___| |_ ___  _ __ ___     _____   _____ _ __ | |_ ___ 
--- | |  | | | / __| __/ _ \| '_ ` _ \   / _ \ \ / / _ \ '_ \| __/ __|
--- | |__| |_| \__ \ || (_) | | | | | | |  __/\ V /  __/ | | | |_\__ \
---  \____\__,_|___/\__\___/|_| |_| |_|  \___| \_/ \___|_| |_|\__|___/                                                                   
---                                                      version 1.0.0
 --
--- https://github.com/erik-riklund/wow-backbone (2025)
-
+-- [ Custom events handler ]
 --
---
--- Custom events handler
---
--- Implements a publisher/subscriber system for addon events. Events are registered
--- by name and listeners are invoked via `Backbone.ExecuteCallback` for safe dispatch.
+-- Provides a publish/subscribe mechanism, enabling communication between different modules or addons.
 --
 
-local events = {} -- event_id (key) -> list of callbacks (value).
+local events = {
+  -- event_id -> list of callbacks
+}
 
+--
+-- Checks if a specific event has been initialized in the registry.
+--
+-- @param event (string) - The name of the event to check.
+--
+-- # version: 1.0.0
+--
 local eventExists = function (event)
   return events[string.upper(event)] ~= nil
 end
 
+--
+-- Initializes a new event entry in the local registry.
+--
+-- @param name (string) - The name of the event to create.
+--
+-- # version: 1.0.0
+--
 local createEvent = function (name)
   events[string.upper(name)] = {}
 end
 
+--
+-- Attaches a callback to an event and returns a cleanup function.
+--
+-- @param event (string)      - The target event name.
+-- @param callback (function) - The function to execute when the event fires.
+--
+-- # version: 1.0.0
+--
 local registerEventListener = function (event, callback)
   local event_id = string.upper(event)
   events[event_id] = events[event_id] or {}
   table.insert(events[event_id], callback)
   
   return function ()
-    events[event_id] = each.value(
+    events[event_id] = list.each(
       events[event_id], function (listener)
         return when(listener ~= callback, listener, nil)
       end
@@ -43,9 +52,18 @@ local registerEventListener = function (event, callback)
   end
 end
 
+--
+-- Triggers all registered callbacks for a specific event.
+--
+-- @param event (string) - The name of the event to broadcast.
+-- @param ... (unknown)  - Arguments to pass to the listeners.
+--
+-- # version: 1.0.0
+--
 local emitEvent = function (event, ...)
   local args = {...}
-  each.value(events[string.upper(event)] or {},
+  
+  list.each(events[string.upper(event)] or {},
     function (callback)
       Backbone.ExecuteCallback(
         function() callback(unpack(args)) end
@@ -55,26 +73,39 @@ local emitEvent = function (event, ...)
 end
 
 --
--- The public API for custom events
+-- Registers a new unique event and returns its trigger function.
+-- Throws an error if the event name is already taken.
 --
--- These functions expose the custom event functionality through the `Backbone` API.
+-- @param name (string) - The unique identifier for the event.
 --
-
+-- # version: 1.0.0
+--
 Backbone.extend(
   'CreateEvent', function (name)
     if eventExists(name) then
-      throw ('Failed to create event, "%s" already exists', name)
+      throw ('Failed to create event: "%s" already exists', name)
     end
     
     createEvent(name)
-    return function (...) emitEvent(name, ...) end
+    return function (...)
+      emitEvent(name, ...)
+    end
   end
 )
 
+--
+-- Subscribes a callback to a custom event.
+-- Throws an error if the event has not been created yet.
+--
+-- @param event (string)      - The name of the event to listen for.
+-- @param callback (function) - The function to call upon emission.
+--
+-- # version: 1.0.0
+--
 Backbone.extend(
   'OnCustomEvent', function (event, callback)
     if not eventExists(event) then
-      throw ('Failed to register listener. The event "%s" does not exist', event)
+      throw ('Failed to register listener: the event "%s" does not exist', event)
     end
     return registerEventListener(event, callback)
   end

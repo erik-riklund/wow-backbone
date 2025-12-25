@@ -5,5 +5,16 @@
 ## Version: 1.0.0
 ## Notes: Provides callback handling and simplified event integration.
 
-library.lua
+declare.lua
+
+library/any.lua
+library/when.lua
+library/throw.lua
+library/switch.lua
+library/immutable.lua
+library/extendable.lua
+library/list.lua
+library/map.lua
+library/printf.lua
+
 addon.lua

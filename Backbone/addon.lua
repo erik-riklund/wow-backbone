@@ -5,19 +5,21 @@
 -- |____/ \__,_|\___|_|\_\_.__/ \___/|_| |_|\___|
 --                                  version 1.0.0
 --                                               
--- https://github.com/erik-riklund/wow-backbone (2025)
+-- github.com/erik-riklund/wow-backbone (2025)
 
 local API = extendable({})
 declare('Backbone', immutable(API))
 
 --
--- Callback handler
+-- [ Callback handler ]
 --
 -- A queued task execution system to manage callbacks,
 -- ensuring no single frame is overwhelmed, preventing lag.
 --
 
-local tasks = {} -- Queue for callbacks to be executed in subsequent frames.
+local tasks = {
+  -- a sequential array of callbacks queued for execution.
+}
 
 CreateFrame('Frame')
   :SetScript('OnUpdate', function()
@@ -30,15 +32,22 @@ CreateFrame('Frame')
         
         if not success then
           local file, line, message = string.split(':', result, 3)
-          print(string.format('%s\n%s (line %d)', message, file, line))
+          printf('%s\n%s (line %d)', message, file, line)
         end
       end
     end
   end)
 
+--
+-- Defers the execution of a callback to the next update cycle.
+-- Queues the function into the internal task buffer for safe execution.
+--
+-- @param callback (function) - The function to be executed.
+--
+-- # version: 1.0.0
+--
 Backbone.extend(
-  'ExecuteCallback',
-  function (callback)
+  'ExecuteCallback', function (callback)
     if type(callback) ~= 'function' then
       throw ('Expected `callback` to be a function, got %s.', type(callback))
     end
@@ -47,13 +56,15 @@ Backbone.extend(
 )
 
 --
--- Event handler
+-- [ Event handler ]
 --
 -- Registers addon event listeners and dispatches events to registered callbacks,
 -- queuing them for safe execution via `Backbone.ExecuteCallback`.
 --
 
-local events = {} -- event_id (key) -> list of callbacks (value).
+local events = {
+  -- event_id -> list of callbacks
+}
 
 local events_frame = CreateFrame('Frame')
 events_frame:RegisterEvent('ADDON_LOADED')
@@ -96,9 +107,17 @@ events_frame:SetScript('OnEvent',
   end
 )
 
+--
+-- Subscribes to a standard WoW game event.
+-- Registers the event with the internal frame if it is the first listener.
+--
+-- @param event_name (string) - The name of the Blizzard game event.
+-- @param callback (function) - The function to execute when the event fires.
+--
+-- # version: 1.0.0
+--
 Backbone.extend(
-  'OnEvent',
-  function (event_name, callback)
+  'OnEvent', function (event_name, callback)
     if event_name == 'ADDON_LOADED' then
       throw 'Use `Backbone.OnAddonLoaded` for the "ADDON_LOADED" event.'
     end
@@ -112,9 +131,17 @@ Backbone.extend(
   end
 )
 
+--
+-- Subscribes to the loading of a specific addon.
+-- Executes immediately if the addon is already loaded, otherwise waits for the event.
+--
+-- @param addon_name (string) - The name of the addon to watch for.
+-- @param callback (function) - The function to execute once the addon is ready.
+--
+-- # version: 1.0.0
+--
 Backbone.extend(
-  'OnAddonLoaded',
-  function (addon_name, callback)
+  'OnAddonLoaded', function (addon_name, callback)
     if select(2, C_AddOns.IsAddOnLoaded(addon_name)) then
       Backbone.ExecuteCallback(function() callback() end)
       
